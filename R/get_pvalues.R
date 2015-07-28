@@ -12,6 +12,7 @@
 #' @return data frame containing fixed effect estimates, SE, t-values, (degrees 
 #'   of freedom if appropriate) and p-values.
 #' @importFrom pbkrtest get_Lb_ddf
+#' @export
 #' @examples
 #' model <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' get_pvalues(model)
