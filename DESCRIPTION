@@ -1,0 +1,19 @@
+Package: gazer
+Type: Package
+Title: Tools for Processing Eye Tracking Data
+Version: 0.1
+Date: 2015-07-28
+Authors@R: person("Dan", "Mirman", email = "dan@danmirman.org", role = c("aut",
+    "cre"))
+Author: Dan Mirman
+Maintainer: Dan Mirman <dan@danmirman.org>
+Description: Functions for reading and pre-processing eye tracking data.
+URL: http://github.com/dmirman/gazer
+BugReports: http://github.com/dmirman/gazer/issues
+License: GPL-3
+LazyData: true
+Imports:
+    ggplot2,
+    reshape2,
+	plyr
+	
