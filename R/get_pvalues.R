@@ -23,17 +23,25 @@ get_pvalues <- function(model, method = "normal") {
   coefs <- data.frame(coef(summary(model)))
   switch(method,
          # normal approximation
-         normal = {coefs$p.normal <- get_pvalues_normal(coefs$t.value)},
+         normal = {coefs$p.normal <- get_pvalues_normal(coefs$t.value)
+                   coefs$star.normal <- p_star(coefs$p.normal)},
          # K-R
-         KR = {coefs$df.KR <- get_Lb_ddf(model, fixef(model))
-               coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)},
+         KR = {
+         require(pbkrtest)
+         coefs$df.KR <- get_Lb_ddf(model, fixef(model))
+               coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
+               # coefs$star.KR <- p_star(coefs$p.KR)},
          # all
          all = {coefs$p.normal <- get_pvalues_normal(coefs$t.value)
                 coefs$df.KR <- get_Lb_ddf(model, fixef(model))
-                coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)},
+                coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
+                # coefs$star.normal <- p_star(coefs$p.normal)
+                # coefs$star.KR <- p_star(coefs$p.KR)},
          {warning("Invalid p-value estimation method. Use 'normal', 'KR'", 
                   "or 'all'. Defaulting to normal approximation.")
-          coefs$p.normal <- get_pvalues_normal(coefs$t.value)})
+          coefs$p.normal <- get_pvalues_normal(coefs$t.value)
+          # coefs$star.normal <- p_star(coefs$p.normal)})
+         
   coefs
 }
 
@@ -43,4 +51,12 @@ get_pvalues_normal <- function(ts) {
 
 get_pvalues_kr <- function(ts, dfs) {
   2 * (1 - pt(abs(ts), dfs))
+}
+
+p_star <- function(pval){
+  star <- ifelse(pval < 0.001, "***", 
+                 ifelse(pval < 0.01, "**", 
+                        ifelse(pval < 0.05, "*", 
+                               ifelse(pval < 0.1, ".", "")))) 
+  return(star)
 }
