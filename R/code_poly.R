@@ -9,11 +9,15 @@
 #' @param draw.poly logical value indicating whether to create a graph showing tranformed polynomial predictor values, defaults to TRUE
 #' @return Returns a data frame containing the original data and at least two new columns: "predictor".Index, and a column for each order of the polynomial-transformed predictor
 #' @examples
-#' WordLearnEx.gca <- code_poly(df=WordLearnEx, predictor="Block", poly.order=2)
-#' Az.gca <- code_poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
+#' WordLearnEx.gca <- code.poly(df=WordLearnEx, predictor="Block", poly.order=2)
+#' Az.gca <- code.poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
 #' @section Contributors:
 #' Originally written by Matt Winn \url{http://www.mattwinn.com/tools/R_add_polynomials_to_df.html} and revised by Dan Mirman to handle various corner cases.
 code_poly <- function(df=NULL, predictor=NULL, poly.order=NULL, orthogonal=TRUE, draw.poly=TRUE){
+  if (draw.poly){
+    require(ggplot2)
+    require(reshape2)
+  }
   # Codes raw or orthogonal polynomial transformations of a predictor variable
   # be sure to not have an actual variable named "predictor" in your data.frame
   # ultimately adds 2 or more columns, including:
@@ -23,58 +27,61 @@ code_poly <- function(df=NULL, predictor=NULL, poly.order=NULL, orthogonal=TRUE,
   # Revised by Dan Mirman (11/3/2014): 
   #   - call to poly now uses predictor.index and 1:max instead of unique() to deal with out-of-order time bins
   #   - combined indexing and alignment with original data, mainly to avoid problems when poly.order==1
-
-  # figure out which column is the predictor
-  predictor.column.num <- which(colnames(df)==predictor)
-  # copy that column into a column that is named "predictor"
-  df$predictor <- df[,predictor.column.num]
-  
+  # Revised by Matt Winn (2/12/2015)
+  #   - uses `[` instead of `$` to use variable name to extract column
+  #   - computes polynomial on unique(sort(predictor.vector))
+  #       rather than 1:max(predictor.vector) 
+  #       to accomodate non-integer predictor (e.g. time) levels
+  #       (such as those produced by a Tobii 60-Hz eye tracker)
+  #   - Accomodates missing/unevenly-spaced time bins 
+  #       by indexing each sorted unique time bin and using the index to extract
+  #       the polynomial value
+  # Revised by Matt Winn (3/19/2015)
+  #   - uses dplyr::collect to handle columns in tbl_df objects
+  #     (of the type created when using dplyr),
+  #     from which you cannot extract pure vectors using `[` or `select`
+  #     it looks like this: . %>% collect %>% .[[predictor]] 
+  # Revised by Matt Winn (7/29/2015)
+  #   - no longer uses dplyr;
+  #   - simply uses `[[` to extract predictor (time) column
+  #===========================================================#
   # convert choice for orthogonal into choice for raw
   raw <- (orthogonal-1)^2
   
-  #check whether predictor steps are all equal
-  #get unique values of predictor, sort them, and get step sizes
-  step.sizes <- diff(sort(unique(df$predictor)))
-  #check whether there is more than 1 unique step size
-  #  and produce a warning if there is
-  if(length(unique(step.sizes)) > 1){
-    warning("Warning: predictor appears to have unequal step sizes, experimental solution will be applied. Current solution will not work for non-integer predictor values.")
-    #use brute force approach of integer steps from min to max
-    px <- data.frame(predictor = seq(min(df$predictor), max(df$predictor), by=1)) 
-    px$predictor.index <- px$predictor - min(df$predictor) + 1
-    #compute polynomial
-    predictor.polynomial <- poly(1:max(px$predictor.index), poly.order, raw=raw)
-    #add predictor values to df
-    df <- merge(df, px) 
-    # use predictor index as index to align 
-    # polynomial-transformed predictor values with original dataset
-    # (as many as called for by the polynomial order)
-    df[, paste("poly", 1:poly.order, sep="")] <- 
-      predictor.polynomial[df$predictor.index, 1:poly.order]
-  } else {
-    #create index of predictor (e.g. numbered time bins)
-    df$predictor.index <- as.numeric(as.factor(df$predictor))
-    #create x-order order polys (orthogonal if not raw)
-    predictor.polynomial <- poly(1:max(df$predictor.index), poly.order, raw=raw)
-    # use predictor index as index to align 
-    # polynomial-transformed predictor values with original dataset
-    # (as many as called for by the polynomial order)
-    df[, paste("poly", 1:poly.order, sep="")] <- 
-      predictor.polynomial[df$predictor.index, 1:poly.order]
+  # Make sure that the declared predictor is actually present in the data.frame
+  if (!predictor %in% names(df)){
+    stop(paste0(predictor, " is not a variable in your data frame. Check spelling and try again"))
   }
   
+  # Extract the vector to be used as the predictor
+  predictor.vector <- df[[predictor]]
   
-    
-  # draw a plot of the polynomial transformations, if desired
+  # Create index of predictor (e.g. numbered time bins)
+  # The index of the time bin will be used later as an index to call the time sample.
+  predictor.indices <- as.numeric(as.factor(predictor.vector))
+  
+  df$temp.predictor.index <- predictor.indices
+  
+  # Create n-order order polynomials (orthogonal if not raw)
+  predictor.polynomial <- poly(x = unique(sort(predictor.vector)), 
+                               degree = poly.order, raw=raw)
+  
+  # Use predictor index as index to align 
+  #   polynomial-transformed predictor values with original dataset
+  #   (as many as called for by the polynomial order).
+  df[, paste("poly", 1:poly.order, sep="")] <- 
+    predictor.polynomial[predictor.indices, 1:poly.order]
+  
+  # Draw a plot of the polynomial transformations, if desired
   if (draw.poly == TRUE){
     # extract the polynomials from the df
-    df.poly <- df[c("predictor", paste("poly", 1:poly.order, sep=""))]
+    df.poly <- unique(df[c(predictor, paste("poly", 1:poly.order, sep=""))])
     
-    # melt from wide to long format
-    df.poly.melt <- melt(df.poly, id.vars="predictor")
+    # Melt from wide to long format
+    df.poly.melt <- melt(df.poly, id.vars=predictor)
     
-    # Make level names intuitive
-    # don't bother with anything above 6th order. 
+    # Make level names intuitive for plot
+    #  don't bother with anything above 6th order. 
     levels(df.poly.melt$variable)[levels(df.poly.melt$variable)=="poly1"] <- "Linear"
     levels(df.poly.melt$variable)[levels(df.poly.melt$variable)=="poly2"] <- "Quadratic"
     levels(df.poly.melt$variable)[levels(df.poly.melt$variable)=="poly3"] <- "Cubic"
@@ -82,21 +89,24 @@ code_poly <- function(df=NULL, predictor=NULL, poly.order=NULL, orthogonal=TRUE,
     levels(df.poly.melt$variable)[levels(df.poly.melt$variable)=="poly5"] <- "Quintic"
     levels(df.poly.melt$variable)[levels(df.poly.melt$variable)=="poly6"] <- "Sextic"
     
-    # change some column names for the output
+    # Change some column names for the output
     colnames(df.poly.melt)[colnames(df.poly.melt) == "variable"] <- "Order"
     
-    poly.plot <- ggplot(df.poly.melt, aes(x=predictor, y=value, color=Order))+
+    poly.plot <- ggplot(df.poly.melt, aes(y=value, color=Order))+
+      aes_string(x=predictor)+
       geom_line()+
-      xlab(paste0(predictor, " (transformed polynomials)"))+
-      ylab("Transformed value")+
+      xlab(paste0(predictor, "\n (raw predictor)"))+
+      ylab("Transformed polynomial value")+
       scale_color_brewer(palette="Set1")+
       theme_bw()
     
     print(poly.plot)
   }
   
-  # restore correct column names
-  colnames(df)[colnames(df) == "predictor.index"] <- paste0(predictor,".Index")
-  df$predictor <- NULL
+  # Restore correct column names
+  colnames(df)[colnames(df) == "temp.predictor.index"] <- paste0(predictor,".Index")
+  
+  # Return the original data.frame with polynomial columns 
+  # that can be used as model predictors
   return(df)
 }
