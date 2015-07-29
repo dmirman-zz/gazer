@@ -14,22 +14,25 @@ code_poly(df = NULL, predictor = NULL, poly.order = NULL,
 
 \item{poly.order}{integer order of polynomial to be created}
 
-\item{orthogonal}{logical value indicating whether polynomial should be orthogonal (default) or natural (aka raw)}
+\item{orthogonal}{logical value indicating whether polynomial should be
+orthogonal (default) or natural (aka raw)}
 
-\item{draw.poly}{logical value indicating whether to create a graph showing tranformed polynomial predictor values, defaults to TRUE}
+\item{draw.poly}{logical value indicating whether to create a graph showing
+tranformed polynomial predictor values, defaults to TRUE}
 }
 \value{
-Returns a data frame containing the original data and at least two new columns: "predictor".Index, and a column for each order of the polynomial-transformed predictor
+Returns a data frame containing the original data and at least two
+  new columns: "predictor".Index, and a column for each order of the
+  polynomial-transformed predictor
 }
 \description{
-Takes a data frame, name of predictor variable, and polynomial order. Creates polynomial-transformed predictor variables, adds them to the data frame and returns the result. Original data frame is unchanged, remember to assign the result.
-}
-\section{Contributors}{
-
-Originally written by Matt Winn \url{http://www.mattwinn.com/tools/R_add_polynomials_to_df.html} and revised by Dan Mirman to handle various corner cases.
+Takes a data frame, name of predictor variable, and polynomial order. Creates
+polynomial-transformed predictor variables, adds them to the data frame and
+returns the result. Original data frame is unchanged, remember to assign the
+result.
 }
 \examples{
-WordLearnEx.gca <- code.poly(df=WordLearnEx, predictor="Block", poly.order=2)
-Az.gca <- code.poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
+WordLearnEx.gca <- code_poly(df=WordLearnEx, predictor="Block", poly.order=2)
+Az.gca <- code_poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
 }
 
