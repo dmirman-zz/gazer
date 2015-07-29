@@ -34,7 +34,7 @@ get_pvalues <- function(model, method = "normal") {
   # Apply normal approx if asked for
   if (method %in% c("normal", "all")) {
     coefs$p.normal <- get_pvalues_normal(coefs$t.value)
-    coefs$p.normal.star <- p_star(coefs$p.normal)
+    coefs$p.normal.star <- get_p_stars(coefs$p.normal)
   }
 
   # Apply KR if asked for
@@ -54,10 +54,7 @@ get_pvalues_kr <- function(ts, dfs) {
   2 * (1 - pt(abs(ts), dfs))
 }
 
-p_star <- function(pval){
-  star <- ifelse(pval < 0.001, "***",
-                 ifelse(pval < 0.01, "**",
-                        ifelse(pval < 0.05, "*",
-                               ifelse(pval < 0.1, ".", ""))))
-  return(star)
+get_p_stars <- function(ps) {
+  symnum(ps, na = FALSE, cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+         symbols = c("***", "**", "*", ".", " "), legend = FALSE)
 }
