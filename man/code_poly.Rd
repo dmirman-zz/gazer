@@ -29,7 +29,7 @@ Takes a data frame, name of predictor variable, and polynomial order. Creates po
 Originally written by Matt Winn \url{http://www.mattwinn.com/tools/R_add_polynomials_to_df.html} and revised by Dan Mirman to handle various corner cases.
 }
 \examples{
-WordLearnEx.gca <- code_poly(df=WordLearnEx, predictor="Block", poly.order=2)
-Az.gca <- code_poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
+WordLearnEx.gca <- code.poly(df=WordLearnEx, predictor="Block", poly.order=2)
+Az.gca <- code.poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)
 }
 

@@ -24,6 +24,7 @@ degrees of freedom, or both. If Kenward-Roger approximation is used, result
 also contains approximated degrees of freedom.
 }
 \examples{
+require(lme4)
 model <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 get_pvalues(model)
 # Not working with lme4 1.8?
