@@ -24,18 +24,20 @@ readFixationReport <- function(filename, screen_size=c(1024, 768),
     #measure calibration goodness by computing: 
     #	proportion non-fixation time
     #	proportion of off-screen fixations
-    temp <- ddply(gaze, .(Subject, Target), summarize, 
-                  fixTime = sum(CURRENT_FIX_DURATION),
+    temp <- gaze %>% group_by(Subject, Target) %>%
+        summarise(fixTime = sum(CURRENT_FIX_DURATION),
                   totalTime = max(CURRENT_FIX_END))
-    nonFixTime <- ddply(temp, .(Subject), summarize, 
-                           nonFixTime = mean(1 - (fixTime/totalTime)))
-    g2 <- data.frame(gaze, screen_width=screen_size[1], screen_height=screen_size[2])
-    oob_prop <- ddply(g2, .(Subject), summarize, 
-          oob_prop = sum(CURRENT_FIX_DURATION[(CURRENT_FIX_X > screen_width |
-                                                 CURRENT_FIX_X < 0 | 
-                                                 CURRENT_FIX_Y > screen_height |
-                                                 CURRENT_FIX_Y < 0)]) /
-                      sum(CURRENT_FIX_DURATION))
+    
+    nonFixTime <- temp %>% group_by(Subject) %>%
+        summarise(nonFixTime = mean(1 - (fixTime/totalTime)))
+  
+  g2 <- data.frame(gaze, screen_width=screen_size[1], screen_height=screen_size[2])
+  oob_prop <- g2 %>% group_by(Subject) %>%
+      summarise(oob_prop = sum(CURRENT_FIX_DURATION[(CURRENT_FIX_X > screen_width |
+                                            CURRENT_FIX_X < 0 | 
+                                            CURRENT_FIX_Y > screen_height |
+                                            CURRENT_FIX_Y < 0)]) /
+                                      sum(CURRENT_FIX_DURATION))
     calibGoodness <- merge(nonFixTime, oob_prop)
     #make a scatterplot of fixations
     g3 <- merge(g2, calibGoodness)
