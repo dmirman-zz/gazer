@@ -9,16 +9,25 @@ get_pvalues(model, method = "normal")
 \arguments{
 \item{model}{a merMod model object fit by lmer}
 
-\item{method}{p-value estimation method, defaults to normal, can also be KR or all}
+\item{method}{p-value estimation method, defaults to "normal", can also be
+"KR" or "all"}
 }
 \value{
-data frame containing fixed effect estimates, SE, t-values, (degrees of freedom if appropriate) and p-values.
+data frame containing fixed effect estimates, SE, t-values, (degrees
+  of freedom if appropriate) and p-values.
 }
 \description{
-Takes a model fit with lmer and (optionally) an estimation method, returns a data frame containing fixed effect coefficient estimates, SE, t-values, and p-values. Can use normal approximation, Kenward-Roger approximation for degrees of freedom, or both. If Kenward-Roger approximation is used, result also contains approximated degrees of freedom.
+Takes a model fit with lmer and (optionally) an estimation method, returns a
+data frame containing fixed effect coefficient estimates, SE, t-values, and
+p-values. Can use normal approximation, Kenward-Roger approximation for
+degrees of freedom, or both. If Kenward-Roger approximation is used, result
+also contains approximated degrees of freedom.
 }
 \examples{
-get_pvalues(m.full)
-get_pvalues(m.full, "KR")
+require(lme4)
+model <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+get_pvalues(model)
+# Not working with lme4 1.8?
+# get_pvalues(m.full, "KR")
 }
 
