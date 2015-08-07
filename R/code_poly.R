@@ -15,6 +15,7 @@
 #' @return Returns a data frame containing the original data and at least two
 #'   new columns: "predictor".Index, and a column for each order of the
 #'   polynomial-transformed predictor
+#' @export
 #' @examples
 #' WordLearnEx.gca <- code_poly(df=WordLearnEx, predictor="Block", poly.order=2)
 #' Az.gca <- code_poly(df=Az, predictor="Time", poly.order=2, orthogonal=FALSE)

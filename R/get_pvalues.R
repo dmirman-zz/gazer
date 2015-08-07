@@ -11,7 +11,6 @@
 #'   "KR" or "all"
 #' @return data frame containing fixed effect estimates, SE, t-values, (degrees
 #'   of freedom if appropriate) and p-values.
-#' @importFrom pbkrtest get_Lb_ddf
 #' @export
 #' @examples
 #' require(lme4)
@@ -39,7 +38,11 @@ get_pvalues <- function(model, method = "normal") {
 
   # Apply KR if asked for
   if (method %in% c("KR", "all")) {
-    coefs$df.KR <- get_Lb_ddf(model, fixef(model))
+    #run a minimal KRmodcomp
+    restrictionMatrix <- cbind(t(rep(0, length(fixef(model))-1)), 1)
+    kr <- KRmodcomp(model, restrictionMatrix)
+    #get ddf
+    coefs$df.KR <- getKR(kr, "ddf")
     coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
   }
 
