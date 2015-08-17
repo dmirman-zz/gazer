@@ -27,7 +27,6 @@ also contains approximated degrees of freedom.
 require(lme4)
 model <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 get_pvalues(model)
-# Not working with lme4 1.8?
-# get_pvalues(m.full, "KR")
+get_pvalues(model, "KR")
 }
 

@@ -16,8 +16,7 @@
 #' require(lme4)
 #' model <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' get_pvalues(model)
-#' # Not working with lme4 1.8?
-#' # get_pvalues(m.full, "KR")
+#' get_pvalues(model, "KR")
 get_pvalues <- function(model, method = "normal") {
   # Extract fixed effect coefficients from model
   coefs <- data.frame(coef(summary(model)))
@@ -44,6 +43,7 @@ get_pvalues <- function(model, method = "normal") {
     #get ddf
     coefs$df.KR <- getKR(kr, "ddf")
     coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
+    coefs$p.KR.star <- get_p_stars(coefs$p.KR)
   }
 
   coefs
