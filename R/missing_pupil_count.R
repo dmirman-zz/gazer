@@ -20,5 +20,5 @@ missing_pupil_count <- function(datafile, missingthresh=.5) {
   combineSub<-merge(datafile, countsbysubject[, c("subject", "averageMissingSub")], by="subject", all=TRUE)
   combinetrial<-merge(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"), all=TRUE)
   combinetrial<-subset(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
-  return(countsbysubject)
+  return(combinetrial)
 }
