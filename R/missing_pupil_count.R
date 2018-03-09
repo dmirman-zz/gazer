@@ -1,8 +1,7 @@
-#' calculated percent missing data by subject and by trial
+#' calculate percent missing data by subject and by trial
 #' 
 #'
-#' renames column variables and makes them lower case
-#' places time in ms
+#' 
 #'@param missingthresh user-specified threshold for missing data. 
 
 
