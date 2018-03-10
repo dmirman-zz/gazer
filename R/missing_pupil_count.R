@@ -4,10 +4,6 @@
 #' 
 #'@param missingthresh user-specified threshold for missing data. 
 
-
-
-
-
 missing_pupil_count <- function(datafile, missingthresh=.5) { 
   countsbysubject <- ddply(datafile, .(subject), summarise, 
                            missing = sum(is.na(pupil) ), samples = sum(!is.na(pupil)), total = length(pupil))
@@ -16,7 +12,11 @@ missing_pupil_count <- function(datafile, missingthresh=.5) {
   countsbytrial <- ddply(datafile, .(subject, trial), summarise, 
                          missing = sum(is.na(pupil) ), samples = sum(!is.na(pupil)), total = length(pupil))
   countsbytrial$averageMissingTrial <- (countsbytrial$missing / countsbytrial$total)
-  #trials excluded
+  greaterthan=subset(countsbytrial, countsbytrial$averageMissingTrial > missingthresh)
+  prop<-length(greaterthan$trial)/length(countsbytrial$trial)
+  #%trials excluded
+  print(prop)
+  print(countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
   combineSub<-merge(datafile, countsbysubject[, c("subject", "averageMissingSub")], by="subject", all=TRUE)
   combinetrial<-merge(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"), all=TRUE)
   combinetrial<-subset(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
