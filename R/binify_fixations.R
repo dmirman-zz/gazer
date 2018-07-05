@@ -29,31 +29,33 @@ binify_fixations <- function(gaze, binSize=20, keepCols=c("Subject", "TrialNumbe
   #if maxTime is defined, do some trimming
   if (!is.null(maxTime)) {
     #drop all fixations that start after the maxTime
-    gaze<-subset(gaze,CURRENT_FIX_START < maxTime)
+    gaze <- subset(gaze,CURRENT_FIX_START < maxTime)
     #trim fixation end times to be less than maxTime
-    gaze$FixEnd[gaze$FixEnd>maxTime]<-maxTime
+    gaze$FixEnd[gaze$FixEnd>maxTime] <- maxTime
   }
 
   #make a fixation ID variable that is just the fixation number in the overall data frame
   gaze$FixationID <- 1:nrow(gaze)
-
-  data <- ddply(idata.frame(gaze), .(FixationID), expandFixList, binSize=binSize)
+  #expand fixations into time bins
+  for(f in 1:max(gaze$FixationID)){ # for each fixation
+    this_fix <- subset(gaze, FixationID == f)
+    fix_bins <- ceiling(this_fix$CURRENT_FIX_START/binSize):ceiling(this_fix$FixEnd/binSize)
+    if(f==1){ #first fixation: initialize gaze_bins
+      gaze_bins <- data.frame(FixationID = 1, timeBin = fix_bins)
+    } else { #other fixations: append to gaze_bins
+      gaze_bins <- rbind(gaze_bins, data.frame(FixationID = f, timeBin = fix_bins))
+    }
+  }
 
   #there is a border case in which two redundant bins can be generated
   #clean them up by keeping the second one
-  data <- subset(data,timeBin[2:length(timeBin)]!=timeBin[1:(length(timeBin)-1)])
+  gaze_bins <- subset(gaze_bins, timeBin[2:length(timeBin)]!=timeBin[1:(length(timeBin)-1)])
 
   #combine data
-  dataFull <- merge(data,gaze[,c(keepCols,"FixationID")],by="FixationID")
+  dataFull <- merge(gaze_bins, gaze[,c(keepCols, "FixationID")], by="FixationID")
 
   #add a variable with actual time instead of time bin
   dataFull$Time <- dataFull$timeBin*binSize
 
   return(dataFull)
-}
-
-expandFixList <- function(d, binSize=20){
-  #convenience function called by binify_fixations
-  timeBin <- (ceiling(d$CURRENT_FIX_START/binSize):ceiling(d$FixEnd/binSize))
-  data.frame(timeBin=timeBin,FixationID=d$FixationID)
 }

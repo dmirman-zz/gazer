@@ -18,20 +18,20 @@ assignAOI <- function(gaze, screen_size=c(1024, 768), aoi_size=c(400, 300), aoi_
   #standard case: using aoi_size (not aoi_loc) for each corner
   if(is.null(aoi_loc)){
     #image location 1: top left
-    ind1 <- (gaze[,X] < roi_size[1]) & (gaze[,Y] < roi_size[2])
+    ind1 <- (gaze[,X] < aoi_size[1]) & (gaze[,Y] < aoi_size[2])
     gaze$AOI[ind1] <- 1
     #image location 2: top right
-    ind2 <- (gaze[,X] > (screen_size[1]-roi_size[1])) & (gaze[,Y] < roi_size[2])
+    ind2 <- (gaze[,X] > (screen_size[1]-aoi_size[1])) & (gaze[,Y] < aoi_size[2])
     gaze$AOI[ind2] <- 2
     #image location 3: bottom left
-    ind3 <- (gaze[,X] < roi_size[1]) & (gaze[,Y] > (screen_size[2]-roi_size[2]))
+    ind3 <- (gaze[,X] < aoi_size[1]) & (gaze[,Y] > (screen_size[2]-aoi_size[2]))
     gaze$AOI[ind3] <- 3
     #image location 4: bottom right
-    ind4 <- (gaze[,X] > (screen_size[1]-roi_size[1])) & (gaze[,Y] > (screen_size[2]-roi_size[2]))
+    ind4 <- (gaze[,X] > (screen_size[1]-aoi_size[1])) & (gaze[,Y] > (screen_size[2]-aoi_size[2]))
     gaze$AOI[ind4] <- 4
     #center location
-    ind0 <- (gaze[,X] > roi_size[1]) & (gaze[,X] < (screen_size[1]-roi_size[1])) &
-      (gaze[,Y] > roi_size[2]) & (gaze[,Y] < (screen_size[2]-roi_size[2]))
+    ind0 <- (gaze[,X] > aoi_size[1]) & (gaze[,X] < (screen_size[1]-aoi_size[1])) &
+      (gaze[,Y] > aoi_size[2]) & (gaze[,Y] < (screen_size[2]-aoi_size[2]))
     gaze$AOI[ind0] <- 0 #factor value of 0 becomes 1 when converted to integer
   }
   #alternative parsing based on aoi_loc
@@ -45,9 +45,6 @@ assignAOI <- function(gaze, screen_size=c(1024, 768), aoi_size=c(400, 300), aoi_
       gaze$AOI[ind] <- i
     }
   }
-  #ADD SOME WAY TO CONVERT AOI TO OBJECT TYPE... OR MAYBE THAT SHOULD BE A SEPARATE FUNCTION?
-#   gaze$T <- gaze$IA == as.numeric(gaze$TargetLocation)
-#   gaze$U <- (!(gaze$T) & !(gaze$IA=="5") & !(gaze$IA=="0"))
 
   return(gaze)
 }

@@ -13,8 +13,10 @@
  \item{Object}{object type: phonologically related Competitor or Unrelated object. Target object data are omitted}
  \item{Type}{type of phonological competitor: Cohort (e.g., penny - pencil) or Rhyme (e.g., carrot - parrot)}
  \item{FixProp}{fixation proportion: proportion of correct-response trials on which the object was fixated}
- }
- @source Mirman et al. (2011, Brain & Lang., 117:2, 53-68) \url{http://www.danmirman.org/pdfs/Mirman_etal_2011.pdf}}
+ }}
+\source{
+Mirman et al. (2011, Brain & Lang., 117:2, 53-68) \url{http://www.danmirman.org/pdfs/Mirman_etal_2011.pdf}
+}
 \usage{
 CohortRhyme
 }

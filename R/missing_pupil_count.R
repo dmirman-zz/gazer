@@ -1,14 +1,12 @@
-#' calculated percent missing data by subject and by trial
+#' Calculate percent missing data by subject and by trial
 #'
 #'
 #' renames column variables and makes them lower case
 #' places time in ms
-#'@param missingthresh user-specified threshold for missing data.
-#' calculate percent missing data by subject and by trial
 #'
-#'
-#'
-#'@param missingthresh user-specified threshold for missing data.
+#' @param missingthresh user-specified threshold for missing data.
+#' @export
+#' @return data frame containing missing data information
 missing_pupil_count <- function(datafile, missingthresh=.5) {
   countsbysubject <- ddply(datafile, .(subject), summarise,
                            missing = sum(is.na(pupil) ), samples = sum(!is.na(pupil)), total = length(pupil))
