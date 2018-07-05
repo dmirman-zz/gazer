@@ -1,0 +1,104 @@
+---
+title: "Simple Visual World Paradigm Analysis Example"
+author: "Dan Mirman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simple Visual World Paradigm Analysis Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This is a basic example of pre-processing VWP data. The data are from a semantic competition experiment where the distractors were either thematically (associate) or taxonomically related to the target (Mirman & Graziano, 2012).
+
+## Initial set-up
+Load the necessary packages
+
+```{r, message=FALSE, warning=FALSE}
+library(gazer)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+## Read in the raw fixation report
+
+```{r}
+# note that the path is likely to be different on your local machine
+gaze <- readFixationReport("../data/FixData_v1_N15.xls", plot_fix_scatter = F)
+summary(gaze)
+```
+
+Get some calibration diagnostics, including a figure
+```{r, fig.height=5, fig.width=7}
+cg <- get_gaze_diagnostics(gaze)
+```
+
+Alternatively, a single call will read in the data and generate two diagnostic figures
+```{r eval=FALSE}
+gaze <- readFixationReport("../data/FixData_v1_N15.xls")
+```
+
+## Parse areas of interest
+The four screen corners (1-4) need to be interpreted and matched to which object is in each location. 
+
+First, extract the numbered location of the target and competitor:
+
+```{r}
+gaze$TargetLocation <- as.numeric(substr(gaze$TargetLoc, 6, 6))
+gaze$CompLocation <- as.numeric(substr(gaze$CompPort, 6, 6))
+```
+
+Then match fixation locations to AOI based on screen coordinates:
+
+```{r}
+gaze_aoi <- assignAOI(gaze)
+summary(gaze_aoi)
+```
+
+Now determine which object was being fixated by matching AOI codes with target and competitor locations:
+
+```{r}
+gaze_aoi$Targ <- gaze_aoi$AOI == gaze_aoi$TargetLocation
+gaze_aoi$Comp <- gaze_aoi$AOI == gaze_aoi$CompLocation
+gaze_aoi$Unrelated <- ((gaze_aoi$AOI != as.numeric(gaze_aoi$TargetLocation)) &
+                         (gaze_aoi$AOI != as.numeric(gaze_aoi$CompLocation)) &
+                         (gaze_aoi$AOI != 0) & !is.na(gaze_aoi$AOI))
+```
+
+## Fixations to bins
+Convert from fixation list to time bins, only keep the columns needed for analysis. Most of the work is done by the `binify_fixations` function, it just needs a list columns that should be kept after the bining is done. You can optionally specify a bin size (default is 20ms). Note: this step is slow.
+
+```{r}
+gaze_bins <- binify_fixations(gaze_aoi, keepCols=c("Subject", "Target", "Condition", "ACC", "RT", "Targ", "Comp", "Unrelated"))
+summary(gaze_bins)
+```
+
+## Gather
+The fixation locations are in separate columns and need to be "gathered" into a single column:
+
+```{r}
+gaze_obj <- gather(gaze_bins, key = "Object", value = "Fix", c("Targ", "Comp", "Unrelated"), factor_key = TRUE)
+gaze_obj$Fix <- replace(gaze_obj$Fix, is.na(gaze_obj$Fix), FALSE) # recode NA as not-fixating
+summary(gaze_obj)
+```
+
+## Compute fixation proportions
+Filter out error and practice trials, and focus on relevant time window. Then group by Subject, Condition, Time bin, and Object type, and calculate mean fixation proportion for each of those "groups". These are the subject-by-condition time courses that would go into an analysis.
+```{r}
+gaze_subj <- gaze_obj %>% filter(ACC==1 & Time < 3500 & Condition != "practice") %>% 
+  dplyr::group_by(Subject, Condition, Time, Object) %>%
+  summarize(meanFix = mean(Fix))
+# there were two unrelated objects, so divide those proportions by 2
+gaze_subj$meanFix[gaze_subj$Object=="Unrelated"] <- gaze_subj$meanFix[gaze_subj$Object=="Unrelated"] / 2
+
+summary(gaze_subj)
+```
+
+## Plot fixation time course
+```{r, fig.height=5, fig.width=8}
+ggplot(gaze_subj, aes(Time, meanFix, color=Object)) + 
+  facet_wrap(~ Condition) +
+  stat_summary(fun.y=mean, geom="line")
+```
+

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Dan Mirman" />
+
+<meta name="date" content="2018-07-05" />
+
+<title>Simple Visual World Paradigm Analysis Example</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Simple Visual World Paradigm Analysis Example</h1>
+<h4 class="author"><em>Dan Mirman</em></h4>
+<h4 class="date"><em>2018-07-05</em></h4>
+
+
+
+<p>This is a basic example of pre-processing VWP data. The data are from a semantic competition experiment where the distractors were either thematically (associate) or taxonomically related to the target (Mirman &amp; Graziano, 2012).</p>
+<div id="initial-set-up" class="section level2">
+<h2>Initial set-up</h2>
+<p>Load the necessary packages</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(gazer)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(tidyr)
+<span class="kw">library</span>(ggplot2)</code></pre></div>
+</div>
+<div id="read-in-the-raw-fixation-report" class="section level2">
+<h2>Read in the raw fixation report</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note that the path is likely to be different on your local machine</span>
+gaze &lt;-<span class="st"> </span><span class="kw">readFixationReport</span>(<span class="st">&quot;../data/FixData_v1_N15.xls&quot;</span>, <span class="dt">plot_fix_scatter =</span> F)
+<span class="kw">summary</span>(gaze)</code></pre></div>
+<pre><code>##     Subject     CURRENT_FIX_PUPIL CURRENT_FIX_DURATION CURRENT_FIX_END  
+##  9160   :1109   Min.   :  36.0    Min.   :   2.0       Min.   :   22.0  
+##  9196   : 897   1st Qu.: 122.0    1st Qu.: 140.0       1st Qu.:  919.5  
+##  9115   : 882   Median : 165.0    Median : 210.0       Median : 1886.0  
+##  9187   : 839   Mean   : 176.3    Mean   : 279.6       Mean   : 1958.0  
+##  9061   : 787   3rd Qu.: 201.0    3rd Qu.: 328.0       3rd Qu.: 2614.5  
+##  9171   : 786   Max.   :9144.0    Max.   :2660.0       Max.   :26184.0  
+##  (Other):5616                                                           
+##  CURRENT_FIX_START CURRENT_FIX_X     CURRENT_FIX_Y       CompPort   
+##  Min.   :    4     Min.   :-3270.0   Min.   :-3270.0   image1:2794  
+##  1st Qu.:  650     1st Qu.:  234.5   1st Qu.:  173.5   image2:2762  
+##  Median : 1562     Median :  510.9   Median :  362.7   image3:2716  
+##  Mean   : 1680     Mean   :  510.5   Mean   :  354.0   image4:2644  
+##  3rd Qu.: 2334     3rd Qu.:  799.7   3rd Qu.:  522.7                
+##  Max.   :25848     Max.   : 3270.0   Max.   : 3270.0                
+##                                                                     
+##      Condition     TargetLoc         ACC               RT       
+##  associate:3059   image1:2769   Min.   :0.0000   Min.   : 2236  
+##  filler   :3010   image2:2891   1st Qu.:1.0000   1st Qu.: 2957  
+##  practice :1702   image3:2611   Median :1.0000   Median : 3237  
+##  taxonomic:3145   image4:2645   Mean   :0.9898   Mean   : 3631  
+##                                 3rd Qu.:1.0000   3rd Qu.: 3687  
+##                                 Max.   :1.0000   Max.   :26105  
+##                                                                 
+##      Target     TargetLocation
+##  barn   : 213   1:2769        
+##  walker : 194   2:2891        
+##  acorn  : 184   3:2611        
+##  bandaid: 184   4:2645        
+##  pillow : 181                 
+##  falcon : 180                 
+##  (Other):9780</code></pre>
+<p>Get some calibration diagnostics, including a figure</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cg &lt;-<span class="st"> </span><span class="kw">get_gaze_diagnostics</span>(gaze)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Alternatively, a single call will read in the data and generate two diagnostic figures</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze &lt;-<span class="st"> </span><span class="kw">readFixationReport</span>(<span class="st">&quot;../data/FixData_v1_N15.xls&quot;</span>)</code></pre></div>
+</div>
+<div id="parse-areas-of-interest" class="section level2">
+<h2>Parse areas of interest</h2>
+<p>The four screen corners (1-4) need to be interpreted and matched to which object is in each location.</p>
+<p>First, extract the numbered location of the target and competitor:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze<span class="op">$</span>TargetLocation &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(gaze<span class="op">$</span>TargetLoc, <span class="dv">6</span>, <span class="dv">6</span>))
+gaze<span class="op">$</span>CompLocation &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(gaze<span class="op">$</span>CompPort, <span class="dv">6</span>, <span class="dv">6</span>))</code></pre></div>
+<p>Then match fixation locations to AOI based on screen coordinates:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze_aoi &lt;-<span class="st"> </span><span class="kw">assignAOI</span>(gaze)
+<span class="kw">summary</span>(gaze_aoi)</code></pre></div>
+<pre><code>##     Subject     CURRENT_FIX_PUPIL CURRENT_FIX_DURATION CURRENT_FIX_END  
+##  9160   :1109   Min.   :  36.0    Min.   :   2.0       Min.   :   22.0  
+##  9196   : 897   1st Qu.: 122.0    1st Qu.: 140.0       1st Qu.:  919.5  
+##  9115   : 882   Median : 165.0    Median : 210.0       Median : 1886.0  
+##  9187   : 839   Mean   : 176.3    Mean   : 279.6       Mean   : 1958.0  
+##  9061   : 787   3rd Qu.: 201.0    3rd Qu.: 328.0       3rd Qu.: 2614.5  
+##  9171   : 786   Max.   :9144.0    Max.   :2660.0       Max.   :26184.0  
+##  (Other):5616                                                           
+##  CURRENT_FIX_START CURRENT_FIX_X     CURRENT_FIX_Y       CompPort   
+##  Min.   :    4     Min.   :-3270.0   Min.   :-3270.0   image1:2794  
+##  1st Qu.:  650     1st Qu.:  234.5   1st Qu.:  173.5   image2:2762  
+##  Median : 1562     Median :  510.9   Median :  362.7   image3:2716  
+##  Mean   : 1680     Mean   :  510.5   Mean   :  354.0   image4:2644  
+##  3rd Qu.: 2334     3rd Qu.:  799.7   3rd Qu.:  522.7                
+##  Max.   :25848     Max.   : 3270.0   Max.   : 3270.0                
+##                                                                     
+##      Condition     TargetLoc         ACC               RT       
+##  associate:3059   image1:2769   Min.   :0.0000   Min.   : 2236  
+##  filler   :3010   image2:2891   1st Qu.:1.0000   1st Qu.: 2957  
+##  practice :1702   image3:2611   Median :1.0000   Median : 3237  
+##  taxonomic:3145   image4:2645   Mean   :0.9898   Mean   : 3631  
+##                                 3rd Qu.:1.0000   3rd Qu.: 3687  
+##                                 Max.   :1.0000   Max.   :26105  
+##                                                                 
+##      Target     TargetLocation  CompLocation        AOI       
+##  barn   : 213   Min.   :1.00   Min.   :1.000   Min.   :0.000  
+##  walker : 194   1st Qu.:1.00   1st Qu.:1.000   1st Qu.:0.000  
+##  acorn  : 184   Median :2.00   Median :2.000   Median :2.000  
+##  bandaid: 184   Mean   :2.47   Mean   :2.477   Mean   :1.721  
+##  pillow : 181   3rd Qu.:3.00   3rd Qu.:3.000   3rd Qu.:3.000  
+##  falcon : 180   Max.   :4.00   Max.   :4.000   Max.   :4.000  
+##  (Other):9780                                  NA's   :1040</code></pre>
+<p>Now determine which object was being fixated by matching AOI codes with target and competitor locations:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze_aoi<span class="op">$</span>Targ &lt;-<span class="st"> </span>gaze_aoi<span class="op">$</span>AOI <span class="op">==</span><span class="st"> </span>gaze_aoi<span class="op">$</span>TargetLocation
+gaze_aoi<span class="op">$</span>Comp &lt;-<span class="st"> </span>gaze_aoi<span class="op">$</span>AOI <span class="op">==</span><span class="st"> </span>gaze_aoi<span class="op">$</span>CompLocation
+gaze_aoi<span class="op">$</span>Unrelated &lt;-<span class="st"> </span>((gaze_aoi<span class="op">$</span>AOI <span class="op">!=</span><span class="st"> </span><span class="kw">as.numeric</span>(gaze_aoi<span class="op">$</span>TargetLocation)) <span class="op">&amp;</span>
+<span class="st">                         </span>(gaze_aoi<span class="op">$</span>AOI <span class="op">!=</span><span class="st"> </span><span class="kw">as.numeric</span>(gaze_aoi<span class="op">$</span>CompLocation)) <span class="op">&amp;</span>
+<span class="st">                         </span>(gaze_aoi<span class="op">$</span>AOI <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(gaze_aoi<span class="op">$</span>AOI))</code></pre></div>
+</div>
+<div id="fixations-to-bins" class="section level2">
+<h2>Fixations to bins</h2>
+<p>Convert from fixation list to time bins, only keep the columns needed for analysis. Most of the work is done by the <code>binify_fixations</code> function, it just needs a list columns that should be kept after the bining is done. You can optionally specify a bin size (default is 20ms). Note: this step is slow.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze_bins &lt;-<span class="st"> </span><span class="kw">binify_fixations</span>(gaze_aoi, <span class="dt">keepCols=</span><span class="kw">c</span>(<span class="st">&quot;Subject&quot;</span>, <span class="st">&quot;Target&quot;</span>, <span class="st">&quot;Condition&quot;</span>, <span class="st">&quot;ACC&quot;</span>, <span class="st">&quot;RT&quot;</span>, <span class="st">&quot;Targ&quot;</span>, <span class="st">&quot;Comp&quot;</span>, <span class="st">&quot;Unrelated&quot;</span>))
+<span class="kw">summary</span>(gaze_bins)</code></pre></div>
+<pre><code>##    FixationID       timeBin           Subject             Target      
+##  Min.   :    1   Min.   :   1.00   9115   :14560   barn      :  3184  
+##  1st Qu.: 2732   1st Qu.:  45.00   9160   :12851   walker    :  2761  
+##  Median : 5295   Median :  88.00   9061   :12215   bandaid   :  2752  
+##  Mean   : 5458   Mean   :  95.09   9156   :11734   acorn     :  2673  
+##  3rd Qu.: 8293   3rd Qu.: 130.00   9171   :10931   soda      :  2642  
+##  Max.   :10916   Max.   :1310.00   9092   :10763   paintbrush:  2613  
+##                                    (Other):88597   (Other)   :145026  
+##      Condition          ACC               RT           Targ        
+##  associate:45169   Min.   :0.0000   Min.   : 2236   Mode :logical  
+##  filler   :45125   1st Qu.:1.0000   1st Qu.: 2947   FALSE:87494    
+##  practice :25206   Median :1.0000   Median : 3229   TRUE :63465    
+##  taxonomic:46151   Mean   :0.9895   Mean   : 3641   NA's :10692    
+##                    3rd Qu.:1.0000   3rd Qu.: 3673                  
+##                    Max.   :1.0000   Max.   :26105                  
+##                                                                    
+##     Comp         Unrelated            Time      
+##  Mode :logical   Mode :logical   Min.   :   20  
+##  FALSE:135512    FALSE:134895    1st Qu.:  900  
+##  TRUE :15447     TRUE :26756     Median : 1760  
+##  NA's :10692                     Mean   : 1902  
+##                                  3rd Qu.: 2600  
+##                                  Max.   :26200  
+## </code></pre>
+</div>
+<div id="gather" class="section level2">
+<h2>Gather</h2>
+<p>The fixation locations are in separate columns and need to be “gathered” into a single column:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze_obj &lt;-<span class="st"> </span><span class="kw">gather</span>(gaze_bins, <span class="dt">key =</span> <span class="st">&quot;Object&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;Fix&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Targ&quot;</span>, <span class="st">&quot;Comp&quot;</span>, <span class="st">&quot;Unrelated&quot;</span>), <span class="dt">factor_key =</span> <span class="ot">TRUE</span>)
+gaze_obj<span class="op">$</span>Fix &lt;-<span class="st"> </span><span class="kw">replace</span>(gaze_obj<span class="op">$</span>Fix, <span class="kw">is.na</span>(gaze_obj<span class="op">$</span>Fix), <span class="ot">FALSE</span>) <span class="co"># recode NA as not-fixating</span>
+<span class="kw">summary</span>(gaze_obj)</code></pre></div>
+<pre><code>##    FixationID       timeBin           Subject              Target      
+##  Min.   :    1   Min.   :   1.00   9115   : 43680   barn      :  9552  
+##  1st Qu.: 2732   1st Qu.:  45.00   9160   : 38553   walker    :  8283  
+##  Median : 5295   Median :  88.00   9061   : 36645   bandaid   :  8256  
+##  Mean   : 5458   Mean   :  95.09   9156   : 35202   acorn     :  8019  
+##  3rd Qu.: 8293   3rd Qu.: 130.00   9171   : 32793   soda      :  7926  
+##  Max.   :10916   Max.   :1310.00   9092   : 32289   paintbrush:  7839  
+##                                    (Other):265791   (Other)   :435078  
+##      Condition           ACC               RT             Time      
+##  associate:135507   Min.   :0.0000   Min.   : 2236   Min.   :   20  
+##  filler   :135375   1st Qu.:1.0000   1st Qu.: 2947   1st Qu.:  900  
+##  practice : 75618   Median :1.0000   Median : 3229   Median : 1760  
+##  taxonomic:138453   Mean   :0.9895   Mean   : 3641   Mean   : 1902  
+##                     3rd Qu.:1.0000   3rd Qu.: 3673   3rd Qu.: 2600  
+##                     Max.   :1.0000   Max.   :26105   Max.   :26200  
+##                                                                     
+##        Object          Fix         
+##  Targ     :161651   Mode :logical  
+##  Comp     :161651   FALSE:379285   
+##  Unrelated:161651   TRUE :105668   
+##                                    
+##                                    
+##                                    
+## </code></pre>
+</div>
+<div id="compute-fixation-proportions" class="section level2">
+<h2>Compute fixation proportions</h2>
+<p>Filter out error and practice trials, and focus on relevant time window. Then group by Subject, Condition, Time bin, and Object type, and calculate mean fixation proportion for each of those “groups”. These are the subject-by-condition time courses that would go into an analysis.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gaze_subj &lt;-<span class="st"> </span>gaze_obj <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(ACC<span class="op">==</span><span class="dv">1</span> <span class="op">&amp;</span><span class="st"> </span>Time <span class="op">&lt;</span><span class="st"> </span><span class="dv">3500</span> <span class="op">&amp;</span><span class="st"> </span>Condition <span class="op">!=</span><span class="st"> &quot;practice&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(Subject, Condition, Time, Object) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">meanFix =</span> <span class="kw">mean</span>(Fix))
+<span class="co"># there were two unrelated objects, so divide those proportions by 2</span>
+gaze_subj<span class="op">$</span>meanFix[gaze_subj<span class="op">$</span>Object<span class="op">==</span><span class="st">&quot;Unrelated&quot;</span>] &lt;-<span class="st"> </span>gaze_subj<span class="op">$</span>meanFix[gaze_subj<span class="op">$</span>Object<span class="op">==</span><span class="st">&quot;Unrelated&quot;</span>] <span class="op">/</span><span class="st"> </span><span class="dv">2</span>
+
+<span class="kw">summary</span>(gaze_subj)</code></pre></div>
+<pre><code>##     Subject          Condition         Time            Object    
+##  9061   : 1566   associate:7800   Min.   :  20   Targ     :7790  
+##  9062   : 1566   filler   :7758   1st Qu.: 880   Comp     :7790  
+##  9092   : 1566   practice :   0   Median :1740   Unrelated:7790  
+##  9115   : 1566   taxonomic:7812   Mean   :1742                   
+##  9146   : 1566                    3rd Qu.:2600                   
+##  9153   : 1566                    Max.   :3480                   
+##  (Other):13974                                                   
+##     meanFix      
+##  Min.   :0.0000  
+##  1st Qu.:0.0000  
+##  Median :0.1000  
+##  Mean   :0.1926  
+##  3rd Qu.:0.2222  
+##  Max.   :1.0000  
+## </code></pre>
+</div>
+<div id="plot-fixation-time-course" class="section level2">
+<h2>Plot fixation time course</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gaze_subj, <span class="kw">aes</span>(Time, meanFix, <span class="dt">color=</span>Object)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>Condition) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_summary</span>(<span class="dt">fun.y=</span>mean, <span class="dt">geom=</span><span class="st">&quot;line&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
