@@ -27,8 +27,8 @@ library(ggplot2)
 ## Read in the raw fixation report
 
 ```{r}
-# Use a file installed with the pakcage 
-gaze_path <- system.file(package = "gazer", "data/FixData_v1_N15.xls")
+# Use a file installed with the package 
+gaze_path <- system.file("extdata", "FixData_v1_N15.xls", package = "gazer")
 gaze <- readFixationReport(gaze_path, plot_fix_scatter = FALSE)
 summary(gaze)
 ```
@@ -98,12 +98,9 @@ The fixation locations are in separate columns and need to be "gathered" into a
 single column:
 
 ```{r}
-gaze_obj <- gather(
-  gaze_bins, 
-  key = "Object", 
-  value = "Fix", 
-  Targ, Comp, Unrelated, 
-  factor_key = TRUE)
+gaze_obj <- gather(gaze_bins, 
+                   key = "Object", value = "Fix", 
+                   Targ, Comp, Unrelated, factor_key = TRUE)
 
 # recode NA as not-fixating
 gaze_obj$Fix <- replace(gaze_obj$Fix, is.na(gaze_obj$Fix), FALSE) 
@@ -112,16 +109,18 @@ summary(gaze_obj)
 
 ## Compute fixation proportions
 
-Filter out error and practice trials, and focus on relevant time window. Then
-group by Subject, Condition, Time bin, and Object type, and calculate mean
-fixation proportion for each of those "groups". These are the
-subject-by-condition time courses that would go into an analysis.
+Filter out error and practice trials, and focus on relevant time window. Then group by Subject, Condition, and Object type to calculate number of valid trials in each cell. Then also group by time bin to calculate time course of number of object fixations and mean fixation proportion. These are the subject-by-condition time courses that would go into an analysis.
 
 ```{r}
 gaze_subj <- gaze_obj %>% 
-  filter(ACC == 1, Time < 3500, Condition != "practice") %>% 
-  group_by(Subject, Condition, Time, Object) %>%
-  summarize(meanFix = mean(Fix))
+  filter(ACC == 1, Condition != "practice", Time < 3500) %>% 
+  # calculate number of valid trials for each subject-condition
+  group_by(Subject, Condition, Object) %>% 
+  mutate(nTrials = length(unique(Target))) %>% ungroup() %>%
+  # calculate number of fixations 
+  group_by(Subject, Condition, Object, Time) %>%
+  summarize(sumFix = sum(Fix), nTrials = unique(nTrials), 
+            meanFix = sum(Fix)/unique(nTrials))
 
 # there were two unrelated objects, so divide those proportions by 2
 gaze_subj$meanFix[gaze_subj$Object == "Unrelated"] <- 
@@ -134,6 +133,8 @@ summary(gaze_subj)
 ```{r, fig.height=5, fig.width=8}
 ggplot(gaze_subj, aes(Time, meanFix, color = Object)) + 
   facet_wrap(~ Condition) +
-  stat_summary(fun.y = mean, geom = "line")
+  stat_summary(fun.y = mean, geom = "line") +
+  geom_vline(xintercept = 1300) +
+  annotate("text", x=1300, y=0.9, label="Word onset", hjust=0)
 ```
 
