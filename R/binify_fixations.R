@@ -39,7 +39,7 @@ binify_fixations <- function(gaze,
   gaze_list <- split(gaze, gaze$FixationID)
 
   # Apply: A function to expand a single fication
-  expand_fixation <- function(df, bin_size) {
+  expand_fixation <- function(df) {
     fix_bins <- seq(
       from = ceiling(df[["CURRENT_FIX_START"]] / binSize),
       to = ceiling(df[["FixEnd"]] / binSize))
