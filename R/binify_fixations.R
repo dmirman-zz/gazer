@@ -9,53 +9,70 @@
 #' @param maxTime optional parameter to set maximum trial length
 #' @return data frame containing gaze data arranged by bin
 #' @export
-#' @examples
-binify_fixations <- function(gaze, binSize=20, keepCols=c("Subject", "TrialNumber", "Target", "T"), maxTime=NULL){
-  #convert a list of fixations to bins
-  #binSize determines the size of each bin in ms
-  #keepCols determines which columns from the original data frame will show up in the output
-  #	will no longer need fixation start and duration, nor fixation location coordinates
-  #
-  #maxTime can be used to cut down trial length
-  #
+binify_fixations <- function(gaze,
+                             binSize = 20,
+                             keepCols = c(
+                               "Subject", "TrialNumber", "Target", "T"),
+                             maxTime = NULL) {
 
-  #need to know when fixations end
+  # Need to know when fixations end
   if ("CURRENT_FIX_END" %in% names(gaze)) {
     gaze$FixEnd <- gaze$CURRENT_FIX_END
   } else {
-    #compute end of fixation from start and duration
+    # compute end of fixation from start and duration
     gaze$FixEnd <- gaze$CURRENT_FIX_START + gaze$CURRENT_FIX_DURATION
   }
-  #if maxTime is defined, do some trimming
+
+  # If maxTime is defined, do some trimming.
   if (!is.null(maxTime)) {
-    #drop all fixations that start after the maxTime
-    gaze <- subset(gaze,CURRENT_FIX_START < maxTime)
-    #trim fixation end times to be less than maxTime
-    gaze$FixEnd[gaze$FixEnd>maxTime] <- maxTime
+    # drop all fixations that start after the maxTime
+    gaze <- subset(gaze, CURRENT_FIX_START < maxTime)
+    # trim fixation end times to be less than maxTime
+    gaze$FixEnd[gaze$FixEnd > maxTime] <- maxTime
   }
 
-  #make a fixation ID variable that is just the fixation number in the overall data frame
-  gaze$FixationID <- 1:nrow(gaze)
-  #expand fixations into time bins
-  for(f in 1:max(gaze$FixationID)){ # for each fixation
-    this_fix <- subset(gaze, FixationID == f)
-    fix_bins <- ceiling(this_fix$CURRENT_FIX_START/binSize):ceiling(this_fix$FixEnd/binSize)
-    if(f==1){ #first fixation: initialize gaze_bins
-      gaze_bins <- data.frame(FixationID = 1, timeBin = fix_bins)
-    } else { #other fixations: append to gaze_bins
-      gaze_bins <- rbind(gaze_bins, data.frame(FixationID = f, timeBin = fix_bins))
-    }
+  # Make a fixation ID variable that is just the fixation number in the overall
+  # data frame
+  gaze$FixationID <- seq_len(nrow(gaze))
+
+  # Split: Make a list of dataframes for each fixation
+  gaze_list <- split(gaze, gaze$FixationID)
+
+  # Apply: A function to expand a single fication
+  expand_fixation <- function(df) {
+    fix_bins <- seq(
+      from = ceiling(df[["CURRENT_FIX_START"]] / binSize),
+      to = ceiling(df[["FixEnd"]] / binSize))
+    data.frame(
+      FixationID = unique(df[["FixationID"]]),
+      timeBin = fix_bins)
   }
 
-  #there is a border case in which two redundant bins can be generated
-  #clean them up by keeping the second one
-  gaze_bins <- subset(gaze_bins, timeBin[2:length(timeBin)]!=timeBin[1:(length(timeBin)-1)])
+  # Combine: Expand each fixation and reduce to a single dataframe
+  gaze_bins <- dplyr::bind_rows(lapply(gaze_list, expand_fixation))
 
-  #combine data
-  dataFull <- merge(gaze_bins, gaze[,c(keepCols, "FixationID")], by="FixationID")
+  # There is a border case in which two redundant bins can be generated.
+  # Clean them up by keeping the second one.
+  gaze_bins <- subset(
+    gaze_bins,
+    timeBin[2:length(timeBin)] != timeBin[1:(length(timeBin)-1)])
 
-  #add a variable with actual time instead of time bin
-  dataFull$Time <- dataFull$timeBin*binSize
+  # Check names in keepCcols
+  missing_names <- keepCols[!(keepCols %in% names(gaze))]
+  if (length(missing_names) > 0) {
+    quoted <- sprintf("`%s`", missing_names)
+    warning(
+      paste0(
+        quoted, collapse = ", "), " are not columns in the fixation dataframe")
+  }
 
-  return(dataFull)
+  # Combine binned data with information from original df
+  keepCols <- keepCols[keepCols %in% names(gaze)]
+  dataFull <- merge(
+    gaze_bins, gaze[, c(keepCols, "FixationID")], by = "FixationID")
+
+  # Add a variable with actual time instead of time bin
+  dataFull$Time <- dataFull$timeBin * binSize
+
+  dataFull
 }
