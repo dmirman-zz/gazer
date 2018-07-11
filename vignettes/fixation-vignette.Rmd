@@ -48,8 +48,7 @@ gaze <- readFixationReport(gaze_path)
 
 ## Parse areas of interest
 
-The four screen corners (1-4) need to be interpreted and matched to which object
-is in each location.
+For this experiment, the objects were always presented in the four corners of the screen and the gaze position was recorded in terms of (x,y) coordinates. So we need to identify target and competitor image locations, convert gaze coordinates into image locations, and compare gaze location to target and competitor locations. [If your data are already coded in terms of which image is being fixated or the images are not in fixed locations, then this step is not necessary.]
 
 First, extract the numbered location of the target and competitor:
 
