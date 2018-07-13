@@ -57,10 +57,4 @@ movingAverage <- function(x, n=3, centered=TRUE) {
   # return sum divided by count
   s/count
 }
-#####################
-# Clean up leading NAs in a vector
-# by replacing the first 6 elements (100 ms) with the man value
-cleanUpLeadingNAs <- function(x){
-  x[1:6] <- mean(x, na.rm=TRUE)
-  return(x)
-}
+
