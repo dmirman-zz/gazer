@@ -20,7 +20,7 @@ preprocess_pupil <- function(datafile, baseline_window=NA, binsize=NA, stim_onse
   pupil_interp <- blinks_na %>%
     dplyr::group_by(subject, trial, time) %>%
     mutate(interp = na.approx(pup, rule=2),
-           timebins = timeBins(time, binsize))  #places data into timebins =  50, 150 ms, 250, ms
+           timebins = timeBins(time, binsize))  %>% ungroup()#places data into timebins =  50, 150 ms, 250, ms
 
   if (smoothing=="LPF") {
     pupil_data_lf<- pupil_interp %>%
@@ -42,7 +42,7 @@ preprocess_pupil <- function(datafile, baseline_window=NA, binsize=NA, stim_onse
     meanmax_pupil <- corrected_baseline %>%
       dplyr::group_by(subject, trial) %>%
       dplyr::summarise(mean_pupil = mean(baselinecorrectedp, na.rm=TRUE),
-                       max_pupil = max(baselinecorrectedp, na.rm=TRUE))
+                       max_pupil = max(baselinecorrectedp, na.rm=TRUE)) %>% ungroup()
 
     #when does stimulus onset occur.
 
