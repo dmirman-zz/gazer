@@ -31,7 +31,9 @@
 #' @export
 #'
 
-low_pass_filter<-function(ts, samp_freq, filter_freq=4){
-  LPF<-signal::butter(3, 2 * filter_freq / samp_freq, "low")
+low_pass_filter<-function(ts, samp_freq, LPF_cutoff_freq=10){
+  message("low pass filtering")
+  # typically use a 10 Hz LPF
+  LPF = signal::butter(4,LPF_cutoff_freq/(samp_freq/2), type = 'low', plane='z')
   return(as.vector(signal::filter(LPF, ts)))
 }
