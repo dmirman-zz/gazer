@@ -6,10 +6,7 @@ mean_max_pupil <- function(datafile) {
   message("Calculating mean and max")
   meanmax_pupil <- datafile %>%
     dplyr::group_by(subject, trial) %>%
-    dplyr::summarise(mean_pupil = mean(baselinecorrectedp),
+    dplyr::mutate(mean_pupil = mean(baselinecorrectedp),
                      max_pupil = max(baselinecorrectedp)) %>% ungroup()
- 
-    corrected_pupil_baseline <- merge(datafile,
-                                      meanmax_pupil[, c("subject", "trial", "mean_pupil", "max_pupil")], by=c("subject", "trial"))
-  return(corrected_pupil_baseline)
+  return(meanmax_pupil)
   }
