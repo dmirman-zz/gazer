@@ -21,6 +21,6 @@ baseline_correction_pupil<-function(datafile,baseline_window=NA,stim_onset=NA, s
   message("setting trial at zero")
   zero_onset <- corrected_baseline %>% dplyr::mutate(timebinonset=timebins-timebins[[1]])
   
-  return(corrected_baseline)
+  return(zero_onset)
 
   }
