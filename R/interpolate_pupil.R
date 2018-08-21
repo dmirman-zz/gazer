@@ -13,8 +13,8 @@ message("Turnining all blinks to NA")
   blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
   message("Performing linear interpolation")
   pupil_interp <- blinks_na %>%
-    dplyr::group_by(subject, trial, time) %>%
-    mutate(interp = na.approx(pup, rule=2), #linear interpolation
-           timebins = timeBins(time, binsize))  %>% ungroup()#places data into timebins =  50, 150 ms, 250, ms if 100ms bins #gets rid of time variable
+    dplyr::group_by(subject, trial) %>%
+    dplyr::mutate(interp = na.approx(pup, rule=2), #linear interpolation
+          timebins = timeBins(time, binsize))  %>% ungroup()#places data into timebins =  50, 150 ms, 250, ms if 100ms bins #gets rid of time variable
     return(pupil_interp)
 }

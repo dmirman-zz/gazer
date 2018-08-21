@@ -4,10 +4,12 @@
 #' @param binsize user-specified threshold for binning data.
 #' @param stim_onset user-specified threshold for when stimulus of interest appears.
 #' @param stim_offset  user-specified threshold for trial offset 
+#' @param movingavg name of your average pupil col
 #' @return data frame containing baseline corrected data from event of interest
 baseline_correction_pupil<-function(datafile,baseline_window=NA,stim_onset=NA, stim_offset=NA) { message("Calculating baseline")
   #recent paper (Mahot, 2018)suggested using median over mean for baseline correction
-    baseline <- datafile  %>%
+  message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
+  baseline <- datafile  %>%
     dplyr::filter(timebins > baseline_window[1],
                   timebins < baseline_window[2]) %>%
     dplyr::group_by(subject, trial) %>%
