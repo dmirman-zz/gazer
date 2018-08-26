@@ -11,7 +11,7 @@ merge_pupil_files <- function (file_list) {  #file list is path to .xls files
     read.table(files, header=TRUE, sep="\t", na.strings = ".") } ))
   change_name <- rename(dataset,
                         c(RECORDING_SESSION_LABEL="subject", TRIAL_INDEX="trial",
-                          ACCURACY="acc", AVERAGE_IN_BLINK="blink", AVERAGE_PUPIL_SIZE="pupil"))
+                         AVERAGE_IN_BLINK="blink", AVERAGE_PUPIL_SIZE="pupil"))
   names(change_name) <- tolower(names(change_name))
   change_name$time <- change_name$timestamp-change_name$ip_start_time
   return(change_name)
