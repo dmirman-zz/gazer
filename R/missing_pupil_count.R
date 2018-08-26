@@ -10,20 +10,20 @@
 missing_pupil_count <- function(datafile, missingthresh=.3) {
 
   countsbysubject <- datafile %>%
-      group_by(subject) %>%
-      summarise(missing = sum(is.na(pupil)),
+      dplyr::group_by(subject) %>%
+      dplyr::summarise(missing = sum(is.na(pupil)),
             samples = sum(!is.na(pupil)),
             total = length(pupil)) %>%
-      mutate(averageMissingSub = missing / total)
+      dplyr::mutate(averageMissingSub = missing / total)
 
   countsbytrial <- datafile %>%
-      group_by(subject, trial) %>%
-      summarise(missing = sum(is.na(pupil)),
+      dplyr::group_by(subject, trial) %>%
+      dplyr::summarise(missing = sum(is.na(pupil)),
             samples = sum(!is.na(pupil)),
             total = length(pupil))%>%
-      mutate(averageMissingTrial = missing / total)
+      dplyr::mutate(averageMissingTrial = missing / total)
 
-  greaterthan <- subset(countsbytrial, countsbytrial$averageMissingTrial > missingthresh)
+  greaterthan <- filter(countsbytrial, averageMissingTrial > missingthresh)
   prop <- length(greaterthan$trial)/length(countsbytrial$trial)
 
   # % trials excluded
@@ -37,7 +37,7 @@ missing_pupil_count <- function(datafile, missingthresh=.3) {
   # add missing data per trial to the data frame
   combinetrial <- merge(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"), all=TRUE)
   # keep only the data that exceeds the threshold for retaining the trials & subjects
-  combinetrial_above_threshold <- subset(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
+  combinetrial_above_threshold <- filter(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
 
   return(combinetrial_above_threshold)
 }
