@@ -1,11 +1,12 @@
-###############################################-
-# Moving average function
-#
-# Creates a moving average using a specified averageing window
-# if n is 5, then it uses the target value,
-# 2 preceding and 2 following.
-#
-######################################
+
+#' Moving average function
+#' Creates a moving average using a specified averageing window
+#' if n is 5, then it uses the target value,
+#'  2 preceding and 2 following
+#'  @param x data 
+#'  @param  n #used for moving window
+#'  @param centered 
+#'  @return  return sum divided by count
 movingAverage <- function(x, n=3, centered=TRUE) {
 
   if (centered) {
