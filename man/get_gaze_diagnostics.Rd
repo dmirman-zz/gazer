@@ -10,8 +10,6 @@ get_gaze_diagnostics(gaze, screen_size = c(1024, 768))
 \item{gaze}{fixation list from fixation report}
 
 \item{screen_size}{size of the screen in pixels. Defaults to c(1024, 768)}
-
-\item{plot_fix_scatter}{logical indicating whether a scatterplot of fixations should be created}
 }
 \value{
 data frame containing gaze diagnostics

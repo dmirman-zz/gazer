@@ -2,6 +2,8 @@
 #'
 #' Renames column variables and makes them lower case
 #' Places time in ms
+#'@import tidyverse
+#'@import itsadug
 #'
 #' @param file_list path to .xls files
 #' @export

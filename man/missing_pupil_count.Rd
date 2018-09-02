@@ -4,7 +4,7 @@
 \alias{missing_pupil_count}
 \title{Calculate percent missing data by subject and by trial}
 \usage{
-missing_pupil_count(datafile, missingthresh = 0.5)
+missing_pupil_count(datafile, missingthresh = 0.3)
 }
 \arguments{
 \item{missingthresh}{user-specified threshold for missing data.}
