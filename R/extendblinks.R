@@ -4,7 +4,7 @@
 #' @param fillback  NA extend backward 
 #' @param fillforward NA extend forward 
 #' @return vector containing extended blinks
-
+#' @export
 
 extendblinks <- function(values, fillback=5, fillforward=5) {
   # Function to take any run of NA values in a vector,

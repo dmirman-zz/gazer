@@ -7,6 +7,7 @@
 #' @param missingthresh user-specified threshold for missing data.
 #' @export
 #' @return data frame containing missing data information
+#' @export
 missing_pupil_count <- function(datafile, missingthresh=.3) {
 
   countsbysubject <- datafile %>%

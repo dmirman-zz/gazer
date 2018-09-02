@@ -7,6 +7,7 @@
 #'  @param  n #used for moving window
 #'  @param centered 
 #'  @return  return sum divided by count
+#'  @export
 movingAverage <- function(x, n=3, centered=TRUE) {
 
   if (centered) {
