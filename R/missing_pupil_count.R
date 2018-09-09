@@ -1,9 +1,4 @@
 #' Calculate percent missing data by subject and by trial
-#'
-#'
-#' renames column variables and makes them lower case
-#' places time in ms
-#'
 #' @param missingthresh user-specified threshold for missing data.
 #' @export
 #' @return data frame containing missing data information
