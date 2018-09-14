@@ -1,13 +1,13 @@
 #' Turns pupil sizes with blinks NA and linearly interpolates values
-#' @param binsize user-specified threshold for binning data.
+#' @param datafile data frame.
 #' @export
 #' @import zoo
+#' 
 #' @return data frame containing interpolated data
 #' 
-
-interpolate_pupil<-function(datafile) { #must specify desired binszie
+interpolate_pupil<-function(datafile) { 
   require(zoo)
-message("Turnining pupil size with blinks to NA")
+message("Turning pupil size with blinks to NA")
   blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupilmm)) #turns blinks into NA for interpolation
   message("Performing linear interpolation")
   pupil_interp <- blinks_na %>%
