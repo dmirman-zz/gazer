@@ -13,7 +13,6 @@ baseline_correction_pupil<-function(datafile,baseline_window=NA) { message("Calc
     dplyr::summarise(baseline = median(movingavgpup)) %>% ungroup()
   message("Merging baseline")
   merge_baseline <- merge(baseline, datafile) # merge median pupil size with raw dataset
-  message("Clipping trials")
   message("Performing baseline correction")
   corrected_baseline <- merge_baseline %>%  dplyr::mutate(baselinecorrectedp = movingavgpup - baseline) %>% dplyr::arrange(trial, time) #clip trials relative to stim onset and offset
   #perform baseline subtraction
