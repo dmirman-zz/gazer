@@ -1,0 +1,225 @@
+---
+title: "Pupil Preprocessing"
+author: "Jason Geller"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+One thing you have probably noticed while perusing the pupillometry literature is how variable pupil preprocessing can be across labs. It is quite common for researchers to develop in-house code for their lab, written in different programs and langauges. This can make computational replicability difficult. In the current climate where replicality and transparencey are becoming the norm, some sort of standardization is needed. To this end, we have created several functions that will hopefully aid researchers in analyzing pupil data. 
+
+This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us analyze this data. 
+
+#Preparing your data
+
+Before using this package, a number of steps are required: First, your data must have been collected using an SR Research Eyelink eye tracker. Second, your data must have been exported using SR Research Data Viewer software. Third, I recommend extending blinks 100 ms before and after a blink in Data Viewer. However, that is not neccessary as we have a function that will do that for you! A Sample Report must be generated with the following columns: 
+
+
+```{r, message=FALSE, warning=FALSE}
+names_needed <- c("RECORDING_SESSION_LABEL","TRIAL_INDEX","AVERAGE_IN_BLINK","TIMESTAMP","AVERAGE_PUPIL_SIZE", "IP_START_TIME", "SAMPLE_MESSAGE")
+knitr::kable(names_needed, col.names = "Names")
+```
+
+You should also include columns important for your experiment. 
+
+#Load packages 
+
+```{r, message=FALSE, warning=FALSE}
+library(gazerR)
+```
+
+#Load the data
+
+```{r, message=FALSE, warning=FALSE}
+data(pupR)
+```
+
+We need to read in the file that contains data from 1 participant. The files are much too large to store on Github. 
+
+```{r}
+pupil_path <- system.file("extdata", "Pupil_file1.xls", package = "gazer")
+```
+
+With you actual data, the function `merge_pupil_files` will take all your files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
+
+```{r}
+pupil_files<-merge_pupil_files(file_list)
+```
+
+#Behavioral Data
+
+If you are also interested in analyzing behavioral data (RTs and accuracy), the `behave_data` function will cull the important behavioral data from the Sample Report. The function will return a data frame without errors when omiterrors=TRUE or a data frame with errors for accuracy/error analysis when omiterrors=FALSE. The columns relevant for your experiment need to be specified within the behave_col names argument. This does not eliminate outliers. You must use your preferred method. I recommend Jonathan Gange trimr package to do this.
+
+
+```{r}
+behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("subject","script","alteration", "trial", "target","accuracy","rt", "block", "cb"))
+print(head(behave_data))
+
+```
+
+In our data, we want to remove subject accuracy lower than .75 percent and item accuracy below .60 percent. We can take the file generated above to calculate this when argument omiterrors=FALSE. We then merge accuracy by items and subejects into the main pupil file. 
+
+```{r}
+itemacc<-behave_data %>% dplyr::group_by(target) %>% dplyr::summarise(meanitemacc = mean(accuracy[block>0])) #overall item accuracy
+    
+subacc<-behave_data %>% dplyr::group_by(subject) %>% dplyr::summarise (meansubacc = mean(accuracy[block>0]))#subject accuracy
+    
+dataraw1<-merge(pupil_files, itemacc)#merge into main ds
+dataraw2<-merge(dataraw1, subacc)#merge into main ds
+
+```
+
+Let's now clean up our data a bit. First, we will transform pupil size from arbituary units to mm. Second, we will remove practice blocks, incorrect responses, conditions that are not words,  subjects with accuracy below 75%, and items with accuracy below 60%. 
+
+```{r}
+pupil_files1<-dataraw2 %>%
+  dplyr::mutate(pupilmm= (pupil*5)/5570.29) %>%
+  dplyr::filter(block>0  & accuracy==1 & alteration=="word" & meanitemacc>.60 & meansubacc>.74) %>% 
+  arrange(subject, target, trial, time)
+```
+Pupil Preprocessing is now ready to begin! 
+
+# Blinks
+
+Subjects and trials with a lot of missing data arising from blinks should be removed. This function will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percetage of subjects and trials thrown out are returned for reporting in papers.   
+
+```{r}
+pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
+```
+
+##Extending Blinks
+
+If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommedned that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` funtion. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
+
+```{r}
+pup_extend<- pup_missing %>% group_by(subject, trial, time) %>% mutate(extendblink=extendblinks(pupilmm, fillback=25, fillforward=25))
+```
+## Remove large and small pupil values
+
+You should remove pupil values less than 2 mm and greater than 9 mm, if data is in mm, as these are generally unrealistic pupil values. 
+
+```{r}
+pup_outliers<-pup_missing %>% filter (pupilmm > 2 & pupilmm < 9)
+```
+
+# Interpolation of Pupil Values
+
+Pupil values need to be linearlly interpolated. This function sets all pupil values with blinks to NA and linearlly interpolates those values and returns a tibble with a column containing interpolated values.  
+
+```{r}
+pup_interp<-interpolate_pupil(pup_outliers)
+```
+
+For a sanity check, let's make sure that our interpolation did it was supposed to do. In the plot below we have the uninterpolated data (in black) and our interpolated data (in red) for one trial. 
+
+```{r}
+
+pup_interp_trial1<-filter(pup_interp, subject=="10b" & trial==10)
+
+plot_interp=ggplot(pup_interp_trial1, aes(x=time, y=pupilmm)) + 
+  geom_point() + 
+  geom_line()  +
+  geom_line(data = pup_interp_trial1, aes(x=time, y=interp, colour="#000099"),
+            show.legend = FALSE)+labs(ylab="pupil(mm)", xlab="Time", title="Interpolation for One Trial")
+print(plot_interp)
+
+```
+
+Looks good! 
+
+## Median Absoulate Deviation (MAD)
+
+Artifacts that arise from quick changes in pupil size shoul be removed (Kret & Sjak-Shie, in press). The max_dilation function calculates the nomralized dilation speed, which is the max absoulte change between samples divided by the temporal speration for each sample, preceding or succeeding the sample. To detect outliters, the median abosulate deviation is calcualted from the speed dilation variable, multipled by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
+
+```{r}
+max_pup<-pup_interp%>% group_by(subject, trial) %>% mutate(speed=speed_pupil(interp,time))
+mad_pup<-max_pup %>% group_by(subject, trial) %>% mutate(MAD=calc_mad(speed))
+mad_removal<-mad_pup %>% filter(speed < MAD)
+mad_removal<-as.data.frame(mad_removal)
+```
+
+# Smoothing
+
+Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can do this using the `movingAverage` function. To use this function, you need to specificy the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
+
+```{r, echo=FALSE}
+rolling_mean_pupil_average<-mad_removal %>% #must be in a data.frame
+        dplyr::select(subject, trial,target, script,alteration, time, interp, sample_message) %>%
+        dplyr::mutate(movingavgpup= movingAverage(mad_removal$interp,n=5))
+```
+
+To make life easier, let's place the data into timebins (useres can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
+
+```{r, echo=FALSE}
+library(itsadug)
+timebins1<- rolling_mean_pupil_average %>% dplyr::mutate(timebins=timeBins(time, 200))
+
+```
+
+# Baseline correction
+
+To control for variability arising from non-task related processing, baseline correction is commonly done. There several different types of baseline correction. In a recent paper by Mathot (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
+
+```{r, echo=FALSE}
+baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
+```
+
+##Zero onset
+
+The stimulus of interest comes on screen 1 s after trial onset. To start our trial at zero, and not 1 s, we take each time bin and subtract it from the first. Next, we trucnate the trial to 4200 ms--this seems to be when conditions begin to diverge for our data after visual inspection. 
+```{r, echo=FALSE}
+
+baseline_pupil_onset<-baseline_pupil %>% filter(timebins>1000) %>% mutate(timebinonset=timebins-timebins[[1]]) %>% filter(timebinonset <=3600)
+
+```
+
+# Aggreating Data
+
+We have a whole lot of data. To reduce the amount of data we are working with, we summarize the data on subject,conditon, and bin onset. This produces an average pupil diameter for each bin,subject, and condition.  
+
+```{r, echo=FALSE}
+agg_subject<-baseline_pupil_onset%>% dplyr::group_by(subject, script,timebinonset) %>% dplyr::summarise(baselinep=mean(baselinecorrectedp)) %>% ungroup()
+```
+
+##Plot
+
+We can see here that recognizing cursive words resulted in a larger pupillary response than type-print. 
+
+```{r, echo=FALSE}
+f3raw <- ggplot(agg_subject, aes(x = timebinonset, y = baselinep, color = alteration)) + facet_grid(~script)+stat_summary(fun.y = "mean", geom = "line", size = 0.5)+ 
+  theme_bw() + ylab("Pupil Diameter Change (mm)") + xlab("Time (ms)") + 
+    theme(legend.position = c(0.85, 0.85))
+print(f3raw)
+
+```
+##Mean Pupil
+
+You may want to examine the mean dimateter, as this is one of the most popular DVs in the literature. 
+```{r, echo=FALSE}
+mean_max_pup<-baseline_pupil_onset%>% 
+  dplyr::group_by(subject, script, alteration) %>%
+  dplyr::summarise(maxpup=max(baselinecorrectedp), meanpup=mean(baselinecorrectedp)) %>%
+  ungroup()
+
+newvec <- c("black", "red")
+
+max<-ggplot(mean_max_pup, aes(script, maxpup, fill = script)) + facet_grid(~alteration)+
+    geom_point(shape = 21, color = "black", size = 2.3, alpha = 0.6, position = position_jitter(w = 0.03,  h = 0))  + ylab("Max Pupil Size (mm)") + stat_summary(fun.y = "mean", fun.ymin = "mean", fun.ymax = "mean", geom = "crossbar", color = "black", size = 0.4, width = 0.3)
+print(max)
+
+ mean<-ggplot(mean_max_pup, aes(script, meanpup, fill = script)) +  facet_grid(~alteration) + 
+    geom_point(shape = 21, color = "black", size = 2.3, alpha = 0.6, position = position_jitter(w = 0.03, 
+        h = 0))  + ylab("Mean Pupil Size (mm)") + stat_summary(fun.y = "mean", fun.ymin = "mean", fun.ymax = "mean", geom = "crossbar", color = "black", size = 0.4, width = 0.3)
+ print(mean)
+```
+
