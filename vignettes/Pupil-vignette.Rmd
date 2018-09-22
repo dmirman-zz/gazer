@@ -32,31 +32,25 @@ knitr::kable(names_needed, col.names = "Names")
 
 You should also include columns important for your experiment. 
 
-#Load packages 
+# Load packages 
 
 ```{r, message=FALSE, warning=FALSE}
 library(gazerR)
 ```
 
-#Load the data
-
-```{r, message=FALSE, warning=FALSE}
-data(pupR)
-```
-
-We need to read in the file that contains data from 1 participant. The files are much too large to store on Github. 
+We need to read in the file that contains data from 1 participant. 
 
 ```{r}
 pupil_path <- system.file("extdata", "Pupil_file1.xls", package = "gazer")
 ```
 
-With you actual data, the function `merge_pupil_files` will take all your files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
+With your actual data (that includes many Ss), the function `merge_pupil_files` will take all your pupil files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
 
 ```{r}
 pupil_files<-merge_pupil_files(file_list)
 ```
 
-#Behavioral Data
+# Behavioral Data
 
 If you are also interested in analyzing behavioral data (RTs and accuracy), the `behave_data` function will cull the important behavioral data from the Sample Report. The function will return a data frame without errors when omiterrors=TRUE or a data frame with errors for accuracy/error analysis when omiterrors=FALSE. The columns relevant for your experiment need to be specified within the behave_col names argument. This does not eliminate outliers. You must use your preferred method. I recommend Jonathan Gange trimr package to do this.
 
@@ -91,13 +85,13 @@ Pupil Preprocessing is now ready to begin!
 
 # Blinks
 
-Subjects and trials with a lot of missing data arising from blinks should be removed. This function will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percetage of subjects and trials thrown out are returned for reporting in papers.   
+Subjects and trials with a lot of missing data arising from blinks should be removed. `missing_pupil_count` function will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
 
 ```{r}
 pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
 ```
 
-##Extending Blinks
+## Extending Blinks
 
 If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommedned that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` funtion. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
 
@@ -174,7 +168,7 @@ To control for variability arising from non-task related processing, baseline co
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
 ```
 
-##Zero onset
+# Trial Clipping
 
 The stimulus of interest comes on screen 1 s after trial onset. To start our trial at zero, and not 1 s, we take each time bin and subtract it from the first. Next, we trucnate the trial to 4200 ms--this seems to be when conditions begin to diverge for our data after visual inspection. 
 ```{r, echo=FALSE}
@@ -191,7 +185,7 @@ We have a whole lot of data. To reduce the amount of data we are working with, w
 agg_subject<-baseline_pupil_onset%>% dplyr::group_by(subject, script,timebinonset) %>% dplyr::summarise(baselinep=mean(baselinecorrectedp)) %>% ungroup()
 ```
 
-##Plot
+## Plot
 
 We can see here that recognizing cursive words resulted in a larger pupillary response than type-print. 
 
