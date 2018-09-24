@@ -96,3 +96,34 @@
 #' }
 #' @source Partial data from Mirman et al. (2008, Cognition, 108:1, 271-280). \url{http://www.danmirman.org/pdfs/MirmanMagnusonGrafEstesDixon2008.pdf}
 "WordLearnEx"
+
+
+#' Judgments to cursive vs. type-print words in LDT 
+#'
+#' Aggregate baseline corrected pupillary data for a LDT task that required participants to judge the lexical status of cursive and type-print stimuli.
+#' @format A data frame with  2234494 rows and 22 variables
+#' \describe{
+#'  \item{subject}{subject id, N=9}
+#'  \item{script}{Cursive or Print}
+#'  \item{timebinonset}{trial onset}
+#'  \item{baselinep}{baseline corrected pupil size in mm}
+
+#'  
+#' }
+
+"Agg_pupil_cursive"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
