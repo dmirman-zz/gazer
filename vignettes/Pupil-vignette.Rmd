@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-One thing you have probably noticed while perusing the pupillometry literature is how variable pupil preprocessing can be across labs. It is quite common for researchers to develop in-house code for their lab, written in different programs and langauges. This can make computational replicability difficult. In the current climate where replicality and transparencey are becoming the norm, some sort of standardization is needed. To this end, we have created several functions that will hopefully aid researchers in analyzing pupil data. 
+One thing you have probably noticed while perusing the pupillometry literature is how variable pupil preprocessing can be across labs. It is quite common for researchers to develop in-house code for their lab, written in different programming languages. This can make computational replicability difficult. In the current climate where replicality and transparencey are becoming the norm, some sort of standardization is needed. To this end, we have created several functions that will hopefully aid researchers in analyzing pupil data. 
 
-This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us analyze this data. 
+This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this prediction. 
 
 #Preparing your data
 
@@ -35,16 +35,17 @@ You should also include columns important for your experiment.
 # Load packages 
 
 ```{r, message=FALSE, warning=FALSE}
-library(gazerR)
+install_github("dmirman/gazer")
 ```
 
-We need to read in the file that contains data from 1 participant. 
+We need to read in the file that contains data from 1 participant to reduce computational processing. 
 
 ```{r}
 pupil_path <- system.file("extdata", "Pupil_file1.xls", package = "gazer")
+pupil_sub1<-read.table(pupil_path)
 ```
 
-With your actual data (that includes many Ss), the function `merge_pupil_files` will take all your pupil files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
+In reality, you will have many Ss files. The function `merge_pupil_files` will take all your pupil files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
 
 ```{r}
 pupil_files<-merge_pupil_files(file_list)
@@ -52,12 +53,11 @@ pupil_files<-merge_pupil_files(file_list)
 
 # Behavioral Data
 
-If you are also interested in analyzing behavioral data (RTs and accuracy), the `behave_data` function will cull the important behavioral data from the Sample Report. The function will return a data frame without errors when omiterrors=TRUE or a data frame with errors for accuracy/error analysis when omiterrors=FALSE. The columns relevant for your experiment need to be specified within the behave_col names argument. This does not eliminate outliers. You must use your preferred method. I recommend Jonathan Gange trimr package to do this.
+If you are also interested in analyzing behavioral data (RTs and accuracy), the `behave_data` function will cull the important behavioral data from the Sample Report. `behave_data` will return a data frame without errors when omiterrors=TRUE or a data frame with errors for accuracy/error analysis when omiterrors=FALSE. The columns relevant for your experiment need to be specified within the behave_col names argument. This does not eliminate outliers. You must use your preferred method. I recommend the very good `trimr` package by Jim Grange. 
 
 
 ```{r}
 behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("subject","script","alteration", "trial", "target","accuracy","rt", "block", "cb"))
-print(head(behave_data))
 
 ```
 
@@ -185,35 +185,4 @@ We have a whole lot of data. To reduce the amount of data we are working with, w
 agg_subject<-baseline_pupil_onset%>% dplyr::group_by(subject, script,timebinonset) %>% dplyr::summarise(baselinep=mean(baselinecorrectedp)) %>% ungroup()
 ```
 
-## Plot
-
-We can see here that recognizing cursive words resulted in a larger pupillary response than type-print. 
-
-```{r, echo=FALSE}
-f3raw <- ggplot(agg_subject, aes(x = timebinonset, y = baselinep, color = alteration)) + facet_grid(~script)+stat_summary(fun.y = "mean", geom = "line", size = 0.5)+ 
-  theme_bw() + ylab("Pupil Diameter Change (mm)") + xlab("Time (ms)") + 
-    theme(legend.position = c(0.85, 0.85))
-print(f3raw)
-
-```
-##Mean Pupil
-
-You may want to examine the mean dimateter, as this is one of the most popular DVs in the literature. 
-```{r, echo=FALSE}
-mean_max_pup<-baseline_pupil_onset%>% 
-  dplyr::group_by(subject, script, alteration) %>%
-  dplyr::summarise(maxpup=max(baselinecorrectedp), meanpup=mean(baselinecorrectedp)) %>%
-  ungroup()
-
-newvec <- c("black", "red")
-
-max<-ggplot(mean_max_pup, aes(script, maxpup, fill = script)) + facet_grid(~alteration)+
-    geom_point(shape = 21, color = "black", size = 2.3, alpha = 0.6, position = position_jitter(w = 0.03,  h = 0))  + ylab("Max Pupil Size (mm)") + stat_summary(fun.y = "mean", fun.ymin = "mean", fun.ymax = "mean", geom = "crossbar", color = "black", size = 0.4, width = 0.3)
-print(max)
-
- mean<-ggplot(mean_max_pup, aes(script, meanpup, fill = script)) +  facet_grid(~alteration) + 
-    geom_point(shape = 21, color = "black", size = 2.3, alpha = 0.6, position = position_jitter(w = 0.03, 
-        h = 0))  + ylab("Mean Pupil Size (mm)") + stat_summary(fun.y = "mean", fun.ymin = "mean", fun.ymax = "mean", geom = "crossbar", color = "black", size = 0.4, width = 0.3)
- print(mean)
-```
 
