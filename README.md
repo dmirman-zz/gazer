@@ -1,4 +1,4 @@
-# gazer
+# gazeR
 
 Functions for reading and pre-processing eye tracking data.
 
