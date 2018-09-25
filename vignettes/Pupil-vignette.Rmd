@@ -16,28 +16,28 @@ knitr::opts_chunk$set(
 )
 ```
 
-One thing you have probably noticed while perusing the pupillometry literature is how variable pupil preprocessing can be across labs. It is quite common for researchers to develop in-house code for their lab, written in different programming languages. This can make computational replicability difficult. In the current climate where replicality and transparencey are becoming the norm, some sort of standardization is needed. To this end, we have created several functions that will hopefully aid researchers in analyzing pupil data. 
 
-This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this prediction. 
+This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this hypothesis! 
 
-#Preparing your data
+# Preparing your data
 
 Before using this package, a number of steps are required: First, your data must have been collected using an SR Research Eyelink eye tracker. Second, your data must have been exported using SR Research Data Viewer software. Third, I recommend extending blinks 100 ms before and after a blink in Data Viewer. However, that is not neccessary as we have a function that will do that for you! A Sample Report must be generated with the following columns: 
 
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 names_needed <- c("RECORDING_SESSION_LABEL","TRIAL_INDEX","AVERAGE_IN_BLINK","TIMESTAMP","AVERAGE_PUPIL_SIZE", "IP_START_TIME", "SAMPLE_MESSAGE")
 knitr::kable(names_needed, col.names = "Names")
 ```
 
 You should also include columns important for your experiment. 
 
-# Load packages 
+# Load Package
 
 ```{r, message=FALSE, warning=FALSE}
 install_github("dmirman/gazer")
 ```
 
+# Load Data
 We need to read in the file that contains data from 1 participant to reduce computational processing. 
 
 ```{r}
@@ -61,7 +61,7 @@ behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("
 
 ```
 
-In our data, we want to remove subject accuracy lower than .75 percent and item accuracy below .60 percent. We can take the file generated above to calculate this when argument omiterrors=FALSE. We then merge accuracy by items and subejects into the main pupil file. 
+In our data, we want to remove subject accuracy lower than 75 percent and item accuracy below 60 percent. We can take the file generated above to calculate this when argument omiterrors=FALSE. We then merge accuracy by items and subejects into the main pupil file. 
 
 ```{r}
 itemacc<-behave_data %>% dplyr::group_by(target) %>% dplyr::summarise(meanitemacc = mean(accuracy[block>0])) #overall item accuracy
@@ -85,7 +85,7 @@ Pupil Preprocessing is now ready to begin!
 
 # Blinks
 
-Subjects and trials with a lot of missing data arising from blinks should be removed. `missing_pupil_count` function will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
+Subjects and trials with a lot of missing data--due to blinks--should be removed. `missing_pupil_count`will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
 
 ```{r}
 pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
@@ -114,24 +114,7 @@ Pupil values need to be linearlly interpolated. This function sets all pupil val
 pup_interp<-interpolate_pupil(pup_outliers)
 ```
 
-For a sanity check, let's make sure that our interpolation did it was supposed to do. In the plot below we have the uninterpolated data (in black) and our interpolated data (in red) for one trial. 
-
-```{r}
-
-pup_interp_trial1<-filter(pup_interp, subject=="10b" & trial==10)
-
-plot_interp=ggplot(pup_interp_trial1, aes(x=time, y=pupilmm)) + 
-  geom_point() + 
-  geom_line()  +
-  geom_line(data = pup_interp_trial1, aes(x=time, y=interp, colour="#000099"),
-            show.legend = FALSE)+labs(ylab="pupil(mm)", xlab="Time", title="Interpolation for One Trial")
-print(plot_interp)
-
-```
-
-Looks good! 
-
-## Median Absoulate Deviation (MAD)
+# Median Absoulate Deviation (MAD)
 
 Artifacts that arise from quick changes in pupil size shoul be removed (Kret & Sjak-Shie, in press). The max_dilation function calculates the nomralized dilation speed, which is the max absoulte change between samples divided by the temporal speration for each sample, preceding or succeeding the sample. To detect outliters, the median abosulate deviation is calcualted from the speed dilation variable, multipled by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
 
@@ -144,7 +127,7 @@ mad_removal<-as.data.frame(mad_removal)
 
 # Smoothing
 
-Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can do this using the `movingAverage` function. To use this function, you need to specificy the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
+Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use `movingAverage`. To use this function, you need to specificy the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
 
 ```{r, echo=FALSE}
 rolling_mean_pupil_average<-mad_removal %>% #must be in a data.frame
@@ -155,14 +138,13 @@ rolling_mean_pupil_average<-mad_removal %>% #must be in a data.frame
 To make life easier, let's place the data into timebins (useres can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
 
 ```{r, echo=FALSE}
-library(itsadug)
 timebins1<- rolling_mean_pupil_average %>% dplyr::mutate(timebins=timeBins(time, 200))
 
 ```
 
 # Baseline correction
 
-To control for variability arising from non-task related processing, baseline correction is commonly done. There several different types of baseline correction. In a recent paper by Mathot (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
+To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
 
 ```{r, echo=FALSE}
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
@@ -170,7 +152,7 @@ baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000)
 
 # Trial Clipping
 
-The stimulus of interest comes on screen 1 s after trial onset. To start our trial at zero, and not 1 s, we take each time bin and subtract it from the first. Next, we trucnate the trial to 4200 ms--this seems to be when conditions begin to diverge for our data after visual inspection. 
+The stimulus of interest comes on screen 1 s after trial onset. To start our trial at zero, and not 1 s, we take each time bin and subtract it from the first. Next, we truncate the trial to 4200 ms--this seems to be when conditions begin to diverge for our data after visual inspection. 
 ```{r, echo=FALSE}
 
 baseline_pupil_onset<-baseline_pupil %>% filter(timebins>1000) %>% mutate(timebinonset=timebins-timebins[[1]]) %>% filter(timebinonset <=3600)

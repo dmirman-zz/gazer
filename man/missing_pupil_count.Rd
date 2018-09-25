@@ -13,6 +13,5 @@ missing_pupil_count(datafile, missingthresh = 0.3)
 data frame containing missing data information
 }
 \description{
-renames column variables and makes them lower case
-places time in ms
+Calculate percent missing data by subject and by trial
 }

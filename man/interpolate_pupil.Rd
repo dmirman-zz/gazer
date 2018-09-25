@@ -7,7 +7,7 @@
 interpolate_pupil(datafile)
 }
 \arguments{
-\item{binsize}{user-specified threshold for binning data.}
+\item{datafile}{data frame.}
 }
 \value{
 data frame containing interpolated data
