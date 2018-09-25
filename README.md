@@ -1,5 +1,7 @@
-# gazeR
-Functions for reading and pre-processing eye tracking data.
+# gazeR:A package to analyze gaze position and pupil size data
+
+For a detailed overview of how to use gazeR, please see the vignettes.
+
 ![gazer2](https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg)
 ## Synopsis
 
@@ -8,5 +10,9 @@ This package contains functions for reading in raw eye-tracking data, formatting
 ## Installing Package
 
 ``` r
-install.github("dmirman/gazer")
+# install devtools
+install.packages("devtools")
+
+# install trimr from GitHub
+devools::install_github("dmirman/gazer")
 ``` 
