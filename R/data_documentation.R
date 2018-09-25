@@ -108,7 +108,7 @@
 #'  \item{baselinep}{baseline corrected pupil size in mm}
 #'  
 #' }
-"Agg_pupil_cursive"
+"cursive"
 
 
 
