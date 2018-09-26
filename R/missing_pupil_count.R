@@ -27,7 +27,7 @@ missing_pupil_count<- function(datafile, missingthresh=.3) {
                      total = length(pupil))%>%
     dplyr::mutate(averageMissingTrial = missing / total)
   
-  greaterthan <- filter(countsbytrial, averageMissingTrial > missingthresh)
+  greaterthan <- dplyr::filter(countsbytrial, averageMissingTrial > missingthresh)
   prop <- length(greaterthan$trial)/length(countsbytrial$trial)
   
   # % trials excluded
