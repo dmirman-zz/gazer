@@ -41,7 +41,7 @@ missing_pupil_count<- function(datafile, missingthresh=.3) {
   # add missing data per trial to the data frame
   combinetrial <- merge(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"), all=TRUE)
   # keep only the data that exceeds the threshold for retaining the trials & subjects
-  combinetrial_above_threshold <- filter(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
+  combinetrial_above_threshold <- dplyr::filter(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
   
   return(combinetrial_above_threshold)
 }
