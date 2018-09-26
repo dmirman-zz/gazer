@@ -8,7 +8,7 @@
 interpolate_pupil<-function(datafile) { 
   require(zoo)
 message("Turning pupil size with blinks to NA")
-  blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupilmm)) #turns blinks into NA for interpolation
+  blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
   message("Performing linear interpolation")
   pupil_interp <- blinks_na %>%
     dplyr::group_by(subject, trial) %>%
