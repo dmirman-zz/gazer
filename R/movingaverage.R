@@ -4,11 +4,11 @@
 #' if n is 5, then it uses the target value,
 #'  2 preceding and 2 following
 #'  @param x data 
-#'  @param  n #used for moving window
+#'  @param  n #sed for moving window
 #'  @param centered 
 #'  @return  return sum divided by count
 #'  @export
-movingAverage <- function(x, n=3, centered=TRUE) {
+movingaverage <- function(x, n=5, centered=TRUE) {
 
   if (centered) {
     before <- floor  ((n-1)/2)
