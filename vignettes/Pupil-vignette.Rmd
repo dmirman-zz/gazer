@@ -38,7 +38,7 @@ install_github("dmirman/gazer")
 ```
 
 # Load Data
-We need to read in the file that contains data from 1 participant to reduce computational processing. 
+We need to read in the file that contains data from 4 participants to reduce computational processing. 
 
 ```{r}
 pupil_path <- system.file("extdata", "Pupil_file1.xls", package = "gazer")
@@ -77,7 +77,6 @@ Let's now clean up our data a bit. First, we will transform pupil size from arbi
 
 ```{r}
 pupil_files1<-dataraw2 %>%
-  dplyr::mutate(pupilmm= (pupil*5)/5570.29) %>%
   dplyr::filter(block>0  & accuracy==1 & alteration=="word" & meanitemacc>.60 & meansubacc>.74) %>% 
   arrange(subject, target, trial, time)
 ```
@@ -96,7 +95,7 @@ pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
 If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommedned that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` funtion. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
 
 ```{r}
-pup_extend<- pup_missing %>% group_by(subject, trial, time) %>% mutate(extendblink=extendblinks(pupilmm, fillback=25, fillforward=25))
+pup_extend<- pup_missing %>% group_by(subject, trial, time) %>% mutate(extendblink=extendblinks(pupil, fillback=25, fillforward=25))
 ```
 ## Remove large and small pupil values
 
