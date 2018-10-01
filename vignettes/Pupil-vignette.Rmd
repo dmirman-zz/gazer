@@ -108,7 +108,7 @@ rolling_mean_pupil_average<-mad_removal %>%
 
 # Baseline correction
 
-To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
+To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
 
 ```{r, echo=FALSE}
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
