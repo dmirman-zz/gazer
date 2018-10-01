@@ -59,4 +59,3 @@ movingaverage <- function(x, n=5, centered=TRUE) {
   # return sum divided by count
   s/count
 }
-
