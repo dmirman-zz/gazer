@@ -18,13 +18,13 @@ message("Turning pupil size with blinks to NA")
     return(pupil_interp)
   }
   
-  if (extendblinks==TRUE)
-    message("Extending blinks")
+  if (extendblinks==TRUE) {
 message("Performing linear interpolation")
-pupil_interp <- data_frame() %>%
+pupil_interp <- datafile %>%
   dplyr::group_by(subject, trial) %>%
   dplyr::mutate(interp = na.approx(pupil, rule=2)) %>% ungroup() 
 return(pupil_interp)
+  }
 }
 
   
