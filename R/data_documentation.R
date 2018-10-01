@@ -105,7 +105,7 @@
 #'  \item{subject}{subject id, N=23}
 #'  \item{script}{Cursive or Print}
 #'  \item{timebinonset}{trial onset}
-#'  \item{baselinep}{baseline corrected pupil size in mm}
+#'  \item{baselinep}{baseline corrected pupil size}
 #'  
 #' }
 "cursive"
