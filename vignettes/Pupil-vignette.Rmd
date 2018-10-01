@@ -45,7 +45,7 @@ pupil_path <- system.file("extdata", "Pupil_file1.xls", package = "gazer")
 pupil_sub1<-read.table(pupil_path)
 ```
 
-In reality, you will have many Ss files. The function `merge_pupil_files` will take all your pupil files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column entitled time that places time in ms instead of tracker time.
+In reality, you will have many Ss files. The function `merge_pupil_files` will take all your pupil files from a folder path and merge them together. It will also: rename columns, make all columns lowercase, and adds a new column `time` that places tracker time in ms. 
 
 ```{r}
 pupil_files<-merge_pupil_files(file_list)
@@ -60,27 +60,6 @@ If you are also interested in analyzing behavioral data (RTs and accuracy), the 
 behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("subject","script","alteration", "trial", "target","accuracy","rt", "block", "cb"))
 
 ```
-
-In our data, we want to remove subject accuracy lower than 75 percent and item accuracy below 60 percent. We can take the file generated above to calculate this when argument omiterrors=FALSE. We then merge accuracy by items and subejects into the main pupil file. 
-
-```{r}
-itemacc<-behave_data %>% dplyr::group_by(target) %>% dplyr::summarise(meanitemacc = mean(accuracy[block>0])) #overall item accuracy
-    
-subacc<-behave_data %>% dplyr::group_by(subject) %>% dplyr::summarise (meansubacc = mean(accuracy[block>0]))#subject accuracy
-    
-dataraw1<-merge(pupil_files, itemacc)#merge into main ds
-dataraw2<-merge(dataraw1, subacc)#merge into main ds
-
-```
-
-Let's now clean up our data a bit. First, we will transform pupil size from arbituary units to mm. Second, we will remove practice blocks, incorrect responses, conditions that are not words,  subjects with accuracy below 75%, and items with accuracy below 60%. 
-
-```{r}
-pupil_files1<-dataraw2 %>%
-  dplyr::filter(block>0  & accuracy==1 & alteration=="word" & meanitemacc>.60 & meansubacc>.74) %>% 
-  arrange(subject, target, trial, time)
-```
-Pupil Preprocessing is now ready to begin! 
 
 # Blinks
 
@@ -97,20 +76,13 @@ If you are exporting files from SR, there is an option to extend blinks within D
 ```{r}
 pup_extend<- pup_missing %>% group_by(subject, trial, time) %>% mutate(extendblink=extendblinks(pupil, fillback=25, fillforward=25))
 ```
-## Remove large and small pupil values
-
-You should remove pupil values less than 2 mm and greater than 9 mm, if data is in mm, as these are generally unrealistic pupil values. 
-
-```{r}
-pup_outliers<-pup_missing %>% filter (pupilmm > 2 & pupilmm < 9)
-```
 
 # Interpolation of Pupil Values
 
-Pupil values need to be linearlly interpolated. This function sets all pupil values with blinks to NA and linearlly interpolates those values and returns a tibble with a column containing interpolated values.  
+Pupil values need to be linearlly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not this with sample files automatically) and linearlly interpolates those values. If extendblinks=TRUE, it performs linerally interpolation. This requires the use of the `extend_blinks` function referenced above. 
 
 ```{r}
-pup_interp<-interpolate_pupil(pup_outliers)
+pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
 ```
 
 # Median Absoulate Deviation (MAD)
@@ -126,19 +98,12 @@ mad_removal<-as.data.frame(mad_removal)
 
 # Smoothing
 
-Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use `movingAverage`. To use this function, you need to specificy the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
+Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use the `movingAverage` function. To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
 
 ```{r, echo=FALSE}
-rolling_mean_pupil_average<-mad_removal %>% #must be in a data.frame
+rolling_mean_pupil_average<-mad_removal %>% 
         dplyr::select(subject, trial,target, script,alteration, time, interp, sample_message) %>%
         dplyr::mutate(movingavgpup= movingAverage(mad_removal$interp,n=5))
-```
-
-To make life easier, let's place the data into timebins (useres can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
-
-```{r, echo=FALSE}
-timebins1<- rolling_mean_pupil_average %>% dplyr::mutate(timebins=timeBins(time, 200))
-
 ```
 
 # Baseline correction
@@ -149,21 +114,7 @@ To control for variability arising from non-task related processing, baseline co
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
 ```
 
-# Trial Clipping
 
-The stimulus of interest comes on screen 1 s after trial onset. To start our trial at zero, and not 1 s, we take each time bin and subtract it from the first. Next, we truncate the trial to 4200 ms--this seems to be when conditions begin to diverge for our data after visual inspection. 
-```{r, echo=FALSE}
 
-baseline_pupil_onset<-baseline_pupil %>% filter(timebins>1000) %>% mutate(timebinonset=timebins-timebins[[1]]) %>% filter(timebinonset <=3600)
-
-```
-
-# Aggreating Data
-
-We have a whole lot of data. To reduce the amount of data we are working with, we summarize the data on subject,conditon, and bin onset. This produces an average pupil diameter for each bin,subject, and condition.  
-
-```{r, echo=FALSE}
-agg_subject<-baseline_pupil_onset%>% dplyr::group_by(subject, script,timebinonset) %>% dplyr::summarise(baselinep=mean(baselinecorrectedp)) %>% ungroup()
-```
 
 
