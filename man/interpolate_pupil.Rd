@@ -4,10 +4,12 @@
 \alias{interpolate_pupil}
 \title{Turns pupil sizes with blinks NA and linearly interpolates values}
 \usage{
-interpolate_pupil(datafile)
+interpolate_pupil(datafile, extendblinks = FALSE)
 }
 \arguments{
 \item{datafile}{data frame.}
+
+\item{extendblinks}{blinks already extended  in data frame}
 }
 \value{
 data frame containing interpolated data
