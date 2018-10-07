@@ -79,7 +79,8 @@ pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
 If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommedned that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` funtion. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
 
 ```{r}
-pup_extend<- pup_missing %>% group_by(subject, trial) %>% mutate(extendblink=extendblinks(pupil, fillback=25, fillforward=25))
+pup_extend<- pup_missing %>% group_by(subject, trial) %>% 
+  mutate(extendblink=extendblinks(pupil, fillback=25, fillforward=25))
 ```
 
 # Interpolation of Pupil Values
@@ -95,9 +96,17 @@ pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
 Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the nomralized dilation speed, which is the max absoulte change between samples divided by the temporal speration for each sample, preceding or succeeding the sample. To detect outliters, the median abosulate deviation is calcualted from the speed dilation variable, multipled by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
 
 ```{r}
-max_pup<-pup_interp%>% group_by(subject, trial) %>% mutate(speed=speed_pupil(interp,time))
-mad_pup<-max_pup %>% group_by(subject, trial) %>% mutate(MAD=calc_mad(speed))
-mad_removal<-mad_pup %>% filter(speed < MAD)
+max_pup<-pup_interp%>% 
+  group_by(subject, trial) %>% 
+  mutate(speed=speed_pupil(interp,time))
+
+mad_pup<-max_pup %>% 
+  group_by(subject, trial) %>%
+  mutate(MAD=calc_mad(speed))
+
+mad_removal<-mad_pup %>% 
+  filter(speed < MAD)
+
 mad_removal<-as.data.frame(mad_removal)
 ```
 
