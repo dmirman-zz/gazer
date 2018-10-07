@@ -17,11 +17,12 @@ knitr::opts_chunk$set(
 ```
 
 
-This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decison task that had individuals judge the lexicality of printed stimuli and cursive stimuli. Cursive stimuli are ambigious and non-segemneted making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this hypothesis! 
+This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decision task that had individuals judge the lexicality of printed and cursive stimuli. Cursive stimuli are ambiguous and non-segmented making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this hypothesis! 
 
-# Preparing your data
+# Preparing Your Data
 
-Before using this package, a number of steps are required: First, your data must have been collected using an SR Research Eyelink eye tracker. Second, your data must have been exported using SR Research Data Viewer software. Third, I recommend extending blinks 100 ms before and after a blink in Data Viewer. However, that is not neccessary as we have a function that will do that for you! A Sample Report must be generated with the following columns: 
+Before using this package, a number of steps are required: First, your data must have been collected using an SR Research Eyelink eye tracker. Second, your data must have been exported using SR Research Data Viewer software. Third, I recommend extending blinks 100 ms before and after a blink in Data Viewer. However, that is not necessary as we have a function that will do that for you! A Sample Report must be generated with the following columns:
+
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 RECORDING_SESSION_LABEL
@@ -33,7 +34,7 @@ IP_START_TIME
 SAMPLE_MESSAGE
 ```
 
-You should also include columns important for your experiment. 
+You should also include other columns of interest. 
 
 # Load Package
 
@@ -83,7 +84,7 @@ pup_extend<- pup_missing %>% group_by(subject, trial) %>% mutate(extendblink=ext
 
 # Interpolation of Pupil Values
 
-Pupil values need to be linearlly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not this with sample files automatically) and linearlly interpolates those values. If extendblinks=TRUE, it performs linerally interpolation. This requires the use of the `extend_blinks` function referenced above. 
+Pupil values need to be linearlly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not do this with sample files automatically) and linearlly interpolates those values. If extendblinks=TRUE, it performs linerally interpolation. This requires the use of the `extend_blinks` function referenced above. 
 
 ```{r}
 pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
@@ -102,12 +103,12 @@ mad_removal<-as.data.frame(mad_removal)
 
 # Smoothing
 
-Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use the `movingAverage` function. To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
+Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use the `movingaverage` function. To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
 
 ```{r, echo=FALSE}
 rolling_mean_pupil_average<-mad_removal %>% 
         dplyr::select(subject, trial,target, script,alteration, time, interp, sample_message) %>%
-        dplyr::mutate(movingavgpup= movingAverage(mad_removal$interp,n=5))
+        dplyr::mutate(movingavgpup= movingaverage(mad_removal$interp,n=5))
 ```
 
 # Baseline correction
