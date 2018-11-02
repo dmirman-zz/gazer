@@ -13,6 +13,6 @@ This package contains functions for reading in raw eye-tracking data, formatting
 # install devtools
 install.packages("devtools")
 
-# install trimr from GitHub
+# install gazer from GitHub
 devools::install_github("dmirman/gazer")
 ``` 
