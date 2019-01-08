@@ -39,7 +39,7 @@ get_pvalues <- function(model, method = "normal") {
   if (method %in% c("KR", "all")) {
     #run a minimal KRmodcomp
     restrictionMatrix <- cbind(t(rep(0, length(fixef(model))-1)), 1)
-    kr <- KRmodcomp(model, restrictionMatrix)
+    kr <- pbkrtest::KRmodcomp(model, restrictionMatrix)
     #get ddf
     coefs$df.KR <- getKR(kr, "ddf")
     coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
