@@ -41,7 +41,7 @@ get_pvalues <- function(model, method = "normal") {
     restrictionMatrix <- cbind(t(rep(0, length(fixef(model))-1)), 1)
     kr <- pbkrtest::KRmodcomp(model, restrictionMatrix)
     #get ddf
-    coefs$df.KR <- getKR(kr, "ddf")
+    coefs$df.KR <- pbkrtest::getKR(kr, "ddf")
     coefs$p.KR <- get_pvalues_kr(coefs$t.value, coefs$df.KR)
     coefs$p.KR.star <- get_p_stars(coefs$p.KR)
   }
