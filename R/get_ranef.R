@@ -12,17 +12,15 @@ get_ranef <- function(model=NULL, ranef_name=NULL){
   if(is.null(model) | is.null(ranef_name)){
     stop("Both model and ranef_name need to be specified.")
   }
-  #get random effect
-  re <- ranef(model)[[ranef_name]]
-  #parse rownames
-  cn <- unlist(strsplit(ranef_name, ":")) #new variable names based on components of random effect name
-  rn <- colsplit(rownames(re), ":", cn) #get rownames, split them at ":", give them those variable names
-  #combine parsed rownames and random effect values
-  result <- cbind(rn, re)
+  # get the named random effects and add info from rownames
+  re <- ranef(m.funct)[[ranef_name]] %>%
+    mutate(rn = rownames(.)) %>%
+    separate(rn, unlist(strsplit(ranef_name, ":")), sep = ":", remove=TRUE)
+
   #if necessary, remove annoying parens from variable name
-  if(any(names(result)=="(Intercept)")){
-    result <- rename(result, c("(Intercept)" = "Intercept"))
+  if(any(names(re)=="(Intercept)")){
+    re <- rename(re, "Intercept" = "(Intercept)")
   }
 
-  return(result)
+  return(re)
 }
