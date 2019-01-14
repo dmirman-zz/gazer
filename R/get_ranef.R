@@ -13,7 +13,7 @@ get_ranef <- function(model=NULL, ranef_name=NULL){
     stop("Both model and ranef_name need to be specified.")
   }
   # get the named random effects and add info from rownames
-  re <- ranef(m.funct)[[ranef_name]] %>%
+  re <- ranef(model)[[ranef_name]] %>%
     mutate(rn = rownames(.)) %>%
     separate(rn, unlist(strsplit(ranef_name, ":")), sep = ":", remove=TRUE)
 
