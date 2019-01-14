@@ -39,7 +39,7 @@ You should also include other columns of interest.
 # Load Package
 
 ```{r, message=FALSE, warning=FALSE}
-install_github("dmirman/gazer")
+devtools::install_github("dmirman/gazer")
 ```
 
 # Load Data
