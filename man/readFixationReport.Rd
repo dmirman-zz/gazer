@@ -5,9 +5,8 @@
 \title{Read EyeDataViewer fixation report}
 \usage{
 readFixationReport(filename, screen_size = c(1024, 768),
-  name_changes = c(Subject = "RECORDING_SESSION_LABEL", ACC =
-  "StimSlide.ACC", RT = "StimSlide.RT", TargetLoc = "CorrectPort"),
-  plot_fix_scatter = TRUE)
+  name_changes = c(Subject = "RECORDING_SESSION_LABEL", ACC = "StimSlide.ACC",
+  RT = "StimSlide.RT", TargetLoc = "CorrectPort"), plot_fix_scatter = TRUE)
 }
 \arguments{
 \item{filename}{string containing full filename of fixation report}

@@ -39,7 +39,7 @@ You should also include other columns of interest.
 # Load Package
 
 ```{r, message=FALSE, warning=FALSE}
-install_github("dmirman/gazer")
+devtools::install_github("dmirman/gazer")
 ```
 
 # Load Data
@@ -68,7 +68,7 @@ behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("
 
 # Blinks
 
-Subjects and trials with a lot of missing data--due to blinks--should be removed. `missing_pupil_count` will remove subjects and items that pass a specififed missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
+Subjects and trials with a lot of missing data--due to blinks--should be removed. `missing_pupil_count` will remove subjects and items that pass a specified missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
 
 ```{r}
 pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
@@ -76,7 +76,7 @@ pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
 
 ## Extending Blinks
 
-If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommedned that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` funtion. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
+If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommended that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` function. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250Hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
 
 ```{r}
 pup_extend<- pup_missing %>% group_by(subject, trial) %>% 
@@ -85,7 +85,7 @@ pup_extend<- pup_missing %>% group_by(subject, trial) %>%
 
 # Interpolation of Pupil Values
 
-Pupil values need to be linearlly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not do this with sample files automatically) and linearlly interpolates those values. If extendblinks=TRUE, it performs linerally interpolation. This requires the use of the `extend_blinks` function referenced above. 
+Pupil values need to be linearly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not do this with sample files automatically) and linearly interpolates those values. If extendblinks=TRUE, it performs linear interpolation. This requires the use of the `extend_blinks` function referenced above. 
 
 ```{r}
 pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
@@ -93,8 +93,12 @@ pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
 
 # Median Absoulate Deviation (MAD)
 
+<<<<<<< HEAD
 Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect out liters, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed.
 
+=======
+Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect outliers, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
+>>>>>>> d88651ab29c90cb2a2d19a61deaeb628187c7798
 
 ```{r}
 max_pup<-pup_interp%>% 
@@ -113,7 +117,7 @@ mad_removal<-as.data.frame(mad_removal)
 
 # Smoothing
 
-Pupil data can be extremely nosiy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use the `movingaverage` function. To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to avearge over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
+Pupil data can be extremely noisy! One way to reduce some of this noise is to use a n-point moving average to smooth the data. You can use the `movingaverage` function. To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to average over. In this example, we use a 5-point moving average (n= 5). However, you can set the moving average to whatever you would like. 
 
 ```{r, echo=FALSE}
 rolling_mean_pupil_average<-mad_removal %>% 
@@ -123,7 +127,7 @@ rolling_mean_pupil_average<-mad_removal %>%
 
 # Baseline correction
 
-To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was reccomended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this exmaple, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
+To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was recommended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this example, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
 
 ```{r, echo=FALSE}
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))

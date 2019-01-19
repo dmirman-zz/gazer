@@ -10,7 +10,7 @@
  \item{script}{Cursive or Print}
  \item{timebinonset}{trial onset}
  \item{baselinep}{baseline corrected pupil size}
- 
+
 }}
 \usage{
 cursive_new

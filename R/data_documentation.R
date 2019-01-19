@@ -62,7 +62,7 @@
 #'  \item{Mixed.error}{proportion mixed errors (cat - "rat")}
 #'  \item{Formal.error}{proportion formal errors (cat - "mat")}
 #'  \item{Unrelated.error}{proportion unrelated errors (cat - "log")}
-#'  \item{Nonword.error}{proportion nonword errors (cat - "dog")}
+#'  \item{Nonword.error}{proportion nonword errors (cat - "lat")}
 #' }
 #' @source Moss Aphasia Psycholinguistics Database \url{mappd.org}
 "NamingRecovery"
@@ -97,7 +97,7 @@
 #' @source Partial data from Mirman et al. (2008, Cognition, 108:1, 271-280). \url{http://www.danmirman.org/pdfs/MirmanMagnusonGrafEstesDixon2008.pdf}
 "WordLearnEx"
 
-#' Judgments to cursive vs. type-print words in LDT 
+#' Judgments to cursive vs. type-print words in LDT
 #'
 #' Aggregate baseline corrected pupillary data for a LDT task that required participants to judge the lexical status of cursive and type-print stimuli.
 #' @format A data frame with 872 rows and 4 variables
@@ -106,7 +106,7 @@
 #'  \item{script}{Cursive or Print}
 #'  \item{timebinonset}{trial onset}
 #'  \item{baselinep}{baseline corrected pupil size}
-#'  
+#'
 #' }
 "cursive_new"
 

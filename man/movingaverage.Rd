@@ -2,26 +2,21 @@
 % Please edit documentation in R/movingaverage.R
 \name{movingaverage}
 \alias{movingaverage}
-\title{Moving average function
-Creates a moving average using a specified averageing window
-if n is 5, then it uses the target value,
- 2 preceding and 2 following
- @param x data 
- @param  n #sed for moving window
- @param centered 
- @return  return sum divided by count
- @export}
+\title{Moving average function}
 \usage{
 movingaverage(x, n = 5, centered = TRUE)
 }
+\arguments{
+\item{x}{data}
+
+\item{n}{sed for moving window}
+
+\item{centered}{whether moving average window should be centered (TRUE) or trailing (FALSE)}
+}
+\value{
+return sum divided by count
+}
 \description{
-Moving average function
 Creates a moving average using a specified averageing window
-if n is 5, then it uses the target value,
- 2 preceding and 2 following
- @param x data 
- @param  n #sed for moving window
- @param centered 
- @return  return sum divided by count
- @export
+if n is 5, then it uses the target value, 2 preceding and 2 following
 }

@@ -14,7 +14,7 @@
  \item{Mixed.error}{proportion mixed errors (cat - "rat")}
  \item{Formal.error}{proportion formal errors (cat - "mat")}
  \item{Unrelated.error}{proportion unrelated errors (cat - "log")}
- \item{Nonword.error}{proportion nonword errors (cat - "dog")}
+ \item{Nonword.error}{proportion nonword errors (cat - "lat")}
 }}
 \source{
 Moss Aphasia Psycholinguistics Database \url{mappd.org}
