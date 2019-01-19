@@ -128,8 +128,7 @@ Place data into timebins (users can specifiy a timebin to use). For this example
 
 ```{r, echo=FALSE}
 library(itsadug)
-timebins1<-downsample.pupil(time, 200)
-
+timebins1<-downsample.pupil(rolling_mean_pupil_average, 200)
 ```
 
 # Baseline correction
