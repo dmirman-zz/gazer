@@ -93,7 +93,8 @@ pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
 
 # Median Absoulate Deviation (MAD)
 
-Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the nomralized dilation speed, which is the max absoulte change between samples divided by the temporal speration for each sample, preceding or succeeding the sample. To detect outliters, the median abosulate deviation is calcualted from the speed dilation variable, multipled by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
+Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect out liters, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed.
+
 
 ```{r}
 max_pup<-pup_interp%>% 
