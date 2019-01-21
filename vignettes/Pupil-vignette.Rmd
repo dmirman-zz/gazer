@@ -93,7 +93,9 @@ pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
 
 # Median Absoulate Deviation (MAD)
 
-Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect outliers, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed. 
+Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect out liters, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed.
+
+
 
 ```{r}
 max_pup<-pup_interp%>% 
@@ -120,6 +122,15 @@ rolling_mean_pupil_average<-mad_removal %>%
         dplyr::mutate(movingavgpup= movingaverage(mad_removal$interp,n=5))
 ```
 
+# Decimation or Downsampling
+
+Place data into timebins (users can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
+
+```{r, echo=FALSE}
+library(itsadug)
+timebins1<-downsample.pupil(rolling_mean_pupil_average, 200)
+```
+
 # Baseline correction
 
 To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was recommended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this example, we used a baseline window between 500 ms and 1000 ms (when the fixation cross was on screen) and subtracted this value from each pupil trace. 
@@ -127,8 +138,6 @@ To control for variability arising from non-task related processing, baseline co
 ```{r, echo=FALSE}
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
 ```
-
-
 
 
 
