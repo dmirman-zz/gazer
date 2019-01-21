@@ -19,7 +19,7 @@ get_ranef <- function(model=NULL, ranef_name=NULL){
 
   #if necessary, remove annoying parens from variable name
   if(any(names(re)=="(Intercept)")){
-    re <- rename(re, "Intercept" = "(Intercept)")
+    names(re) <- replace(names(re), names(re)=="(Intercept)", "Intercept")
   }
 
   return(re)
