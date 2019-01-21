@@ -8,13 +8,13 @@
 #' @examples
 #' pupil.downsample(df, bin.length = 100)
 downsample.pupil <- function(df, bin.length = NULL){
-  x <- df %>%
+  downsample <- df %>%
         dplyr::group_by(trial) %>% 
                      dplyr::mutate(
-                     timeBin = trunc(time/bin.length),
-                     timeBin = ifelse(time<0, timebin - 1, TimeBin),
+                     timebin = trunc(time/bin.length),
+                     timebin = ifelse(time<0, timebin - 1, timebin),
                      time = timebin*bin.length) %>% 
                       ungroup()
-  return(x)
+  return(downsample)
 }
 
