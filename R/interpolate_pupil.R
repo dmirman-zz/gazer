@@ -2,18 +2,13 @@
 #' @param datafile data frame.
 #' @param extendblinks blinks already extended  in data frame 
 #' @param type type of interpolation (linear or cubic)
-#' @param hz sampling frequency of data (250hz, 1000hz, etc)
 #' @export
 #' @import zoo
 #' 
 #' @return data frame containing interpolated data 
 #' 
-interpolate_pupil<-function(datafile, extendblinks=FALSE, maxgap=Inf, type=NA, hz=NULL) { #supports linear and cublic-spline interpolation
+interpolate_pupil<-function(datafile, extendblinks=FALSE, type=NA) { #supports linear and cublic-spline interpolation
   require(zoo)
-  if (maxgap!=Inf){
-    maxgap <- round(maxgap/(1000/hz))
-  }
-  
   if (extendblinks==FALSE & type=="linear") {
 message("Turning pupil size with blinks to NA")
   blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
@@ -38,22 +33,17 @@ return(pupil_interp)
     blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
     message("Performing cubic interpolation")
     pupil_interp <- blinks_na %>% dplyr::group_by(subject, trial) %>% 
-                       dplyr::mutate(index = ifelse(is.na(pup), NA, dplyr::row_number()),
-                       index = zoo::na.approx(index, na.rm = FALSE),
-                       interp = zoo::na.spline(pupil, na.rm = FALSE, x = index, maxgap=maxgap))
-    pupil_interp <-  pupil_interp %>% 
-                     dplyr::select(-index)
+      dplyr::mutate(interp = zoo::na.spline(pupil))
+  
     return(pupil_interp)
   }
   
   if (extendblinks==TRUE & type=="cubic") { 
     message("Performing cubic interpolation")
-    pupil_interp <- blinks_na %>% dplyr::group_by(subject, trial) %>% 
-      dplyr::mutate(index = ifelse(is.na(pup), NA, dplyr::row_number()),
-                    index = zoo::na.approx(index, na.rm = FALSE),
-                    interp = zoo::na.spline(pupil, na.rm = FALSE, x = index, maxgap=maxgap))
-    pupil_interp <- pupil_interp %>% 
-                    dplyr::select(-index)
+    pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>% 
+      dplyr::mutate(interp = zoo::na.spline(pupil))
+  
+      
     return(pupil_interp)
   }
     
