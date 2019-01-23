@@ -14,5 +14,5 @@ This package contains functions for reading in raw eye-tracking data, formatting
 install.packages("devtools")
 
 # install gazer from GitHub
-devools::install_github("dmirman/gazer")
+devtools::install_github("dmirman/gazer")
 ``` 
