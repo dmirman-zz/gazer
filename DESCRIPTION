@@ -16,11 +16,12 @@ BugReports: http://github.com/dmirman/gazer/issues
 License: GPL-3
 LazyData: true
 Imports:
-    ggplot2,
-    reshape2,
-  	plyr,
-  	dplyr,
-    pbkrtest
+    ggplot2, 
+    pbkrtest, 
+    data.table, 
+    tidyverse, 
+    lme4, 
+    zoo
 RoxygenNote: 6.1.0
 Suggests: knitr,
     rmarkdown
