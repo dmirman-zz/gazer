@@ -9,7 +9,8 @@
 #' @param file_list path to .xls files
 #' @export
 #' @return data frame containing pupil data
-merge_pupil_files <- function (file_list) {  #file list is path to .xls files
+merge_pupil_files <- function (file_list) {  
+  #file list is path to .xls files
   library(data.table)
 
     
@@ -21,7 +22,7 @@ merge_pupil_files <- function (file_list) {  #file list is path to .xls files
       }
     }
     
-    fread(files, header=TRUE, sep="\t", na.strings = ".")})) #fread makes reading in files quicke
+    fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quicke
   
   change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = AVERAGE_IN_BLINK, pupil = AVERAGE_PUPIL_SIZE, everything())
   
