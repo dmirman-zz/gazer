@@ -14,7 +14,3 @@ downsample.pupil(df, bin.length = NULL)
 \description{
 This function will reduce the sampling fequency
 }
-\examples{
-pupil.downsample(df, bin.length = 100)
-}
-\keyword{downsample}

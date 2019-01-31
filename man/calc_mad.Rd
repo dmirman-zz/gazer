@@ -7,9 +7,9 @@
 calc_mad(max_dilation, n = 16)
 }
 \arguments{
-\item{n}{constant used}
+\item{max_dilation}{pupil file returned from speed_pupil}
 
-\item{pup}{pupil file returned from speed_pupil}
+\item{n}{constant used}
 }
 \value{
 threhold value to filter on

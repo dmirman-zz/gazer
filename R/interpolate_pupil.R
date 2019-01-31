@@ -8,7 +8,6 @@
 #' @return data frame containing interpolated data 
 #' 
 interpolate_pupil<-function(datafile, extendblinks=FALSE, type=NA) { #supports linear and cublic-spline interpolation
-  require(zoo)
   if (extendblinks==FALSE & type=="linear") {
 message("Turning pupil size with blinks to NA")
   blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
