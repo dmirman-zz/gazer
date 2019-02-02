@@ -2,7 +2,7 @@
 
 For a detailed overview of how to use gazeR, please see the vignettes.
 
- <img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="100px" width="500px" />
+ <img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="300px" width="500px" />
 
  
 ## Synopsis
