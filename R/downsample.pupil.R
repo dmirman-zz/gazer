@@ -4,7 +4,6 @@
 #' @param df dataframe
 #' @param bin.length Length of bins to average
 #' @export
-#' @examples
 downsample.pupil <- function(df, bin.length = NULL){
   downsample <- df %>%
         dplyr::group_by(trial) %>% 
