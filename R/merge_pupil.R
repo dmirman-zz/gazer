@@ -5,10 +5,13 @@
 #'@import tidyverse
 #'@import data.table
 #'
+#'
 #' @param file_list path to .xls files
+#' @param blink_colname name of your blink colname:AVERAGE_IN_BLINK, LEFT_, #RIGHT
+#' @param pupil_colname name of your pupil colname:AVERAGE_IN_Pupil, LEFT_, #RIGHT
 #' @export
 #' @return data frame containing pupil data
-merge_pupil_files <- function (file_list) {  
+merge_pupil <- function (file_list, blink_colname=NULL, pupil_colname=NULL) {  
   #file list is path to .xls files
   library(data.table)
 
@@ -23,11 +26,11 @@ merge_pupil_files <- function (file_list) {
     
     fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quicke
   
-  change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = AVERAGE_IN_BLINK, pupil = AVERAGE_PUPIL_SIZE, everything())
+change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, everything())
   
-  names(change_name) <- tolower(names(change_name))
+names(change_name) <- tolower(names(change_name))
   
-  change_name$time <- change_name$timestamp-change_name$ip_start_time
+change_name$time <- change_name$timestamp-change_name$ip_start_time
   
-  return(as_tibble(change_name))
+return(as_tibble(change_name))
 }
