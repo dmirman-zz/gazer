@@ -11,6 +11,7 @@ downsample.pupil <- function(df, bin.length = NULL){
                      timebin = trunc(time/bin.length),
                      timebin = ifelse(time<0, timebin - 1, timebin),
                      timebins = timebin*bin.length) %>% 
+                      select(-timebin)
                       ungroup()
   return(downsample)
 }
