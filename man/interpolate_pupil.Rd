@@ -4,8 +4,7 @@
 \alias{interpolate_pupil}
 \title{Turns pupil sizes with blinks NA and linearly interpolates values}
 \usage{
-interpolate_pupil(datafile, extendblinks = FALSE, maxgap = Inf,
-  type = NA, hz = NULL)
+interpolate_pupil(datafile, extendblinks = FALSE, type = NA)
 }
 \arguments{
 \item{datafile}{data frame.}
@@ -13,8 +12,6 @@ interpolate_pupil(datafile, extendblinks = FALSE, maxgap = Inf,
 \item{extendblinks}{blinks already extended  in data frame}
 
 \item{type}{type of interpolation (linear or cubic)}
-
-\item{hz}{sampling frequency of data (250hz, 1000hz, etc)}
 }
 \value{
 data frame containing interpolated data

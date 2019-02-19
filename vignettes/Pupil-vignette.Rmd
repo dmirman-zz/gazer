@@ -127,7 +127,6 @@ rolling_mean_pupil_average<-mad_removal %>%
 Place data into timebins (users can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
 
 ```{r, echo=FALSE}
-library(itsadug)
 timebins1<-downsample.pupil(rolling_mean_pupil_average, 200)
 ```
 

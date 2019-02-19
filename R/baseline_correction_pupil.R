@@ -14,7 +14,8 @@ baseline_correction_pupil<-function(datafile,baseline_window=NA) { message("Calc
   message("Merging baseline")
   merge_baseline <- merge(baseline, datafile) # merge median pupil size with raw dataset
   message("Performing baseline correction")
-  corrected_baseline <- merge_baseline %>%  dplyr::mutate(baselinecorrectedp = movingavgpup - baseline) %>% dplyr::arrange(trial, time)
+  corrected_baseline <- merge_baseline %>%  
+    dplyr::mutate(baselinecorrectedp = movingavgpup - baseline) %>%       dplyr::arrange(subject, trial, time, timebins, baselinecorrectedp)
   
   return(corrected_baseline)
 
