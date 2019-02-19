@@ -33,7 +33,7 @@ readFixationReport <- function(filename, screen_size=c(1024, 768),
                          size=sqrt(CURRENT_FIX_DURATION))) +
       facet_wrap(~ sText, scales="free") + geom_point(alpha=0.5) +
       annotate("rect", xmin=0, ymin=0,
-               xmax=screen_size[1], ymax=screen_size[2], color="red")
+               xmax=screen_size[1], ymax=screen_size[2], color="red", fill=NA)
     #show them
     print(sp)
   }
