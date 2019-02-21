@@ -22,7 +22,7 @@ message("Turning pupil size with blinks to NA")
 message("Performing linear interpolation")
 pupil_interp <- datafile %>%
   dplyr::group_by(subject, trial) %>%
-  dplyr::mutate(interp = zoo::na.approx(pupil, rule=2)) %>% ungroup() 
+  dplyr::mutate(interp = zoo::na.approx(pupil, na.rm = FALSE, rule=2)) %>% ungroup() 
 return(pupil_interp)
 
   }
@@ -32,7 +32,7 @@ return(pupil_interp)
     blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
     message("Performing cubic interpolation")
     pupil_interp <- blinks_na %>% dplyr::group_by(subject, trial) %>% 
-      dplyr::mutate(interp = zoo::na.spline(pupil))
+      dplyr::mutate(interp = zoo::na.spline(pupil, na.rm=FALSE))
   
     return(pupil_interp)
   }
