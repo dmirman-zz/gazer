@@ -4,7 +4,7 @@
 #' @param baseline_window user-specified threshold for baseline window.
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA) { message("Calculating baseline")
+baseline_correction_pupil<-function(datafile, pupil_colnames=NA, baseline_window=NA) { message("Calculating baseline")
   #recent paper (Mathot et al.,2018)suggested using median over mean for baseline correction
   message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
   baseline <- datafile  %>%
