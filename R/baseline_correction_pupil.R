@@ -22,7 +22,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
     dplyr::group_by(subject, trial, time) %>% 
     dplyr::rename(pupil1 = pupil_colnames) %>% 
     dplyr::mutate(baselinecorrectedp = pupil1 - baseline) %>%      
-    dplyr::arrange(subject, trial, time, timebins, baselinecorrectedp)
+    dplyr::arrange(subject, trial, time, baselinecorrectedp)
   
   return(corrected_baseline)
 
