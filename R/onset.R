@@ -22,10 +22,10 @@
 onset <- function(time, marker, event){
   onset_time <- time[!is.na(marker) & marker == event]
   if(length(onset_time) == 0){
-    warning (paste(event, "not found in onset marker"))
+    warning (paste(event, "event not found"))
     return(rep(NA, length(time)))
   }
   if(length(onset_time) > 1)
-    stop ("More than one instance of onset marker found.")
+    stop ("event marker occurs more than once per trial")
   time - onset_time
 }
