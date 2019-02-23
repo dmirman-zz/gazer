@@ -4,10 +4,13 @@
 \alias{baseline_correction_pupil}
 \title{Performs linear (substraction) baseline correction relative to desired stim_onset and off_set}
 \usage{
-baseline_correction_pupil(datafile, baseline_window = NA)
+baseline_correction_pupil(datafile, pupil_colnames = NULL,
+  baseline_window = NA)
 }
 \arguments{
 \item{datafile}{raw pupil data}
+
+\item{pupil_colnames}{name of your pupil colname you want baseline corrected}
 
 \item{baseline_window}{user-specified threshold for baseline window.}
 }
