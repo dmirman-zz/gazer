@@ -10,20 +10,20 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
   baseline <- datafile  %>%
     dplyr::filter(time > baseline_window[1],
                   time < baseline_window[2]) %>%
-    dplyr::group_by(subject, trial, time) %>%
-    dplyr::rename(pupil1 = pupil_colnames) %>% 
-    dplyr::summarise(baseline = median(pupil1)) %>% 
+    dplyr::group_by(subject, trial) %>%
+    dplyr::rename(pupil_avg = pupil_colnames) %>% 
+    dplyr::summarise(baseline = median(pupil_avg)) %>% 
     ungroup()
   
   message("Merging baseline")
-  merge_baseline <- merge(baseline, datafile) # merge median pupil size with raw dataset
+  merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
   message("Performing baseline correction")
-  corrected_baseline <- merge_baseline %>%
-    dplyr::group_by(subject, trial, time) %>% 
-    dplyr::rename(pupil1 = pupil_colnames) %>% 
-    dplyr::mutate(baselinecorrectedp = pupil1 - baseline) %>%      
-    dplyr::arrange(subject, trial, time, baselinecorrectedp)
   
+    corrected_baseline <- merge_baseline %>% 
+    dplyr::rename(pupil_avg = pupil_colnames) %>% 
+    dplyr::mutate(baselinecorrectedp = pupil_avg - baseline) %>%
+      dplyr::rename(movingavgpuup = pupil_avg)
+
   return(corrected_baseline)
 
   }
