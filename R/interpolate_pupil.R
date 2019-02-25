@@ -40,7 +40,7 @@ return(pupil_interp)
   if (extendblinks==TRUE & type=="cubic") { 
     message("Performing cubic interpolation")
     pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>% 
-      dplyr::mutate(interp = zoo::na.spline(extendpupil,na.rm=FALSE))
+      dplyr::mutate(interp = zoo::na.spline(extendpupil,na.rm=FALSE, method="natural"))
   
       
     return(pupil_interp)
