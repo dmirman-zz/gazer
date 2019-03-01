@@ -18,3 +18,5 @@ install.packages("devtools")
 # install gazer from GitHub
 devtools::install_github("dmirman/gazer")
 ``` 
+#Citation
+Geller, J., Winn, M., Mahr, T., Mirman, D. (2018). GazeR:A package to analyze gaze position and pupil size data. Retrieved from github.com/dmirman/gazer. 
