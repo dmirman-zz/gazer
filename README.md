@@ -1,6 +1,6 @@
 # gazeR:A package to analyze gaze position and pupil size data
 
-For a detailed overview of how to use gazeR, please see the vignettes.
+For a detailed overview of how to use gazeR, please see the vignettes and posted pre-print. 
 
 <p align="center"><img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="200px" width="200px" />
 
@@ -18,3 +18,5 @@ install.packages("devtools")
 # install gazer from GitHub
 devtools::install_github("dmirman/gazer")
 ``` 
+# Citation
+Geller, J., Winn, M., Mahr, T., Mirman, D. (2018). GazeR:A package to analyze gaze position and pupil size data. Retrieved from github.com/dmirman/gazer. 
