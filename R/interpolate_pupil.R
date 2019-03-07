@@ -51,7 +51,7 @@ return(pupil_interp)
     pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>% 
       dplyr::mutate(index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),             
                     index=zoo::na.approx(index, na.rm=FALSE), 
-                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index, method="natural",                      maxgap=maxgap)) %>%
+                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index,maxgap=maxgap)) %>%
     ungroup()
       
     return(pupil_interp)
