@@ -32,7 +32,7 @@ missing_pupil_count<- function(datafile, missingthresh=.3) {
   
   # % trials excluded
   message("% trials excluded:",  round(prop, digits=3))
-  message("subjects taken out:" ,countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
+  message("Participants taken out:" ,countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
   
   # print # subjects excluded
   
