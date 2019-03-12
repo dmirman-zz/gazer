@@ -26,7 +26,7 @@ merge_pupil <- function (file_list, blink_colname=NULL, pupil_colname=NULL) {
     
     fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quicke
   
-change_name <- dplyr::select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, everything())
+change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, everything())
   
 names(change_name) <- tolower(names(change_name))
   
