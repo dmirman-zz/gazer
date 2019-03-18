@@ -8,7 +8,7 @@
 #' @param centered whether moving average window should be centered (TRUE) or trailing (FALSE)
 #' @return return sum divided by count
 #' @export
-movingaverage <- function(x, n=5, centered=TRUE) {
+moving_average_pupil <- function(x, n=5, centered=TRUE) {
 
   if (centered) {
     before <- floor  ((n-1)/2)
