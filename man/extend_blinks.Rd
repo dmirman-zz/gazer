@@ -4,14 +4,16 @@
 \alias{extend_blinks}
 \title{Extends blinks if not already done in SR Data Viewer}
 \usage{
-extend_blinks(values, fillback = 5, fillforward = 5)
+extend_blinks(values, fillback = 5, fillforward = 5, hz = NA)
 }
 \arguments{
 \item{values}{column with pupil values}
 
-\item{fillback}{NA extend backward}
+\item{fillback}{NA extend backward (in ms)}
 
-\item{fillforward}{NA extend forward}
+\item{fillforward}{NA extend forward (in ms)}
+
+\item{hz}{sampling rate of eye tracker}
 }
 \value{
 vector containing extended blinks
