@@ -1,12 +1,21 @@
 
 #' Extends blinks if not already done in SR Data Viewer
 #' @param values column with pupil values 
-#' @param fillback  NA extend backward 
-#' @param fillforward NA extend forward 
+#' @param fillback  NA extend backward (in ms)
+#' @param fillforward NA extend forward (in ms)
+#' @param hz sampling rate of eye tracker
 #' @return vector containing extended blinks
 #' @export
 
-extend_blinks <- function(values, fillback=5, fillforward=5) {
+extend_blinks <- function(values, fillback=5, fillforward=5, hz=NA) {
+  
+  samprate<-1000/hz
+  
+  fillf <- fillforward/samprate
+  
+  fillb <- fillback / samprate
+  
+  
   # Function to take any run of NA values in a vector,
   # and expand them by assigning NA to values 
   # that lead and trail that run
@@ -51,8 +60,8 @@ extend_blinks <- function(values, fillback=5, fillforward=5) {
   }
   
   # Final adjustments so gap.start and gap.end are indices are non-NA values.
-  gap.end <- gap.start + gap.size + fillforward
-  gap.start <- gap.start - fillback
+  gap.end <- gap.start + gap.size + fillf
+  gap.start <- gap.start - fillb
   
   # Pair off all start and ends, make ranges, and combine into a list of indices
   make_these_na <- unlist(mapply(":", gap.start, gap.end))

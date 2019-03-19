@@ -6,7 +6,7 @@
 \title{Judgments to cursive vs. type-print words in LDT}
 \format{A data frame with 872 rows and 4 variables
 \describe{
- \item{subject}{subject id, N=23}
+ \item{subject}{subject id, N=41}
  \item{script}{Cursive or Print}
  \item{timebinonset}{trial onset}
  \item{baselinep}{baseline corrected pupil size}
