@@ -60,7 +60,7 @@ gaze$CompLocation <- as.numeric(substr(gaze$CompPort, 6, 6))
 Then match fixation locations to AOI based on screen coordinates:
 
 ```{r}
-gaze_aoi <- assign_AOI(gaze)
+gaze_aoi <- assign_aoi(gaze)
 summary(gaze_aoi)
 ```
 
