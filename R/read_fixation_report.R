@@ -8,7 +8,7 @@
 #' @param plot_fix_scatter logical indicating whether a scatterplot of fixations should be created
 #' @export
 #' @return gaze data frame containing fixation report
-readFixationReport <- function(filename, screen_size=c(1024, 768),
+read_fixation_report <- function(filename, screen_size=c(1024, 768),
                                name_changes=c(Subject = "RECORDING_SESSION_LABEL",
                                               ACC = "StimSlide.ACC", RT = "StimSlide.RT",
                                               TargetLoc = "CorrectPort"),

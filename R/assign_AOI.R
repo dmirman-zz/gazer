@@ -10,7 +10,7 @@
 #' @param Y name of variable containing Y coordinates. Defaults to "CURRENT_FIX_Y"
 #' @return Original gaze data frame with AOI column added. Non-AOI and off-screen gazes are marked NA.
 #' @export
-assignAOI <- function(gaze, screen_size=c(1024, 768), aoi_size=c(400, 300), aoi_loc=NULL, X="CURRENT_FIX_X", Y="CURRENT_FIX_Y") {
+assign_AOI <- function(gaze, screen_size=c(1024, 768), aoi_size=c(400, 300), aoi_loc=NULL, X="CURRENT_FIX_X", Y="CURRENT_FIX_Y") {
 
   #create AOI variable in gaze data frame
   gaze$AOI <- NA
