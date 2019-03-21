@@ -29,7 +29,7 @@ library(ggplot2)
 ```{r}
 # Use a file installed with the package 
 gaze_path <- system.file("extdata", "FixData_v1_N15.xls", package = "gazer")
-gaze <- readFixationReport(gaze_path, plot_fix_scatter = FALSE)
+gaze <- read_fixation_report(gaze_path, plot_fix_scatter = FALSE)
 summary(gaze)
 ```
 
@@ -43,7 +43,7 @@ Alternatively, a single call will read in the data and generate two diagnostic
 figures
 
 ```{r eval=FALSE}
-gaze <- readFixationReport(gaze_path)
+gaze <- read_fixation_report(gaze_path)
 ```
 
 ## Parse areas of interest
@@ -60,7 +60,7 @@ gaze$CompLocation <- as.numeric(substr(gaze$CompPort, 6, 6))
 Then match fixation locations to AOI based on screen coordinates:
 
 ```{r}
-gaze_aoi <- assignAOI(gaze)
+gaze_aoi <- assign_aoi(gaze)
 summary(gaze_aoi)
 ```
 
