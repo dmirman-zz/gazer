@@ -4,12 +4,12 @@
 #' @param df dataframe
 #' @param bin.length Length of bins to average
 #' @export
-downsample.pupil <- function(df, bin.length = NULL){
+downsample_pupil <- function(df, bin.length = NULL){
   downsample <- df %>%
         dplyr::group_by(trial) %>% 
                      dplyr::mutate(
-                     timebin = trunc(time/bin.length),
-                     timebin = ifelse(time<0, timebin - 1, timebin),
+                     timebin = trunc(time_zero/bin.length),
+                     timebin = ifelse(time_zero<0, timebin - 1, timebin),
                      timebins = timebin*bin.length) %>% 
                       select(-timebin) %>%
                       ungroup()

@@ -68,19 +68,19 @@ behave_data<-behave_pupil(pupil_files, omiterrors = FALSE, behave_colnames = c("
 
 # Blinks
 
-Subjects and trials with a lot of missing data--due to blinks--should be removed. `missing_pupil_count` will remove subjects and items that pass a specified missing threshold (we have it set at .3, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
+Subjects and trials with a lot of missing data--due to blinks--should be removed. `missing_pupil_count` will remove subjects and items that pass a specified missing threshold (we have it set at .2, but users can change this to whatever value they would like). The percentage of subjects and trials thrown out are returned for reporting.    
 
 ```{r}
-pup_missing<-missing_pupil_count(pupil_files1, missingthresh = .3)
+pup_missing<-count_missing_pupil(pupil_files1, missingthresh = .2)
 ```
 
 ## Extending Blinks
 
-If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommended that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` function. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250Hz (once every 4 ms). If we want to extend 100 ms forward and backward in time, we set those arguments to 25. 
+If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommended that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` function. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250Hz (once every 4 ms) and we extend the blinks forward and backward 100 ms in time. 
 
 ```{r}
 pup_extend<- pup_missing %>% group_by(subject, trial) %>% 
-  mutate(extendblink=extendblinks(pupil, fillback=25, fillforward=25))
+  mutate(extendblink=extend_blinks(pupil, fillback=100, fillforward=100))
 ```
 
 # Interpolation of Pupil Values
@@ -88,7 +88,7 @@ pup_extend<- pup_missing %>% group_by(subject, trial) %>%
 Pupil values need to be linearly interpolated. The `interpolate_pupil` function sets all pupil values with blinks to NA if extendblink=FALSE (SR does not do this with sample files automatically) and linearly interpolates those values. If extendblinks=TRUE, it performs linear interpolation. This requires the use of the `extend_blinks` function referenced above. 
 
 ```{r}
-pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE)
+pup_interp<-interpolate_pupil(pup_outliers, extendblinks=TRUE, type="linear")
 ```
 
 # Median Absoulate Deviation (MAD)
@@ -118,17 +118,9 @@ Pupil data can be extremely noisy! One way to reduce some of this noise is to us
 
 ```{r, echo=FALSE}
 rolling_mean_pupil_average<-mad_removal %>% 
-        dplyr::select(subject, trial,target, script,alteration, time, interp, sample_message) %>%
-        dplyr::mutate(movingavgpup= movingaverage(mad_removal$interp,n=5))
+        dplyr::mutate(movingavgpup= movingaverage(interp,n=5))
 ```
 
-# Decimation or Downsampling
-
-Place data into timebins (users can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
-
-```{r, echo=FALSE}
-timebins1<-downsample.pupil(rolling_mean_pupil_average, 200)
-```
 
 # Baseline correction
 
@@ -138,5 +130,25 @@ To control for variability arising from non-task related processing, baseline co
 baseline_pupil<-baseline_correction_pupil(timebins1, baseline_window=c(500,1000))
 ```
 
+
+##  Trial Clipping
+
+In most psychological experiments, each trial includes several events. We can use this information to start our trial onset at zero.  To do this we can use the `onset_pupil` function. This function requires three arguments: time column, sample message column, and the event of interest ("target") in our example). This will allow us to start the trial at the onset of the target. In the output below, we can see below that our experiment now starts at zero, when the target was displayed on screen.  
+
+```{r echo=FALSE, warning=FALSE}
+
+baseline_pupil_onset<-baseline_pupil %>% 
+  dplyr::group_by(subject, trial) %>%  
+  dplyr::mutate(time_zero=onset_pupil(time, sample_message, event=c("target"))) %>%
+  ungroup() %>% 
+```
+
+# Decimation or Downsampling
+
+Place data into timebins (users can specifiy a timebin to use). For this example, we will use 200 ms timebins. 
+
+```{r, echo=FALSE}
+timebins1<-downsample_pupil(baseline_pupil_onset, bin.length =  200)
+```
 
 

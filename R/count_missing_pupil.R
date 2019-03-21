@@ -1,5 +1,5 @@
 #' Calculate percent missing data by subject and by trial
-#' @param missingthresh user-specified threshold for missing data.
+#' @param missingthresh user-specified threshold for missing data. set to .2 
 #' @export
 #' @return data frame containing missing data information
 #' @export
@@ -11,7 +11,7 @@
 #' 
 #' 
 #' 
-missing_pupil_count<- function(datafile, missingthresh=.3) {
+count_missing_pupil<- function(datafile, missingthresh=.2) {
   
   countsbysubject <- datafile %>%
     dplyr::group_by(subject) %>%
@@ -31,8 +31,8 @@ missing_pupil_count<- function(datafile, missingthresh=.3) {
   prop <- length(greaterthan$trial)/length(countsbytrial$trial)
   
   # % trials excluded
-  message(prop ,"of the trials were excluded")
-  message("subjects taken out:" ,countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
+  message("% trials excluded:",  round(prop, digits=3))
+  message("Participants taken out:" ,countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
   
   # print # subjects excluded
   
