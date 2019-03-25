@@ -6,13 +6,15 @@
 #' @param screen_size size of the screen in pixels. Used to compute track quality diagnostics. Defaults to c(1024, 768)
 #' @param name_changes set of variable name pairs for improving variable names. Should be formatted as named character vector with new names as values and old names as names; see plyr::rename()
 #' @param plot_fix_scatter logical indicating whether a scatterplot of fixations should be created
+#' @param page outputs a plots 4 x 3 and displays the first page. Change number to see other pages if you have more Ps 
 #' @export
 #' @return gaze data frame containing fixation report
+#' @import ggforce
 read_fixation_report <- function(filename, screen_size=c(1024, 768),
                                name_changes=c(Subject = "RECORDING_SESSION_LABEL",
                                               ACC = "StimSlide.ACC", RT = "StimSlide.RT",
                                               TargetLoc = "CorrectPort"),
-                               plot_fix_scatter=TRUE) {
+                               plot_fix_scatter=TRUE, pages=1) {
   gaze <- read.table(filename, header=TRUE,sep="\t", na.strings=".")
   #simplify some other column names
   gaze <- dplyr::rename(gaze, !!!name_changes)
@@ -26,17 +28,19 @@ read_fixation_report <- function(filename, screen_size=c(1024, 768),
     calibGoodness <- get_gaze_diagnostics(gaze)
     g3 <- merge(gaze, calibGoodness)
     #make a strip text label containing subject ID and calibration diagnostics
-    g3$sText <- with(g3, paste(Subject, ": NonFix=", signif(nonFixTime, 2),
+    g3$sText <- with(g3, paste("ID:", Subject,": NonFix=", signif(nonFixTime, 2),
                                ", OOB=", signif(oob_prop, 2), sep=""))
     #make the scatterplots
     sp <- ggplot(g3, aes(CURRENT_FIX_X, CURRENT_FIX_Y,
                          size=sqrt(CURRENT_FIX_DURATION))) +
-      facet_wrap(~ sText, scales="free") + geom_point(alpha=0.5) +
+      facet_wrap_paginate(~ sText, scales="free", ncol=4, nrow=3, page = pages) + geom_point(alpha=0.5) +
       annotate("rect", xmin=0, ymin=0,
-               xmax=screen_size[1], ymax=screen_size[2], color="red", fill=NA)
+               xmax=screen_size[1], ymax=screen_size[2], color="red", fill=NA) + 
+      theme_bw()+ 
+      theme(axis.title.y=element_text(size = 14, face="bold"), axis.title.x = element_text(size=14, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"), legend.position = "bottom") 
+      
     #show them
     print(sp)
   }
-
   return(gaze)
 }
