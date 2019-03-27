@@ -31,16 +31,23 @@ read_fixation_report <- function(filename, screen_size=c(1024, 768),
     g3$sText <- with(g3, paste("ID:", Subject,": NonFix=", signif(nonFixTime, 2),
                                ", OOB=", signif(oob_prop, 2), sep=""))
     #make the scatterplots
+    nSubj <- n_distinct(g3$Subject) #number of subjects
+    nc <- 4     #4 columns
+    nr <- ceiling(nSubj/nc) #number of rows
+
     sp <- ggplot(g3, aes(CURRENT_FIX_X, CURRENT_FIX_Y,
                          size=sqrt(CURRENT_FIX_DURATION))) +
-      facet_wrap_paginate(~ sText, scales="free", ncol=4, nrow=3, page = pages) + geom_point(alpha=0.5) +
+    facet_wrap(~ sText, scales="free", ncol=nc) + 
+      geom_point(alpha=0.5) +
+      
       annotate("rect", xmin=0, ymin=0,
                xmax=screen_size[1], ymax=screen_size[2], color="red", fill=NA) + 
       theme_bw()+ 
-      theme(axis.title.y=element_text(size = 14, face="bold"), axis.title.x = element_text(size=14, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"), legend.position = "bottom") 
-      
-    #show them
+      theme(axis.title.y=element_text(size = 14, face="bold"), axis.title.x = element_text(size=14, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"), legend.position = "bottom")
     print(sp)
+    ggsave(paste0("fixation_scatterplots_", format(Sys.time(), "%Y-%m-%d_%H-%M"), ".pdf"), sp, width = nc*3, height = nr*3) 
+    #3
+    #show them
   }
   return(gaze)
 }
