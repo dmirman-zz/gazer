@@ -13,7 +13,8 @@
 #' the time series should be zeroed. If this label is a character string, it
 #' must be enclosed in quotation marks.
 #'
-#' @return Numeric vector that zeroes \code{time} to the trial onset. 
+#' @return Numeric vector that zeroes \code{time} to the trial onset. In the
+#' event that no onset marker is found, a warning is issued and a vector of
 #' \code{NA}s is returned.
 #'
 #' @export
@@ -24,5 +25,6 @@ onset_pupil <- function(time, marker, event){
     return(rep(NA, length(time)))
   }
   if(length(onset_time) > 1)
+    stop ("event marker occurs more than once per trial")
   time - onset_time
 }
