@@ -26,7 +26,7 @@ get_gaze_diagnostics <- function(gaze, screen_size=c(1024, 768)){
   #make a scatterplot of calibration diagnostics
   calib_plot <- ggplot(calibGoodness, aes(nonFixTime, oob_prop, label=Subject)) +
     geom_label() + labs(x="Non-Fixation Time", y="Out of Bounds Proportion", title="Gaze Diagnostics") + theme_bw() + 
-    theme(axis.title.y=element_text(size = 14, face="bold"), axis.title.x = element_text(size=14, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"), legend.position = "bottom")
+    theme(axis.title.y=element_text(size = 12, face="bold"), axis.title.x = element_text(size=12, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"), legend.position = "bottom")
   print(calib_plot)
   #return calibration diagnostics
   return(calibGoodness)

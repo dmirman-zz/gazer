@@ -13,8 +13,7 @@
 #' the time series should be zeroed. If this label is a character string, it
 #' must be enclosed in quotation marks.
 #'
-#' @return Numeric vector that zeroes \code{time} to the trial onset. In the
-#' event that no onset marker is found, a warning is issued and a vector of
+#' @return Numeric vector that zeroes \code{time} to the trial onset. 
 #' \code{NA}s is returned.
 #'
 #' @export
@@ -22,10 +21,8 @@
 onset_pupil <- function(time, marker, event){
   onset_time <- time[!is.na(marker) & marker == event]
   if(length(onset_time) == 0){
-    warning (paste(event, "event not found"))
     return(rep(NA, length(time)))
   }
   if(length(onset_time) > 1)
-    stop ("event marker occurs more than once per trial")
   time - onset_time
 }
