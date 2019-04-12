@@ -1,4 +1,4 @@
-#' Build polynomial predictor variables
+#' Build polyomial predictor variables
 #'
 #' Takes a data frame, name of predictor variable, and polynomial order. Creates
 #' polynomial-transformed predictor variables, adds them to the data frame and
