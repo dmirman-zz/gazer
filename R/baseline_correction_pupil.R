@@ -28,6 +28,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
       dplyr::arrange(subject, trial, time)
   }
   if (baeline_method="div") { 
+    message("Performing divisive baseline correction")
     
     corrected_baseline <- merge_baseline %>% 
       dplyr::rename(pupil_avg = pupil_colnames) %>% 
