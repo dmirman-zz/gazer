@@ -4,7 +4,7 @@
 #' @param baseline_window user-specified threshold for baseline window.
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA) { message("Calculating baseline")
+baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_methd="sub") { message("Calculating baseline")
   #recent paper (Mathot et al.,2018)suggested using median over mean for baseline correction
   message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
   baseline <- datafile  %>%
@@ -17,14 +17,27 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
   
   message("Merging baseline")
   merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
-  message("Performing baseline correction")
+  
+  if (baseline_method="sub") {
+  message("Performing subtractive baseline correction")
   
     corrected_baseline <- merge_baseline %>% 
     dplyr::rename(pupil_avg = pupil_colnames) %>% 
     dplyr::mutate(baselinecorrectedp = pupil_avg - baseline) %>%
       dplyr::rename(movingavgpuup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
-
+  }
+  if (baeline_method="div") { 
+    
+    corrected_baseline <- merge_baseline %>% 
+      dplyr::rename(pupil_avg = pupil_colnames) %>% 
+      dplyr::mutate(baselinecorrectedp = pupil_avg / baseline) %>%
+      dplyr::rename(movingavgpuup = pupil_avg) %>%
+      dplyr::arrange(subject, trial, time)
+    
+  
+    }
+    
   return(corrected_baseline)
 
   }
