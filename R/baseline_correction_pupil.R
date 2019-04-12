@@ -2,6 +2,7 @@
 #' @param datafile raw pupil data
 #' @param pupil_colnames name of your pupil colname you want baseline corrected
 #' @param baseline_window user-specified threshold for baseline window.
+#' @param baseline correction method. Default is sub but can also include divisive
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
 baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_methd="sub") { message("Calculating baseline")
@@ -36,7 +37,6 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
       dplyr::rename(movingavgpuup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
     
-  
     }
     
   return(corrected_baseline)
