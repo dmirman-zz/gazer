@@ -1,4 +1,4 @@
-#' Performs linear (substraction) baseline correction relative to desired stim_onset and off_set
+#' Performs linear (substraction) or divisive baseline correction relative to desired stim_onset and off_set
 #' @param datafile raw pupil data
 #' @param pupil_colnames name of your pupil colname you want baseline corrected
 #' @param baseline_window user-specified threshold for baseline window.
