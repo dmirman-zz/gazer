@@ -19,7 +19,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
   message("Merging baseline")
   merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
   
-  if (baseline_method="sub") {
+  if (baseline_method=="sub") {
   message("Performing subtractive baseline correction")
   
     corrected_baseline <- merge_baseline %>% 
@@ -28,7 +28,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
       dplyr::rename(movingavgpuup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
   }
-  if (baeline_method="div") { 
+  if (baeline_method=="div") { 
     message("Performing divisive baseline correction")
     
     corrected_baseline <- merge_baseline %>% 
