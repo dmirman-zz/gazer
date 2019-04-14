@@ -25,7 +25,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
     corrected_baseline <- merge_baseline %>% 
     dplyr::rename(pupil_avg = pupil_colnames) %>% 
     dplyr::mutate(baselinecorrectedp = pupil_avg - baseline) %>%
-      dplyr::rename(movingavgpuup = pupil_avg) %>%
+      dplyr::rename(movingavgpup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
   }
   if (baseline_method=="div") { 
@@ -34,7 +34,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
     corrected_baseline <- merge_baseline %>% 
       dplyr::rename(pupil_avg = pupil_colnames) %>% 
       dplyr::mutate(baselinecorrectedp = (pupil_avg - baseline)/baseline) %>%
-      dplyr::rename(movingavgpuup = pupil_avg) %>%
+      dplyr::rename(movingavgpup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
     
     }
