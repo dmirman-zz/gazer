@@ -1,12 +1,12 @@
 #' Downsample pupil data
 #'
 #' This function will reduce the sampling fequency
-#' @param df dataframe
+#' @param dataframe dataframe
 #' @param bin.length Length of bins to average
 #' @export
-downsample_pupil <- function(df, bin.length = NULL){
-  downsample <- df %>%
-        dplyr::group_by(trial) %>% 
+downsample_pupil <- function(dataframe, bin.length = NULL){
+  downsample <- dataframe %>%
+        dplyr::group_by(subject, trial) %>% 
                      dplyr::mutate(
                      timebin = trunc(time_zero/bin.length),
                      timebin = ifelse(time_zero<0, timebin - 1, timebin),
