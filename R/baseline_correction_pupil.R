@@ -37,7 +37,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
       dplyr::rename(movingavgpup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
     
-    }
+  }
     
   return(corrected_baseline)
 
