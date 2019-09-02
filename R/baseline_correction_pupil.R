@@ -5,22 +5,23 @@
 #' @param baseline correction method. Default is sub but can also include divisive
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_method="sub") { message("Calculating baseline")
-  #recent paper (Mathot et al.,2018)suggested using median over mean for baseline correction
-  message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
-  baseline <- datafile  %>%
-    dplyr::filter(time > baseline_window[1],
-                  time < baseline_window[2]) %>%
-    dplyr::group_by(subject, trial) %>%
-    dplyr::rename(pupil_avg = pupil_colnames) %>% 
-    dplyr::summarise(baseline = median(pupil_avg)) %>% 
-    ungroup()
-  
-  message("Merging baseline")
-  merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_method="sub") 
+  { 
   
   if (baseline_method=="sub") {
-  message("Performing subtractive baseline correction")
+    message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
+    baseline <- datafile  %>%
+      dplyr::filter(time > baseline_window[1],
+                    time < baseline_window[2]) %>%
+      dplyr::group_by(subject, trial) %>%
+      dplyr::rename(pupil_avg = pupil_colnames) %>% 
+      dplyr::summarise(baseline = median(pupil_avg)) %>% 
+      ungroup()
+    
+    message("Merging baseline")
+    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    
+    message("Performing subtractive baseline correction")
   
     corrected_baseline <- merge_baseline %>% 
     dplyr::rename(pupil_avg = pupil_colnames) %>% 
@@ -28,7 +29,20 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
       dplyr::rename(movingavgpup = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
   }
+  
   if (baseline_method=="div") { 
+    message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
+    baseline <- datafile  %>%
+      dplyr::filter(time > baseline_window[1],
+                    time < baseline_window[2]) %>%
+      dplyr::group_by(subject) %>% #Mathot reccomends taking grand avearge baseline and not trial by trail baseline if doing prop change
+      dplyr::rename(pupil_avg = pupil_colnames) %>% 
+      dplyr::summarise(baseline = median(pupil_avg)) %>% 
+      ungroup()
+    
+    message("Merging baseline")
+    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    
     message("Performing divisive baseline correction")
     
     corrected_baseline <- merge_baseline %>% 
