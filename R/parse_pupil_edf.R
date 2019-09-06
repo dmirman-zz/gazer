@@ -20,26 +20,31 @@ parse_pupil_edf <- function (file_list, output.dir) {
     subs <- length(file_list)
     
     for (sub in 1:subs) { 
-  
-     msg<-edf.messages(file_list[sub])
-     msg$subj <- paste(file_list[sub])
-     samp<-edf.samples(file_list[sub], trials = TRUE)
-     samp$subj <- paste(file_list[sub])
+      
+     samps_all <- edf.trials(file_list[sub], samples=TRUE)
+     
+     msg<-samps_all$messages
+     
+     #msg<-edf.messages.c(file_list[subs])
+     msg<-dplyr::rename(msg, time="sttime")
+     samp<-samps_all$samples
 
-     dat_samp_msg <- merge(samp, msg, all=TRUE)
+     dat_samp_msg <- merge(samp, msg, by=c("time", "eyetrial"), all=TRUE)
      
      dat_samp_msg1 <- dat_samp_msg %>% 
-       dplyr::filter(eyetrial!="NA")%>% #non-trial values
-       dplyr::mutate(time=time-time[1], subject=str_replace(subj, pattern="/Users/gellr/Desktop/TL_EDF/", replacement = "")) %>% #time in ms 
+       #plyr::filter(eyetrial!="NA")%>% #non-trial value
+       dplyr::mutate(subject=str_replace(subj, pattern="/Users/gellr/Desktop/TL_EDF/", replacement = ""))
        rowwise() %>% 
        dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), gazex=mean(c(gxL,gxR),na.rm=TRUE), gazey=mean(c(gyL, gyR),na.rm=TRUE)) %>% # get if recorded from left return left if right right if both average averagepupil
        dplyr::rename(trial="eyetrial") %>% 
-       dplyr::select(subject, time, trial, pupil, gazex, gazey, trial, msg)
-
+       dplyr::select(time, trial, pupil, gazex, gazey,trial, message) %>%
+       ungroup() %>%
+       dplyr::group_by(trial) %>%
+       dplyr::mutate(time=time-time[1])
+    
       setwd(output.dir) 
       subOutData <- paste(file_list[sub], "_raw.csv", sep="") # save file 
       write.table(dat_samp_msg1, file = subOutData, append = FALSE, sep = ",",
       row.names = FALSE, col.names = TRUE)
     }
 }
-
