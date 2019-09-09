@@ -71,8 +71,13 @@ parse_pupil_edf <- function (file_list, output.dir) {
        ungroup() %>%
        dplyr::group_by(trial) %>%
        dplyr::mutate(time=time-time[1])
-      
-      dat_samp_msg1$message <- gsub("[^a-zA-Z]", "", dat_samp_msg$message) #edf file has diff number before each message which makes it diff to align events
+       
+      dat_samp_msg1$message <- gsub("[^a-zA-Z]", "", dat_samp_msg$message)
+     
+     #edf file has diff number before each message which makes it diff to align events
+     dat_samp_msg1 <- dat_samp_msg1 %>%
+       group_by(trial) %>%
+       distinct(time, .keep_all = TRUE)
      
       setwd(output.dir) 
       subOutData <- paste(file_list[sub], "_raw1.csv", sep="") # save file 
