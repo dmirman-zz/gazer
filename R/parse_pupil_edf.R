@@ -67,7 +67,7 @@ parse_pupil_edf <- function (file_list, output.dir) {
        rowwise() %>% 
        #dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), gazex=mean(c(gxL,gxR),na.rm=TRUE), gazey=mean(c(gyL, gyR),na.rm=TRUE)) %>% # get if recorded from left return left if right right if both average averagepupil
        dplyr::rename(subject="ID") %>% 
-       dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message) %>%
+       dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message, -Label) %>%
        ungroup() %>%
        dplyr::group_by(trial) %>%
        dplyr::mutate(time=time-time[1])
