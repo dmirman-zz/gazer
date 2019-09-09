@@ -7,8 +7,9 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
 ## Updates (September 2019)
 
 - Read in edf files directly
-- Blink/saccades/fixation algorthims
+- Blink/saccades/fixation algorithm 
 - Comptability with other eye trackers
+- add Binder functionality to run package in the cloud
 
 ## Synopsis
 
