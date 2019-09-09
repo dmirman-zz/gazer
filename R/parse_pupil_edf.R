@@ -1,9 +1,10 @@
 #' Take EDF files and return data that is in format usable for gazeR
+#' uses saccades package to get blinks
 #' merges the samples data and message data
 #' puts time in ms
 #' adds subject variable column
 #' cleans up the column names
-#' creates pupil column that is ambigious to whether you sampled from left eye, right eye, or both (takes the average)
+#' creates pupil column that is ambigious as to whether you sampled from left eye, right eye, or both (takes the average)
 #'@import tidyverse
 #'@import data.table
 #'@import edfR
@@ -35,10 +36,10 @@ parse_pupil_edf <- function (file_list, output.dir) {
      
      samp <- samp %>%
        rowwise() %>%
-       dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
+       dplyr::mutate(pup=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
        dplyr::rename(trial="eyetrial")
      
-     samp1<-select(samp, time, ID, trial, x, y,pupil)
+     samp1<-select(samp, time, ID, trial, x, y,pup)
      
      blk <- saccades::detect.fixations(samp1) # get blinks using the saccades alg
      
@@ -49,22 +50,24 @@ parse_pupil_edf <- function (file_list, output.dir) {
      blk_merge<- merge(samp1, blk, by=c("trial", "time", "x", "y"), all=TRUE)
      
      blinks <- blk_merge %>% 
-       
        group_by(grp = cumsum(!is.na(startend))) %>% 
-       mutate(Label = replace(startend, first(startend) == 'start', 'start')) %>% 
+       mutate(Label = replace(startend, first(startend) == 'start', 'start')) %>% #extends the start message forward until end message
        ungroup() %>% 
-       dplyr::mutate(blinks=ifelse(Label=="start" | Label=="end", 1, 0)) %>% 
        # label blinks as 1 
-       dplyr::select(ID, trial, time, x, y, pupil, Label, blinks, -grp)
+       dplyr::select(ID, trial, time, x, y, pup, Label, -grp)
+    
+       #blinks$blink[is.na(blinks$blink)] <- 0 
+     
      
      dat_samp_msg <- merge(blinks, msg, by=c("ID", "time", "trial"), all=TRUE)
      
      dat_samp_msg1 <- dat_samp_msg %>% 
+       dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1, NA, pup))%>%
        #plyr::filter(eyetrial!="NA")%>% #non-trial valu
        rowwise() %>% 
        #dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), gazex=mean(c(gxL,gxR),na.rm=TRUE), gazey=mean(c(gyL, gyR),na.rm=TRUE)) %>% # get if recorded from left return left if right right if both average averagepupil
        dplyr::rename(subject="ID") %>% 
-       dplyr::select(subject, time, trial, pupil, x, y, trial, blinks, message) %>%
+       dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message) %>%
        ungroup() %>%
        dplyr::group_by(trial) %>%
        dplyr::mutate(time=time-time[1])
