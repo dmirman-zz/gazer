@@ -9,7 +9,7 @@
 
 extend_blinks <- function(values, fillback=5, fillforward=5, hz=NA) {
   
-  samprate<-1000/hz
+  samprate<-round(1000/hz)
   
   fillf <- fillforward/samprate
   
