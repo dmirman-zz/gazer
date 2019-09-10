@@ -1,11 +1,11 @@
 #' Performs linear (substraction) or divisive baseline correction relative to desired stim_onset and off_set
 #' @param datafile raw pupil data
-#' @param pupil_colnames name of your pupil colname you want baseline corrected
+#' @param pupil_colname name of your pupil colname you want baseline corrected
 #' @param baseline_window user-specified threshold for baseline window.
 #' @param baseline correction method. Default is sub but can also include divisive
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_method="sub") 
+baseline_correction_pupil<-function(datafile, pupil_colname="", baseline_window=NA, baseline_method="sub") 
   { 
   
   if (baseline_method=="sub") {
