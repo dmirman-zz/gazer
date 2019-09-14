@@ -1,19 +1,20 @@
 #' Take EDF files and return data that is in format usable for gazeR
-#' uses saccades package to get blinks
-#' merges the samples data and message data
+#' uses Hershman et al. blink algo to get blinks
+#' for pupil merges the samples data and message data
 #' puts time in ms
 #' adds subject variable column
 #' cleans up the column names
 #' creates pupil column that is ambigious as to whether you sampled from left eye, right eye, or both (takes the average)
+#' For fixation data, obtains fixation report, puts time in ms
 #'@import tidyverse
 #'@import data.table
 #'@import edfR
-#'@import saccades
 #'
 #
 #' @param file_list directory to edf files
 #' @param output.dir directory to save new cleaned files
-#' @param type include whether you want to parse edf pupil data or vwp (fixations)
+#' @param type include whether you want to parse edf pupil data (samp) or vwp (fixations)
+#' @parm hz sampling rate of tracker if processing pupil data for the blink algo
 #' @export
 
 parse_edf <- function (file_list, output.dir, type="", hz=NA) {
@@ -41,7 +42,8 @@ parse_edf <- function (file_list, output.dir, type="", hz=NA) {
      samp <- samp %>%
        rowwise() %>%
        dplyr::mutate(pup=mean(c(paL,paR),na.rm=TRUE), x=round(mean(c(gxL,gxR),na.rm=TRUE)), y=round(mean(c(gyL, gyR),na.rm=TRUE))) %>%
-       dplyr::rename(trial="eyetrial")
+       dplyr::rename(trial="eyetrial") %>%
+       dplyr::ungroup()
      
      samp$subject<-subject
      samp$row_index<-as.numeric(row.names(samp))
@@ -120,27 +122,35 @@ parse_edf <- function (file_list, output.dir, type="", hz=NA) {
         
         samp <- samps_all[[1]][["samples"]]
         
-        df_samp = samp %>% group_by(eyetrial) %>% mutate(timestart=time[1]) # start of time
         
-        df1 <-dplyr::select(df_samp, eyetrial, timestart) %>%
-          distinct(eyetrial, .keep_all = TRUE) # get df of start times per trial
-        
-        samp_fix <- samp[[1]][["fixations"]]
-        
-        samp_fix_merge <- merge(samp_fix, df1, by="eyetrial", by.x=TRUE)
-        
-        st_end_fix <- samp_fix_merge %>% 
-          dplyr::group_by(eyetrial) %>% 
-          dplyr::mutate(CURRENT_FIX_START=timestart-sttime, CURRENT_FIX_END=timestart-entime) %>%
-          dplyr::rename(CURRENT_FIX_Y="gavx", CURRENT_FIX_X="gavy") %>% 
-          ungroup()%>%
-          dplyr::muatte(subject=subject, CURRENT_FIX_DURATION= CURRENT_FIX_END-CURRENT_FIX_START) %>%
+        df_samp = samp %>% group_by(eyetrial) %>% 
+          dplyr::mutate(time=time-time[1]) %>%
+          #dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>% 
+          dplyr::select(-blink, -fixation, -saccade, -gxR, -gyR, -paR, -paL) %>%
           dplyr::rename(trial="eyetrial")
+        
+          # start of time
+        
+        #df1 <-dplyr::select(df_samp, eyetrial, timestart) %>%
+          #distinct(eyetrial, .keep_all = TRUE) # get df of start times per trial
+        
+        #samp_fix <- samps_all[[1]][["fixations"]]
+        
+        #samp_fix_merge <- merge(samp_fix, df1, by="eyetrial", all=TRUE)
+        
+        #st_end_fix <- samp_fix_merge %>% 
+        #  dplyr::group_by(eyetrial) %>% 
+        #  dplyr::mutate(CURRENT_FIX_START=sttime-timestart, CURRENT_FIX_END=entime-timestart) %>%
+        #  dplyr::rename(CURRENT_FIX_Y="gavx", CURRENT_FIX_X="gavy") %>% 
+        #  ungroup()%>%
+        #  dplyr::mutate(subject=subject, CURRENT_FIX_DURATION=abs(CURRENT_FIX_END-CURRENT_FIX_START)) %>%
+        #  dplyr::rename(trial="eyetrial")%>%
+        #  dplyr::select(-ID, -sttime, -entime)
         
                                                             
         setwd(output.dir) 
         subOutData <- paste(file_list[sub], "_raw_vwp.csv", sep="") # save file 
-        write.table(st_end_fix, file = subOutData, append = FALSE, sep = ",",
+        write.table(df_samp, file = subOutData, append = FALSE, sep = ",",
                     row.names = FALSE, col.names = TRUE)
         
       }
