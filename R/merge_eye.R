@@ -48,6 +48,10 @@ if (filetype=="edf") {
     
     fread(files, header=TRUE, na.strings = "", fill=TRUE)})) #fread makes reading in files quicke
  
+  dataset$pupil <- as.numeric(pupil)
+  dataset$x<-as.numeric(x)
+  dataset$y<-as.numeric(y)
+  
    return(as_tibble(dataset))
   }
 
