@@ -46,8 +46,8 @@ if (filetype=="edf") {
       }
     }
     
-    fread(files, header=TRUE, na.strings = "", fill=TRUE)})) #fread makes reading in files quicke
- 
+    fread(files, header=TRUE, na.strings = "NA", fill=TRUE)})) #fread makes reading in files quicke
+  
    return(as_tibble(dataset))
   }
 
