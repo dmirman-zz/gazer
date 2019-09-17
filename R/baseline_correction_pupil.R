@@ -5,7 +5,7 @@
 #' @param baseline correction method. Default is sub but can also include divisive
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colnames="", baseline_window=NA, baseline_method="sub") 
+baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_window=NA, baseline_method="sub") 
   { 
   
   if (baseline_method=="sub") {
