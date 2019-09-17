@@ -9,7 +9,7 @@
 #' 
 #' @return data frame containing interpolated data 
 #' 
-interpolate_pupil<-function(datafile, extendblinks=FALSE, maxgap=Inf, type=NA, hz=NULL) {
+interpolate_pupil<-function(datafile, extendblinks=FALSE, maxgap=Inf, type=NULL, hz=NA) {
 #supports linear and cublic-spline interpolation
   if (maxgap!=Inf){
     maxgap <- round(maxgap/(1000/hz))
@@ -41,7 +41,7 @@ return(pupil_interp)
     blinks_na <- datafile %>% dplyr::mutate(pup = ifelse(blink==1, NA, pupil)) #turns blinks into NA for interpolation
     message("Performing cubic interpolation")
     pupil_interp <- blinks_na %>% dplyr::group_by(subject, trial) %>% 
-      dplyr::mutate(index = ifelse(is.na(pup), NA, dplyr::row_number()),index=zoo::na.approx(index, na.rm=FALSE), 
+      dplyr::mutate(index = ifelse(is.na(pup), NA, dplyr::row_number()),index=zoo::na.approx(index, na.rm=FALSE, rule=2), 
                     interp = zoo::na.spline(pup, na.rm=FALSE, x=index, maxgap=maxgap)) %>% 
     dplyr::ungroup()
   
@@ -51,9 +51,10 @@ return(pupil_interp)
   if (extendblinks==TRUE & type=="cubic") { 
     message("Performing cubic interpolation")
     pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>% 
-      dplyr::mutate(index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),             
-                    index=zoo::na.approx(index, na.rm=FALSE), 
-                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index,maxgap=maxgap)) %>%
+      dplyr::mutate( 
+                    index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),             
+                    index= zoo::na.approx(index, na.rm=FALSE), 
+                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index, maxgap=maxgap)) %>%
     dplyr::ungroup()
       
     return(pupil_interp)
