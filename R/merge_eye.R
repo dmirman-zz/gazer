@@ -10,7 +10,7 @@
 #' @param filetype if reading raw edf file use 'edf' if using sr files use type 'sr'
 #' @export
 #' @return data frame containing pupil data
-merge_eye <- function (file_list, blink_colname="", pupil_colname="", filetype="sr") {  
+merge_eye <- function (file_list, blink_colname="blink", pupil_colname="pupil", filetype="sr") {  
   #file list is path to .xls files
   library(data.table)
 
@@ -46,12 +46,8 @@ if (filetype=="edf") {
       }
     }
     
-    fread(files, header=TRUE, na.strings = "", fill=TRUE)})) #fread makes reading in files quicke
- 
-  dataset$pupil <- as.numeric(pupil)
-  dataset$x<-as.numeric(x)
-  dataset$y<-as.numeric(y)
-  
+    fread(files, header=TRUE, sep=",",na.strings = "NA", fill=TRUE)})) #fread makes reading in files quicke
+
    return(as_tibble(dataset))
   }
 
