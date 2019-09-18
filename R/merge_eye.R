@@ -1,5 +1,5 @@
-#' Merge eye files from a folder
-#' if sr Renames column variables and makes them lower case
+#' Merge eye files from a ufolder
+#' if filetype is from sr renames column variables and makes them lower case
 #' Places time in ms
 #' if edf files just reads them in
 #'@import tidyverse
