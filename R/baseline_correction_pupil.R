@@ -35,7 +35,7 @@ baseline_correction_pupil<-function(datafile, pupil_colnames=NULL, baseline_wind
     baseline <- datafile  %>%
       dplyr::filter(time > baseline_window[1],
                     time < baseline_window[2]) %>%
-      dplyr::group_by(subject) %>% #Mathot reccomends taking grand avearge baseline and not trial by trail baseline if doing prop change
+      dplyr::group_by(subject, trial) %>% 
       dplyr::rename(pupil_avg = pupil_colnames) %>% 
       dplyr::summarise(baseline = median(pupil_avg)) %>% 
       ungroup()
