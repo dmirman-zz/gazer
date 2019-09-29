@@ -22,7 +22,7 @@ parse_edf_messages <- function (file_list, output.dir) { # make sure you file
   for (sub in 1:subs) {
     subject = basename(file_list[sub]) # get id from file
     event_messages = edf.messages.c(file_list[sub]) # get trial ID messages
-    event_messages$ID <- rep(subject, length(event_messages$msg)) # add id so it is easier to extract events per subject
+    event_messages$subject <- rep(subject, length(event_messages$msg)) # add id so it is easier to extract events per subject
     
     setwd(output.dir) 
     subOutData <- paste(file_list[sub], "_messages.csv", sep="") # save file 
