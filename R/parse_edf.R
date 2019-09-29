@@ -1,21 +1,20 @@
 #' Take EDF files and return data that is in format usable for gazeR
 #' uses Hershman et al. blink algo to get blinks
-#' for pupil merges the samples data and message data
+#' for pupil merges the samples data
 #' puts time in ms
 #' adds subject variable column
 #' cleans up the column names
 #' creates pupil column that is ambigious as to whether you sampled from left eye, right eye, or both (takes the average)
-#' For fixation data, obtains fixation report, puts time in ms
+#' For fixation data, obtains sample report, puts time in ms
 #'@import tidyverse
 #'@import data.table
 #'@import edfR
 #' @param file_list directory to edf files
 #' @param output.dir directory to save new cleaned files
 #' @param type include whether you want to parse edf pupil data (samp) or vwp (fixations)
-#' @parm hz sampling rate of tracker if processing pupil data for the blink algo
 #' @export
 
-parse_edf <- function (file_list, output.dir, type="") {
+parse_edf <- function (file_list, output.dir, type="pupil") {
   
   library(edfR)#use edfR to read in the edf files
   library(saccades)
@@ -30,11 +29,11 @@ parse_edf <- function (file_list, output.dir, type="") {
       #samps_all <- edf.trials(file_list[sub], samples=TRUE)
       samps_all <- edf.batch(file_list[sub], samples = TRUE, do.plot=FALSE)
       
-      #msg<-samps_all[[1]][["messages"]]
+      msg<-samps_all[[1]][["messages"]]
       
-     # msg<- msg %>%
-       # dplyr::rename(trial="eyetrial", time="sttime") %>%
-       # distinct(time, .keep_all = TRUE)
+      msg<- msg %>%
+       dplyr::rename(trial="eyetrial", time="sttime") %>%
+       distinct(time, .keep_all = TRUE)
       
       # msg$subject<-subject
       
@@ -42,7 +41,7 @@ parse_edf <- function (file_list, output.dir, type="") {
       
       samp <- samp %>%
         rowwise() %>%
-        dplyr::mutate(pup=mean(c(paL,paR),na.rm=TRUE), x=round(mean(c(gxL,gxR),na.rm=TRUE)), y=round(mean(c(gyL, gyR),na.rm=TRUE))) %>%
+        dplyr::mutate(pup=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
         dplyr::rename(trial="eyetrial") %>%
         dplyr::select(-blink, -fixation, -saccade) %>%
         dplyr::ungroup()
@@ -68,15 +67,9 @@ parse_edf <- function (file_list, output.dir, type="") {
       # label blinks as 1 
       #  dplyr::select(subject, trial, time, x, y, pup, Label, -grp)
       
-      blk <- saccades::detect.fixations(samp) # get blinks using the saccades alg
+      blinks_merge <- blink_detect(samp)
       
-      blk1 <- blk %>%
-        dplyr::filter(event=="blink") %>%
-        tidyr::gather(data=., key="startend", value="time", start:end) # gather all the blinks
-      
-      blk_merge<- merge(samp, blk1, by=c("trial", "time", "x", "y"), all=TRUE)
-      
-      blinks <- blk_merge %>% 
+      blinks <- blinks_merge %>% 
         dplyr::group_by(grp = cumsum(!is.na(startend))) %>% 
         dplyr::mutate(Label = replace(startend, first(startend) == 'start', 'start')) %>% #extends the start message forward until end message
         dplyr::ungroup() %>% 
@@ -94,21 +87,24 @@ parse_edf <- function (file_list, output.dir, type="") {
       
       #dat_samp_msg<- msg[blinks, roll='nearest'] # merge the two dfs to nearest timepoint
   
-      #dat_samp_msg <- merge(blinks, msg, by=c("subject", "time", "trial"), all=TRUE)
+      dat_samp_msg <- merge(blinks, msg, by=c("time", "trial"), all=TRUE)
       
-      dat_samp_msg1 <- blinks %>% 
+      dat_samp_msg <- dat_samp_msg %>%
+        dplyr::group_by(trial) %>%
+        dplyr::mutate(pup=zoo::na.locf(pup, fromLast=TRUE)) # sample messages are sometimes recorded outside sampling rate so we need to fill in those NAs with available data
+      
+      dat_samp_msg1 <- dat_samp_msg %>% 
         dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1 | pup==0, NA, pup))%>%
         dplyr::filter(trial!="NA") %>% # get rid non-trial values 
+        dplyr::mutate(message=str_replace_all(message, pattern="[^a-zA-Z]", replacement = "")) %>%
         # rowwise() %>% 
         #dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), gazex=mean(c(gxL,gxR),na.rm=TRUE), gazey=mean(c(gyL, gyR),na.rm=TRUE)) %>% # get if recorded from left return left if right right if both average averagepupil
-        dplyr::select(time, trial, pupil, x, y, trial, blink, -Label) %>%
         # ungroup() %>%
         dplyr::group_by(trial) %>%
-        dplyr::mutate(time=time-time[1], subject=subject)
-      
-      
-      
-      #dat_samp_msg1$message <- gsub("[^a-zA-Z]", "", dat_samp_msg$message)
+        dplyr::mutate(time=time-time[1], subject=subject)%>%
+        dplyr::ungroup()%>%
+        dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message, -Label)
+        
       
       #edf file has diff number before each message which makes it diff to align events
       #dat_samp_msg1 <- dat_samp_msg1 %>%
