@@ -17,11 +17,11 @@ License: GPL-3
 LazyData: true
 Imports:
     ggplot2, 
-    pbkrtest, 
     data.table, 
     tidyverse, 
     lme4, 
     zoo
+    Remotes: tmalsburg/saccades/saccades
 RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown
