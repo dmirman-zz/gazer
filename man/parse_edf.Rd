@@ -3,7 +3,6 @@
 \name{parse_edf}
 \alias{parse_edf}
 \title{Take EDF files and return data that is in format usable for gazeR
-uses Hershman et al. blink algo to get blinks
 for pupil merges the samples data
 puts time in ms
 adds subject variable column
@@ -18,11 +17,10 @@ parse_edf(file_list, output.dir, type = "pupil")
 
 \item{output.dir}{directory to save new cleaned files}
 
-\item{type}{include whether you want to parse edf pupil data (samp) or vwp (fixations)}
+\item{type}{include whether you want to parse edf pupil data (pupil) or vwp (fixations)}
 }
 \description{
 Take EDF files and return data that is in format usable for gazeR
-uses Hershman et al. blink algo to get blinks
 for pupil merges the samples data
 puts time in ms
 adds subject variable column

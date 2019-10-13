@@ -1,5 +1,4 @@
 #' Take EDF files and return data that is in format usable for gazeR
-#' uses Hershman et al. blink algo to get blinks
 #' for pupil merges the samples data
 #' puts time in ms
 #' adds subject variable column
@@ -11,7 +10,7 @@
 #'@import edfR
 #' @param file_list directory to edf files
 #' @param output.dir directory to save new cleaned files
-#' @param type include whether you want to parse edf pupil data (samp) or vwp (fixations)
+#' @param type include whether you want to parse edf pupil data (pupil) or vwp (fixations)
 #' @export
 
 parse_edf <- function (file_list, output.dir, type="pupil") {
