@@ -14,7 +14,7 @@ get_pvalues(model, method = "normal")
 }
 \value{
 data frame containing fixed effect estimates, SE, t-values, (degrees
-  of freedom if appropriate) and p-values.
+of freedom if appropriate) and p-values.
 }
 \description{
 Takes a model fit with lmer and (optionally) an estimation method, returns a

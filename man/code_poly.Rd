@@ -22,8 +22,8 @@ tranformed polynomial predictor values, defaults to TRUE}
 }
 \value{
 Returns a data frame containing the original data and at least two
-  new columns: "predictor".Index, and a column for each order of the
-  polynomial-transformed predictor
+new columns: "predictor".Index, and a column for each order of the
+polynomial-transformed predictor
 }
 \description{
 Takes a data frame, name of predictor variable, and polynomial order. Creates

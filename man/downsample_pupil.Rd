@@ -4,10 +4,10 @@
 \alias{downsample_pupil}
 \title{Downsample pupil data}
 \usage{
-downsample_pupil(df, bin.length = NULL)
+downsample_pupil(dataframe, bin.length = NULL)
 }
 \arguments{
-\item{df}{dataframe}
+\item{dataframe}{dataframe}
 
 \item{bin.length}{Length of bins to average}
 }

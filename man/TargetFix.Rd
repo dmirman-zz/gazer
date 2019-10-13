@@ -6,14 +6,14 @@
 \title{Target fixation data from a typical "visual world paradigm" experiment}
 \format{A data frame with 300 rows and 7 variables
 \describe{
- \item{Subject}{subject ID, factor}
- \item{Time}{time (in ms) relative to word onset in 50ms bins, 300-1000}
- \item{timeBin}{rescaling of Time variable for easier model-fitting, 1-15}
- \item{Condition}{word frequency condition: High (e.g., torch, frog) or Low (e.g., class, horse)}
- \item{meanFix}{fixation proportion (subject mean): proportion of correct-response trials on which the object was fixated}
- \item{sumFix}{fixation sum: number of correct-response trials on which the object was fixated (i.e., numerator for meanFix)}
- \item{N}{number of correct-response trials (i.e., denominator for meanFix)}
- }}
+\item{Subject}{subject ID, factor}
+\item{Time}{time (in ms) relative to word onset in 50ms bins, 300-1000}
+\item{timeBin}{rescaling of Time variable for easier model-fitting, 1-15}
+\item{Condition}{word frequency condition: High (e.g., torch, frog) or Low (e.g., class, horse)}
+\item{meanFix}{fixation proportion (subject mean): proportion of correct-response trials on which the object was fixated}
+\item{sumFix}{fixation sum: number of correct-response trials on which the object was fixated (i.e., numerator for meanFix)}
+\item{N}{number of correct-response trials (i.e., denominator for meanFix)}
+}}
 \usage{
 TargetFix
 }

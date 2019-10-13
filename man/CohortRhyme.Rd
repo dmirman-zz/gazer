@@ -6,14 +6,14 @@
 \title{Cohort and rhyme competition during spoken word recognition}
 \format{A data frame with 1600 rows and 7 variables:
 \describe{
- \item{subjID}{subject ID, factor}
- \item{Group}{subject group: Control, Broca's aphasia, Wernicke's aphasia}
- \item{Time}{time (in ms) since word onset in 100ms bins}
- \item{timeBin}{time bin number (1-20)}
- \item{Object}{object type: phonologically related Competitor or Unrelated object. Target object data are omitted}
- \item{Type}{type of phonological competitor: Cohort (e.g., penny - pencil) or Rhyme (e.g., carrot - parrot)}
- \item{FixProp}{fixation proportion: proportion of correct-response trials on which the object was fixated}
- }}
+\item{subjID}{subject ID, factor}
+\item{Group}{subject group: Control, Broca's aphasia, Wernicke's aphasia}
+\item{Time}{time (in ms) since word onset in 100ms bins}
+\item{timeBin}{time bin number (1-20)}
+\item{Object}{object type: phonologically related Competitor or Unrelated object. Target object data are omitted}
+\item{Type}{type of phonological competitor: Cohort (e.g., penny - pencil) or Rhyme (e.g., carrot - parrot)}
+\item{FixProp}{fixation proportion: proportion of correct-response trials on which the object was fixated}
+}}
 \source{
 Mirman et al. (2011, Brain & Lang., 117:2, 53-68) \url{http://www.danmirman.org/pdfs/Mirman_etal_2011.pdf}
 }

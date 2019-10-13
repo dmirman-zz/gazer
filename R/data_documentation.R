@@ -12,7 +12,7 @@
 #'  \item{Type}{type of phonological competitor: Cohort (e.g., penny - pencil) or Rhyme (e.g., carrot - parrot)}
 #'  \item{FixProp}{fixation proportion: proportion of correct-response trials on which the object was fixated}
 #'  }
-#' @source Mirman et al. (2011, Brain & Lang., 117:2, 53-68) \url{http://www.danmirman.org/pdfs/Mirman_etal_2011.pdf}
+#' @source Mirman et al. (2011, Brain & Lang., 117:2, 53-68) <http://www.danmirman.org/pdfs/Mirman_etal_2011.pdf>
 "CohortRhyme"
 
 #' Fixation of semantically related objects during spoken word comprehension
@@ -27,7 +27,7 @@
 #'  \item{Condition}{semantic relatedness condition: Function (e.g., broom - sponge) or Thematic (e.g., broom - dustpan)}
 #'  \item{Object}{object type: Target, semantically related Competitor, or Unrelated}
 #'  }
-#' @source Kalenine et al. (2012, J. Exp. Psychol. Learn. Mem. Cog., 38:5, 1274-1295) \url{http://www.danmirman.org/pdfs/Kalenine_etal2012.pdf}
+#' @source Kalenine et al. (2012, J. Exp. Psychol. Learn. Mem. Cog., 38:5, 1274-1295) <http://www.danmirman.org/pdfs/Kalenine_etal2012.pdf>
 "FunctTheme"
 
 #' Fixation of semantically related objects during spoken word comprehension by participants with left hemisphere stroke
@@ -45,7 +45,7 @@
 #'  \item{sumFix}{fixation sum: number of correct-response trials on which the object was fixated (i.e., numerator for meanFix)}
 #'  \item{N}{number of correct-response trials (i.e., denominator for meanFix)}
 #'  }
-#' @source Kalenine, Mirman, & Buxbaum (2012, Front. Hum. Neurosci., 6:106, 1-12) \url{http://journal.frontiersin.org/Journal/10.3389/fnhum.2012.00106}
+#' @source Kalenine, Mirman, & Buxbaum (2012, Front. Hum. Neurosci., 6:106, 1-12) <http://journal.frontiersin.org/Journal/10.3389/fnhum.2012.00106>
 "FunctThemePts"
 
 #' Picture naming during aphasia treatment
@@ -64,7 +64,7 @@
 #'  \item{Unrelated.error}{proportion unrelated errors (cat - "log")}
 #'  \item{Nonword.error}{proportion nonword errors (cat - "lat")}
 #' }
-#' @source Moss Aphasia Psycholinguistics Database \url{mappd.org}
+#' @source Moss Aphasia Psycholinguistics Database <mappd.org>
 "NamingRecovery"
 
 #' Target fixation data from a typical "visual world paradigm" experiment
@@ -94,21 +94,21 @@
 #'  \item{Block}{training block (1-10), each block consists of 6 trials}
 #'  \item{Accuracy}{proportion correct responses during the block, chance = 0.5}
 #' }
-#' @source Partial data from Mirman et al. (2008, Cognition, 108:1, 271-280). \url{http://www.danmirman.org/pdfs/MirmanMagnusonGrafEstesDixon2008.pdf}
+#' @source Partial data from Mirman et al. (2008, Cognition, 108:1, 271-280). <http://www.danmirman.org/pdfs/MirmanMagnusonGrafEstesDixon2008.pdf>
 "WordLearnEx"
 
 #' Judgments to cursive vs. type-print words in LDT
 #'
 #' Aggregate baseline corrected pupillary data for a LDT task that required participants to judge the lexical status of cursive and type-print stimuli.
-#' @format A data frame with 872 rows and 4 variables
+#' @format A data frame with 52 rows and 3 variables
 #' \describe{
-#'  \item{subject}{subject id, N=23}
+#
 #'  \item{script}{Cursive or Print}
-#'  \item{timebinonset}{trial onset}
-#'  \item{baselinep}{baseline corrected pupil size}
+#'  \item{timebins}{trial onset}
+#'  \item{aggbaseline}{baseline corrected pupil size}
 #'
 #' }
-"cursive_new"
+"cursive_agg_data"
 
 
 

@@ -9,13 +9,13 @@
 #'
 #' @param marker Vector containing markers of trial events.
 #'
-#' @param event Label in \code{marker} that indicates the onset event to which
+#' @param event Label in `marker` that indicates the onset event to which
 #' the time series should be zeroed. If this label is a character string, it
 #' must be enclosed in quotation marks.
 #'
-#' @return Numeric vector that zeroes \code{time} to the trial onset. In the
+#' @return Numeric vector that zeroes `time` to the trial onset. In the
 #' event that no onset marker is found, a warning is issued and a vector of
-#' \code{NA}s is returned.
+#' `NA`s is returned.
 #'
 #' @export
 

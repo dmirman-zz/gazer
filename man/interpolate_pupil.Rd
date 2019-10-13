@@ -5,7 +5,7 @@
 \title{Turns pupil sizes with blinks NA and linearly interpolates values}
 \usage{
 interpolate_pupil(datafile, extendblinks = FALSE, maxgap = Inf,
-  type = NA, hz = NULL)
+  type = NULL, hz = NA)
 }
 \arguments{
 \item{datafile}{data frame.}

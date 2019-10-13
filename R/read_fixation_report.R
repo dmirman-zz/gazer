@@ -9,7 +9,6 @@
 #' @param page outputs a plots 4 x 3 and displays the first page. Change number to see other pages if you have more Ps 
 #' @export
 #' @return gaze data frame containing fixation report
-#' @import ggforce
 read_fixation_report <- function(filename, screen_size=c(1024, 768),
                                name_changes=c(Subject = "RECORDING_SESSION_LABEL",
                                               ACC = "StimSlide.ACC", RT = "StimSlide.RT",

@@ -6,18 +6,18 @@
 \title{Picture naming during aphasia treatment}
 \format{A data frame with 115 rows and 9 variables:
 \describe{
- \item{SubjectID}{subject ID, factor}
- \item{Diagnosis}{participant's aphasia subtype: Anomic, Conduction, or Wernicke's aphasia}
- \item{TestTime}{test iteration, 0 is the baseline at the start of treatment}
- \item{Correct}{proportion correct naming responses}
- \item{Semantic.error}{proportion semantic errors (cat - "dog")}
- \item{Mixed.error}{proportion mixed errors (cat - "rat")}
- \item{Formal.error}{proportion formal errors (cat - "mat")}
- \item{Unrelated.error}{proportion unrelated errors (cat - "log")}
- \item{Nonword.error}{proportion nonword errors (cat - "lat")}
+\item{SubjectID}{subject ID, factor}
+\item{Diagnosis}{participant's aphasia subtype: Anomic, Conduction, or Wernicke's aphasia}
+\item{TestTime}{test iteration, 0 is the baseline at the start of treatment}
+\item{Correct}{proportion correct naming responses}
+\item{Semantic.error}{proportion semantic errors (cat - "dog")}
+\item{Mixed.error}{proportion mixed errors (cat - "rat")}
+\item{Formal.error}{proportion formal errors (cat - "mat")}
+\item{Unrelated.error}{proportion unrelated errors (cat - "log")}
+\item{Nonword.error}{proportion nonword errors (cat - "lat")}
 }}
 \source{
-Moss Aphasia Psycholinguistics Database \url{mappd.org}
+Moss Aphasia Psycholinguistics Database <mappd.org>
 }
 \usage{
 NamingRecovery
