@@ -34,7 +34,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
 
     pupil_interp <- smooth_pupil %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(movingavgpup, rule=2)) %>%
+      dplyr::mutate(pup_interp = zoo::na.approx(movingavgpup, rule=2)) %>%
       dplyr::ungroup()
     return(pupil_interp)
   }
@@ -50,7 +50,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Performing linear interpolation")
     pupil_interp <- smooth_pupil %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(movingavgpup, na.rm = FALSE, rule=2)) %>%
+      dplyr::mutate(pup_interp = zoo::na.approx(movingavgpup, na.rm = FALSE, rule=2)) %>%
       dplyr::ungroup()
     return(pupil_interp)
 
@@ -68,7 +68,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Performing cubic interpolation")
     pupil_interp <- smooth_pupil %>% dplyr::group_by(subject, trial) %>%
       dplyr::mutate(index = ifelse(is.na(pup), NA, dplyr::row_number()),index=zoo::na.approx(index, na.rm=FALSE, rule=2),
-                    interp = zoo::na.spline(movingavgpup, na.rm=FALSE, x=index, maxgap=maxgap)) %>%
+                    pup_interp = zoo::na.spline(movingavgpup, na.rm=FALSE, x=index, maxgap=maxgap)) %>%
       dplyr::ungroup()
 
     return(pupil_interp)
@@ -78,7 +78,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     message("Smoothing the pupil trace with moving average")
     
-    smooth_pupil <- as.data.frame(pupil_interp) %>%
+    smooth_pupil <- as.data.frame(datafile) %>%
       mutate(movingavgpup = moving_average_pupil(extendpupil, n = n))
     
     message("Performing cubic interpolation")
@@ -86,7 +86,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
       dplyr::mutate(
         index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),
         index= zoo::na.approx(index, na.rm=FALSE),
-        interp = zoo::na.spline(movingavgpup, na.rm=FALSE, x=index, maxgap=maxgap)) %>%
+        pup_interp = zoo::na.spline(movingavgpup, na.rm=FALSE, x=index, maxgap=maxgap)) %>%
       dplyr::ungroup()
 
     return(pupil_interp)
@@ -108,7 +108,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      mutate(movingavgpup = moving_average_pupil(interp, n = n))
+      mutate(pup_interp = moving_average_pupil(interp, n = n))
     
     return(smooth_pupil)
   }
@@ -127,7 +127,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      mutate(movingavgpup = moving_average_pupil(interp, n = n))
+      mutate(pup_interp = moving_average_pupil(interp, n = n))
     
     return(smooth_pupil)
   }
@@ -147,7 +147,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      mutate(movingavgpup =moving_average_pupil(interp, n = n))
+      mutate(pup_interp =moving_average_pupil(interp, n = n))
     
     return(smooth_pupil)
   }
@@ -166,6 +166,8 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      mutate(movingavgpup = moving_average_pupil(interp, n = n))
+      mutate(pup_interp = moving_average_pupil(interp, n = n))
+    
+    return(smooth_pupil)
   }
 }
