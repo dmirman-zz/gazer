@@ -89,7 +89,6 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
       dat_samp_msg <- merge(blinks, msg, by=c("time", "trial"), all=TRUE)
       
       dat_samp_msg <- dat_samp_msg %>%
-        dplyr::group_by(trial) %>%
         dplyr::mutate(pup=zoo::na.locf(pup, fromLast=TRUE)) # sample messages are sometimes recorded outside sampling rate so we need to fill in those NAs with available data
       
       dat_samp_msg1 <- dat_samp_msg %>% 

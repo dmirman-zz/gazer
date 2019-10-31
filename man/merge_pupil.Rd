@@ -2,9 +2,12 @@
 % Please edit documentation in R/merge_pupil.R
 \name{merge_pupil}
 \alias{merge_pupil}
-\title{Merge pupil files from a folder}
+\title{Merge pupil files from a folder
+Renames column variables and makes them lower case
+Places time in ms}
 \usage{
-merge_pupil(file_list, blink_colname = NULL, pupil_colname = NULL)
+merge_pupil(file_list, blink_colname = "", pupil_colname = "",
+  filetype = "sr")
 }
 \arguments{
 \item{file_list}{path to .xls files}
@@ -12,11 +15,14 @@ merge_pupil(file_list, blink_colname = NULL, pupil_colname = NULL)
 \item{blink_colname}{name of your blink colname:AVERAGE_IN_BLINK, LEFT_, #RIGHT}
 
 \item{pupil_colname}{name of your pupil colname:AVERAGE_IN_Pupil, LEFT_, #RIGHT}
+
+\item{filetype}{if reading raw edf file use 'edf' if using sr files use type 'sr'}
 }
 \value{
 data frame containing pupil data
 }
 \description{
+Merge pupil files from a folder
 Renames column variables and makes them lower case
 Places time in ms
 }

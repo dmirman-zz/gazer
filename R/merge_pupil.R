@@ -24,7 +24,7 @@ merge_pupil <- function (file_list, blink_colname="", pupil_colname="", filetype
     }
   
     
-    fread(files, header=TRUE, sep="\t", na.strings = "", fill=TRUE)})) #fread makes reading in files quicke
+    fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quicke
   
     change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, everything())
   
@@ -45,7 +45,7 @@ if (filetype=="edf") {
       }
     }
     
-    fread(files, header=TRUE, sep="\t", na.strings = "", fill=TRUE)})) #fread makes reading in files quicke
+    fread(files, header=TRUE, na.strings = "NA", fill=TRUE)})) #fread makes reading in files quicke
  
    return(as_tibble(dataset))
   }
