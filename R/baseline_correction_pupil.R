@@ -15,7 +15,7 @@ baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_windo
                     time < baseline_window[2]) %>%
       dplyr::group_by(subject, trial) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>% 
-      dplyr::summarise(baseline = median(pupil_avg)) %>% 
+      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>% 
       ungroup()
     
     message("Merging baseline")
@@ -37,7 +37,7 @@ baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_windo
                     time < baseline_window[2]) %>%
       dplyr::group_by(subject, trial) %>% 
       dplyr::rename(pupil_avg = pupil_colname) %>% 
-      dplyr::summarise(baseline = median(pupil_avg)) %>% 
+      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>% 
       ungroup()
     
     message("Merging baseline")
