@@ -3,7 +3,7 @@
 #' @param degree default of 11.
 #' @return vector containing hanning filtered pupil data
 #' @export
-hanning_filter <- function(pupil, degree){
+hanning_filter <- function(pupil, degree=11){
     i <- 0:(degree - 1)
     w <- 0.5 - 0.5 * cos((2 * pi * i)/(degree - 1))
     w <- w/sum(w)
