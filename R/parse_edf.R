@@ -16,6 +16,7 @@
 parse_edf <- function (file_list, output.dir, type="pupil") {
   
   library(edfR)#use edfR to read in the edf files
+  remotes::install_github("tmalsburg/saccades")
   library(saccades)
   library(data.table)
   
@@ -45,27 +46,6 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::select(-blink, -fixation, -saccade) %>%
         dplyr::ungroup()
       
-      #samp$subject<-subject
-      #samp$row_index<-as.numeric(row.names(samp))
-      # use data.table to merge messages to neartest time point in orginal df. in the edf files messages appear during non-sampled times making a lot of NAs. 
-      #samp1<-select(samp, time, subject, trial, x, y,pup, row_index)
-      
-      #df_blinks <- as.data.frame(samp1) %>%
-      # pass into a list
-      # dplyr::summarise(row_index= list(based_noise_blinks_detection(as.matrix(samp1$pup), sampling_rate_in_hz=250))) %>%
-      # unnest()
-      
-      #df_blinks$Label <- rep(c("Onset", "Offset"), length.out=nrow(df_blinks))
-      
-      #df_blinks_merge<-merge(samp1, df_blinks, by="row_index", all.x=TRUE)
-      
-      # blinks <- df_blinks_merge %>% 
-      #  group_by(grp = cumsum(!is.na(Label))) %>% 
-      #  mutate(Label = replace(Label, first(Label) == 'Onset', 'Onset')) %>% #extends the start message forward until end message
-      #  ungroup() %>% 
-      # label blinks as 1 
-      #  dplyr::select(subject, trial, time, x, y, pup, Label, -grp)
-      
       blinks_merge <- blink_detect(samp)
       
       blinks <- blinks_merge %>% 
@@ -74,46 +54,34 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::ungroup() %>% 
         # label blinks as 1 
         dplyr::select(trial, time, x, y, pup, Label, -grp)
-      
+      # use rolling merge from DT 
       setDT(blinks)
       setDT(msg)
       
-      DT_mesg=msg[blinks, on ="time", roll="nearest"]
+      DT_mesg <- msg[blinks, on="time", roll="nearest"]
+      
       #SR edfs are a nightmare. This makes it so messages are alined with closest values 
       get_msg <- DT_mesg %>% 
         group_by(trial, message) %>% 
         top_n(n=1, wt=desc(time))
       
-      #blinks$blink[is.na(blinks$blink)] <- 0 
-      #samp <- as.data.table(blinks) #turn into df 
-      
-     # msg <- as.data.table(msg) #turn into df
-      
-      #setkey(samp1, ID, trial, time)# merge on values
-      
-      #setkey(msg, ID, trial, time)# merge on values
-      
-      #dat_samp_msg<- msg[blinks, roll='nearest'] # merge the two dfs to nearest timepoint
       blinks=as_tibble(blinks)
+      
       dat_samp_msg <- merge(blinks, get_msg, by=c("time", "trial","x", "y", "Label", "pup"), all=TRUE)
       
       dat_samp_msg1 <- dat_samp_msg %>% 
         dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1 | pup==0, NA, pup))%>%
         dplyr::filter(trial!="NA") %>% # get rid non-trial values 
         dplyr::mutate(message=str_replace_all(message, pattern="[^a-zA-Z]", replacement = "")) %>%
-        # rowwise() %>% 
-        #dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), gazex=mean(c(gxL,gxR),na.rm=TRUE), gazey=mean(c(gyL, gyR),na.rm=TRUE)) %>% # get if recorded from left return left if right right if both average averagepupil
-        # ungroup() %>%
         dplyr::group_by(trial) %>%
         dplyr::mutate(time=time-time[1], subject=subject)%>%
         dplyr::ungroup()%>%
         dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message, -Label)
         
-      
-      #edf file has diff number before each message which makes it diff to align events
-      #dat_samp_msg1 <- dat_samp_msg1 %>%
-      #  group_by(trial) %>%
-      #  distinct(time, .keep_all = TRUE)
+      dat_samp_msg1 <- dat_samp_msg1 %>%
+        group_by(trial) %>%
+        distinct(time, .keep_all=TRUE)
+
       
       setwd(output.dir) 
       subOutData <- paste(file_list[sub], "_raw1.csv", sep="") # save file 
