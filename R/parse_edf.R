@@ -75,6 +75,15 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         # label blinks as 1 
         dplyr::select(trial, time, x, y, pup, Label, -grp)
       
+      setDT(blinks)
+      setDT(msg)
+      
+      DT_mesg=msg[blinks, on ="time", roll="nearest"]
+      #SR edfs are a nightmare. This makes it so messages are alined with closest values 
+      get_msg <- DT_mesg %>% 
+        group_by(trial, message) %>% 
+        top_n(n=1, wt=desc(time))
+      
       #blinks$blink[is.na(blinks$blink)] <- 0 
       #samp <- as.data.table(blinks) #turn into df 
       
@@ -85,11 +94,8 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
       #setkey(msg, ID, trial, time)# merge on values
       
       #dat_samp_msg<- msg[blinks, roll='nearest'] # merge the two dfs to nearest timepoint
-  
-      dat_samp_msg <- merge(blinks, msg, by=c("time", "trial"), all=TRUE)
-      
-      dat_samp_msg <- dat_samp_msg %>%
-        dplyr::mutate(pup=zoo::na.locf(pup, fromLast=TRUE)) # sample messages are sometimes recorded outside sampling rate so we need to fill in those NAs with available data
+      blinks=as_tibble(blinks)
+      dat_samp_msg <- merge(blinks, get_msg, by=c("time", "trial","x", "y", "Label", "pup"), all=TRUE)
       
       dat_samp_msg1 <- dat_samp_msg %>% 
         dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1 | pup==0, NA, pup))%>%
