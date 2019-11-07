@@ -72,7 +72,7 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
       dat_samp_msg1 <- dat_samp_msg %>% 
         dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1 | pup==0, NA, pup))%>%
         dplyr::filter(trial!="NA") %>% # get rid non-trial values 
-        dplyr::mutate(message=str_replace_all(message, pattern="[^a-zA-Z]", replacement = "")) %>%
+        #dplyr::mutate(message=str_replace_all(message, pattern="[^a-zA-Z]", replacement = "")) %>%
         dplyr::group_by(trial) %>%
         dplyr::mutate(time=time-time[1], subject=subject)%>%
         dplyr::ungroup()%>%
