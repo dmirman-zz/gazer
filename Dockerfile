@@ -6,5 +6,5 @@ RUN R -e 'install.packages("data.table")'
 RUN R -e 'install.packages("zoo")'
 
 COPY . github.com/dmirman/gazer
-RUN remotes::install_local('/app.tar.gz')
+
 CMD R -e 'library(dockerfiler)'
