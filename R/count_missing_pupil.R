@@ -3,14 +3,7 @@
 #' @export
 #' @return data frame containing missing data information
 #' @export
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
+
 count_missing_pupil<- function(datafile, missingthresh=.2) {
   
   countsbysubject <- datafile %>%
@@ -32,8 +25,7 @@ count_missing_pupil<- function(datafile, missingthresh=.2) {
   
   # % trials excluded
   message("% trials excluded:",  round(prop, digits=3))
-  message("Participants taken out:" ,countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh])
-  
+  message("Participants taken out:", list(countsbysubject$subject[countsbysubject$averageMissingSub> missingthresh]))
   # print # subjects excluded
   
   # add missing data per subject to the data frame
