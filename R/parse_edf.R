@@ -32,8 +32,8 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
       msg<-samps_all[[1]][["messages"]]
       
       msg<- msg %>%
-       dplyr::rename(trial="eyetrial", time="sttime") %>%
-       distinct(time, .keep_all = TRUE)
+        dplyr::rename(trial="eyetrial", time="sttime") %>%
+        distinct(time, .keep_all = TRUE)
       
       # msg$subject<-subject
       
@@ -77,15 +77,16 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::mutate(time=time-time[1], subject=subject)%>%
         dplyr::ungroup()%>%
         dplyr::select(subject, time, trial, pupil, x, y, trial, blink, message, -Label)
-        
-      dat_samp_msg1 <- dat_samp_msg1 %>%
-        group_by(trial) %>%
-        distinct(time, .keep_all=TRUE)
-
+      
+      dat_samp_msg2 <- dat_samp_msg1 %>%
+        group_by(subject) %>%
+        distinct(trial, time, .keep_all=TRUE) %>%
+        ungroup()
+      
       
       setwd(output.dir) 
-      subOutData <- paste(file_list[sub], "_raw1.csv", sep="") # save file 
-      write.table(dat_samp_msg1, file = subOutData, append = FALSE, sep = ",",
+      subOutData <- paste(file_list[sub], "_raw_pupil.csv", sep="") # save file 
+      write.table(dat_samp_msg2, file = subOutData, append = FALSE, sep = ",",
                   row.names = FALSE, col.names = TRUE)
     }
   }
@@ -138,4 +139,5 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
     
   }
 }
+
 
