@@ -4,7 +4,7 @@
 \alias{hanning_filter}
 \title{Perfroms hanning smoothing on pupil data}
 \usage{
-hanning_filter(pupil, degree)
+hanning_filter(pupil, degree = 11)
 }
 \arguments{
 \item{pupil}{column with pupil values}

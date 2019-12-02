@@ -6,8 +6,8 @@
 \usage{
 smooth_interpolate_pupil(datafile, pupil = "pupil",
   extendpupil = "extendpupil", extendblinks = FALSE,
-  method.first = "smooth", maxgap = Inf, type = NULL, hz = NA,
-  n = NA)
+  step.first = "smooth", filter = "moving", maxgap = Inf,
+  type = NULL, hz = NA, n = NA)
 }
 \arguments{
 \item{datafile}{data frame.}
@@ -18,7 +18,9 @@ smooth_interpolate_pupil(datafile, pupil = "pupil",
 
 \item{extendblinks}{blinks already extended  in data frame}
 
-\item{method.first}{whether you want to smooth/interpolate or interpolate/smooth}
+\item{step.first}{whether you want to smooth/interpolate or interpolate/smooth}
+
+\item{filter}{use either moving and hann filter}
 
 \item{maxgap}{max number of NAs to interpolate.}
 
