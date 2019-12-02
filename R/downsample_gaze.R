@@ -7,7 +7,7 @@
 #' @export
 downsample_gaze <- function(dataframe, bin.length = 50, timevar = "time", aggvars = list("subject", "condition", "target", "trial", "object", "timebin")){
   downsample <- dataframe %>%
-    mutate(timebin = round(!!sym(timevar)/bin.size)*bin.size)
+    mutate(timebin = round(!!sym(timevar)/bin.length)*bin.length)
   # if there are aggregation variables, then aggregate
   if(length(aggvars > 0)){
     downsample <- downsample %>%
