@@ -9,15 +9,15 @@ count_missing_pupil<- function(datafile, pupil="pupil", missingthresh=.2) {
   
   countsbysubject <- datafile %>%
     dplyr::group_by(subject) %>%
-    dplyr::summarise(missing = sum(is.na(pupil)),
-                     samples = sum(!is.na(pupil)),
+    dplyr::summarise(missing = sum(is.na(!!sym(pupil))),
+                     samples = sum(!is.na(!!sym(pupil))),
                      total = length(pupil)) %>%
     dplyr::mutate(averageMissingSub = missing / total)
   
   countsbytrial <- datafile %>%
     dplyr::group_by(subject, trial) %>%
-    dplyr::summarise(missing = sum(is.na(pupil)),
-                     samples = sum(!is.na(pupil)),
+    dplyr::summarise(missing = sum(is.na(!!sym(pupil))),
+                     samples = sum(!is.na(!!sym(pupil))),
                      total = length(pupil))%>%
     dplyr::mutate(averageMissingTrial = missing / total)
   
