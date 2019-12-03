@@ -26,7 +26,6 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
     for (sub in 1:subs) { 
       
       subject = basename(file_list[sub])
-      #samps_all <- edf.trials(file_list[sub], samples=TRUE)
       samps_all <- edf.batch(file_list[sub], samples = TRUE, do.plot=FALSE)
       
       msg<-samps_all[[1]][["messages"]]
@@ -35,7 +34,6 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::rename(trial="eyetrial", time="sttime") %>%
         distinct(time, .keep_all = TRUE)
       
-      # msg$subject<-subject
       
       samp <- samps_all[[1]][["samples"]]
       
@@ -67,12 +65,11 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
       
       blinks=as_tibble(blinks)
       
-      dat_samp_msg <- merge(blinks, get_msg, by=c("time", "trial","x", "y", "Label", "pup"), all=TRUE)
+      dat_samp_msg <- base::merge(blinks, get_msg, by=c("time", "trial","x", "y", "Label", "pup"), all=TRUE)
       
       dat_samp_msg1 <- dat_samp_msg %>% 
         dplyr::mutate(blink=ifelse(!is.na(Label), 1, 0), pupil=ifelse(blink==1 | pup==0, NA, pup))%>%
         dplyr::filter(trial!="NA") %>% # get rid non-trial values 
-        #dplyr::mutate(message=str_replace_all(message, pattern="[^a-zA-Z]", replacement = "")) %>%
         dplyr::group_by(trial) %>%
         dplyr::mutate(time=time-time[1], subject=subject)%>%
         dplyr::ungroup()%>%
@@ -110,25 +107,6 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>% 
         dplyr::select(-blink, -fixation, -saccade, -gxL, -gyL, -gxR, -gyR, -paR, -paL) %>%
         dplyr::rename(trial="eyetrial")
-      
-      # start of time
-      
-      #df1 <-dplyr::select(df_samp, eyetrial, timestart) %>%
-      #distinct(eyetrial, .keep_all = TRUE) # get df of start times per trial
-      
-      #samp_fix <- samps_all[[1]][["fixations"]]
-      
-      #samp_fix_merge <- merge(samp_fix, df1, by="eyetrial", all=TRUE)
-      
-      #st_end_fix <- samp_fix_merge %>% 
-      #  dplyr::group_by(eyetrial) %>% 
-      #  dplyr::mutate(CURRENT_FIX_START=sttime-timestart, CURRENT_FIX_END=entime-timestart) %>%
-      #  dplyr::rename(CURRENT_FIX_Y="gavx", CURRENT_FIX_X="gavy") %>% 
-      #  ungroup()%>%
-      #  dplyr::mutate(subject=subject, CURRENT_FIX_DURATION=abs(CURRENT_FIX_END-CURRENT_FIX_START)) %>%
-      #  dplyr::rename(trial="eyetrial")%>%
-      #  dplyr::select(-ID, -sttime, -entime)
-      
       
       setwd(output.dir) 
       subOutData <- paste(file_list[sub], "_raw_vwp.csv", sep="") # save file 
