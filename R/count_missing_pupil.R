@@ -1,10 +1,11 @@
 #' Calculate percent missing data by subject and by trial
 #' @param missingthresh user-specified threshold for missing data. set to .2 
+#' @param pupil name of pupil column
 #' @export
 #' @return data frame containing missing data information
 #' @export
 
-count_missing_pupil<- function(datafile, missingthresh=.2) {
+count_missing_pupil<- function(datafile, pupil="pupil", missingthresh=.2) {
   
   countsbysubject <- datafile %>%
     dplyr::group_by(subject) %>%
