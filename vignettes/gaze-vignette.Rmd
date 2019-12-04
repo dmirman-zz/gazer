@@ -1,0 +1,118 @@
+---
+title: "Gaze Position Example: Simple Visual World Paradigm Analysis"
+author: "Dan Mirman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simple Visual World Paradigm Analysis Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This is a basic example of pre-processing VWP data starting from gaze position samples. The data are from a semantic competition experiment where the distractors were either thematically (associate) or taxonomically related to the target (Mirman & Graziano, 2012).
+
+## Initial set-up
+
+Load the necessary packages
+
+```{r, message=FALSE, warning=FALSE}
+library(gazer)
+library(tidyverse)
+library(saccades)
+```
+
+## Read in the raw gaze data
+
+```{r}
+# Use a file installed with the package 
+gaze_path <- system.file("extdata", "vwp_data_raw_edf.xls", package = "gazer")
+gaze_raw <- data.table::fread(gaze_path) # reads in large datasets quickly
+gaze <- as_tibble(gaze_raw) # save as tibble
+summary(gaze)
+```
+
+Check track loss
+
+```{r track-loss}
+gaze_track <- get_trackloss(gaze, screen_size=c(1024, 768), missingthresh=.2)
+```
+
+## Parse areas of interest
+
+For this experiment, the objects were always presented in the four corners of the screen and the gaze position was recorded in terms of (x,y) coordinates. So we need to identify target and competitor image locations, convert gaze coordinates into image locations, and compare gaze location to target and competitor locations. [If your data are already coded in terms of which image is being fixated or the images are not in fixed locations, then this step is not necessary.]
+
+First, need to get the numeric code for the image locations:
+```{r}
+gaze_aoi <- assign_aoi(gaze, screen_size=c(1024, 768), aoi_size=c(400, 300), aoi_loc=NULL, X="x", Y="y")
+summary(gaze_aoi)
+```
+
+Now determine which object was being looked at by matching AOI codes with target and competitor locations:
+
+```{r}
+gaze_aoi$Targ <- gaze_aoi$AOI == gaze_aoi$TargetLocation
+gaze_aoi$Comp <- gaze_aoi$AOI == gaze_aoi$CompLocation
+gaze_aoi$Unrelated <- ((gaze_aoi$AOI != as.numeric(gaze_aoi$TargetLocation)) &
+                         (gaze_aoi$AOI != as.numeric(gaze_aoi$CompLocation)) &
+                         (gaze_aoi$AOI != 0) & !is.na(gaze_aoi$AOI))
+```
+
+## Gather
+
+The gaze locations are in separate columns and need to be "gathered" into a
+single column:
+
+```{r}
+gaze_obj <- gaze_aoi %>% 
+  gather(key = "object", value = "fix", 
+         Targ, Comp, Unrelated, factor_key = TRUE) %>%
+  # recode NA as not-fixating
+  mutate(Fix = replace_na(fix, FALSE)) 
+summary(gaze_obj)
+```
+
+## Downsampling
+
+It may be helpful to "bin" or downsample the gaze data so that instead of individual samples, the data are combined into regular, aligned time bins:
+
+```{r}
+gaze_bin <- downsample_gaze(gaze_obj)
+summary(gaze_bin)
+```
+
+
+## Aggregate by subject
+
+Filter out error and practice trials, and focus on relevant time window. Then group by Subject, Condition, and Object type to calculate number of valid trials in each cell. Then also group by time bin to calculate time course of number of object fixations and mean fixation proportion. These are the subject-by-condition time courses that would go into an analysis.
+
+```{r}
+gaze_subj <- gaze_bin %>%
+  filter(acc == 1, condition != "practice", timebin < 3500) %>%
+  # calculate number of valid trials for each subject-condition
+  group_by(subject, condition, object) %>%
+  mutate(nTrials = length(unique(target))) %>% ungroup() %>%
+  # calculate number of looks
+  group_by(subject, condition, object, timebin) %>%
+  summarize(sumfix = sum(Fix, na.rm=TRUE), # number of fixations
+            ntrials = unique(nTrials), # number of trials
+            meanfix = sum(Fix, na.rm=TRUE)/unique(nTrials)) # fixation proportion
+
+# there were two unrelated objects, so divide those proportions by 2
+gaze_subj$meanfix[gaze_subj$object == "Unrelated"] <-
+  gaze_subj$meanfix[gaze_subj$object == "Unrelated"] / 2
+summary(gaze_subj)
+
+summary(gaze_subj)
+```
+
+## Plot fixation time course
+```{r, fig.height=5, fig.width=8}
+ggplot(gaze_subj, aes(timebin, meanfix, color = object)) +
+  facet_wrap(~ condition) +
+  theme_gray() +
+  labs(x = "Time (ms)",y = "Proportion of Fixations") +
+  stat_summary(fun.y = mean, geom = "line") +
+  geom_vline(xintercept = 1300) +
+  annotate("text", x=1300, y=0.9, label="Word onset", hjust=0)
+```
+
