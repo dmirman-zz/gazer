@@ -10,7 +10,7 @@
 baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_dur=500, event="event_offset", baseline_method="sub") 
 { 
   if (baseline_method=="sub") {
-    mmessage("Calculating median baseline from",":", event)
+    message("Calculating median baseline from",":", event)
     baseline <- datafile %>%
       dplyr::group_by(subject, trial) %>%
       dplyr::mutate(event_offset_time=time[!is.na(message) & message==event]) %>%
