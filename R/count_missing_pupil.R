@@ -30,9 +30,9 @@ count_missing_pupil<- function(datafile, pupil="pupil", missingthresh=.2) {
   # print # subjects excluded
   
   # add missing data per subject to the data frame
-  combineSub <- dplyr::inner_join(datafile, countsbysubject[, c("subject", "averageMissingSub")], by="subject")
+  combineSub <- dplyr::full_join(datafile, countsbysubject[, c("subject", "averageMissingSub")], by="subject")
   # add missing data per trial to the data frame
-  combinetrial <- dplyr::inner_join(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"))
+  combinetrial <- dplyr::full_join(combineSub, countsbytrial[, c("subject", "trial", "averageMissingTrial")], by=c("subject", "trial"))
   # keep only the data that exceeds the threshold for retaining the trials & subjects
   combinetrial_above_threshold <- dplyr::filter(combinetrial, (averageMissingSub < missingthresh) & (averageMissingTrial < missingthresh))
   
