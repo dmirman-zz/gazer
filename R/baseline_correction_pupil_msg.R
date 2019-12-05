@@ -2,18 +2,18 @@
 #' @param datafile raw pupil data
 #' @param pupil_colname name of your pupil colname you want baseline corrected
 #' @param baseline_dur duration of baseline period from stim offset
-#' @param event_offset message name for stim onset
+#' @param message name of message column
+#' @param event message name for stim onset
 #' @param baseline_method correction method. Default is sub but can also include divisive
-#' 
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_dur=500, event_offset="event_offset", baseline_method="sub") 
+baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_dur=500, event="event_offset", baseline_method="sub") 
 { 
   if (baseline_method=="sub") {
-    message("Calculating median baseline")
+    mmessage("Calculating median baseline from",":", event)
     baseline <- datafile %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(event_offset_time=time[!is.na(message) & message==event_offset]) %>%
+      dplyr::mutate(event_offset_time=time[!is.na(message) & message==event]) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
                       dplyr::rename(pupil_avg = pupil_colname) %>%
@@ -21,7 +21,7 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
                       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::inner_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing subtractive baseline correction")
     
@@ -33,10 +33,10 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
   }
   
   if (baseline_method=="div") { 
-    message("Calculating median baseline from",":", event_offset)
+    message("Calculating median baseline from",":", event)
     baseline <- datafile %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(event_offset_time=time[!is.na(message) & message==event_offset]) %>%
+      dplyr::mutate(event_offset_time=time[!is.na(message) & message==event]) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
@@ -44,7 +44,7 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::inner_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing divisive baseline correction")
     
