@@ -26,7 +26,7 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
   
     fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quick
   
-    change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, everything())
+    change_name <- select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, message= "SAMPLE_MESSAGE",  everything())
   
     names(change_name) <- tolower(names(change_name))
   
