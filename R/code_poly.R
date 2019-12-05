@@ -22,7 +22,6 @@
 code_poly <- function(df=NULL, predictor=NULL, poly.order=NULL, orthogonal=TRUE, draw.poly=TRUE){
   if (draw.poly){
     require(ggplot2)
-    require(reshape2)
   }
 
   # convert choice for orthogonal into choice for raw
@@ -57,8 +56,10 @@ code_poly <- function(df=NULL, predictor=NULL, poly.order=NULL, orthogonal=TRUE,
     # extract the polynomials from the df
     df.poly <- unique(df[c(predictor, paste("poly", 1:poly.order, sep=""))])
 
-    # Melt from wide to long format
-    df.poly.melt <- melt(df.poly, id.vars=predictor)
+    # gather from wide to long format
+    
+    df.poly.melt <- df.poly  %>%
+      tidyr::gather(variable, value, -predictor)
 
     # Make level names intuitive for plot
     #  don't bother with anything above 6th order.
