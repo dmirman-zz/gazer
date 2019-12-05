@@ -19,7 +19,7 @@ baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_windo
       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing subtractive baseline correction")
     
@@ -41,7 +41,7 @@ baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_windo
       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- merge(baseline,datafile,all=TRUE) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing divisive baseline correction")
     

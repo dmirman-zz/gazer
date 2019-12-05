@@ -17,11 +17,11 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
                       dplyr::rename(pupil_avg = pupil_colname) %>%
-                      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
+                      dplyr::summarise(baseline = mean(pupil_avg)) %>%
                       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- dplyr::inner_join(baseline,datafile) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing subtractive baseline correction")
     
@@ -40,11 +40,11 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
-      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
+      dplyr::summarise(baseline = mean(pupil_avg)) %>%
       ungroup()
     
     message("Merging baseline")
-    merge_baseline <- dplyr::inner_join(baseline,datafile) # merge median pupil size with raw dataset
+    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
     
     message("Performing divisive baseline correction")
     
