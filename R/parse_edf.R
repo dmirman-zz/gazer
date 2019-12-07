@@ -57,7 +57,7 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
 
       blinks <-as.data.table(blinks)
       msg<-as.data.table(msg)
-      DT_mesg <- msg[blinks, on="time", roll=5]
+      DT_mesg <- msg[blinks, on=c("trial", "time"), roll=5]
 
       #SR edfs are a nightmare. This makes it so messages are alined with closest values
       get_msg <- DT_mesg %>%
