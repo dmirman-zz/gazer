@@ -47,8 +47,7 @@ Colnames can be changes to match gazer conventions
 gazer_pupil <- make_gazer(data, subject="subject", trial="subject", time="time", x="x", y="y", pupil=NULL)
 ```
 
-# Loading
-Data
+# Loading Data
 We need to read in the file that contains data from 3 participants. Given how large pupil files can be, I did this to reduce computational processing. 
 
 ```{r}
@@ -86,7 +85,7 @@ pup_extend<- pupil_files1 %>%
 
 ### Smoothing
 
-  Pupil data can be extremely noisy! There are many ways to smooth pupil data. In gazeR, you can use a n-point moving average or a hanning filter. To smooth the data using a n-point moving average set `filter` argument to "moving." To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to average over. In this example, we use a 5-point moving average (n= 5). 
+  Pupil data can be extremely noisy! There are many ways to smooth pupil data. In gazeR, you can use a n-point moving average or a hanning filter. To smooth the data using a n-point moving average set the  `filter` argument to "moving." To use this function, you need to specify the column that contains the interpolated pupil values and how many samples you want to average over. In this example, we use a 5-point moving average (n= 5). 
 
 ### Interpolation
 
@@ -99,7 +98,7 @@ smooth_interp3 <- smooth_interpolate_pupil(pup_extend, pupil="pupil", extendpupi
 
 # Baseline correction
 
-To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was recommended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil` function finds the median pupil size during a specified baseline period for each trial. In this example, we use messages to calcuate our baseline. We take 100ms before the target event. 
+To control for variability arising from non-task related processing, baseline correction is commonly done. There are several different types of baseline correction. In a recent paper by Mathot et al. (2018), it was recommended that a subtractive baseline correction be done based on the median. The `baseline_correction_pupil_msg` function finds the median pupil size during a specified baseline period for each trial. In this example, we use messages to calcuate our baseline. We take 100ms before the target event. 
 
 ```{r, echo=TRUE}
 baseline_pupil<-baseline_correction_pupil_msg(smooth_interp3, pupil_colname='pup_interp', baseline_dur=100, event="target", baseline_method = "sub")
@@ -142,6 +141,11 @@ baseline_pupil_onset<-baseline_pupil %>%
   dplyr::group_by(subject, trial) %>%  
   dplyr::mutate(time_zero=onset_pupil(time, sample_message, event=c("target"))) %>%
   ungroup() %>% 
+  
+  
+  
+  ans <- vapply(samp$time, function(x) x-msg$time, numeric(length(msg$time)))
+  indx <- apply(abs(ans), 2, which.min)
 ```
 
 # Decimation or Downsampling
