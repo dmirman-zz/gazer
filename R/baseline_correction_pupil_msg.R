@@ -19,12 +19,12 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
     event_time_merge <- dplyr::full_join(event_time,datafile)
 
     baseline <- event_time_merge %>%
-      group_by(subject, trial) %>%
+      dplyr::group_by(subject, trial) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
-      ungroup()
+      dplyr::ungroup()
 
     message("Merging baseline")
     merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
@@ -48,12 +48,12 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
     event_time_merge <- dplyr::full_join(event_time,datafile)
 
     baseline <- event_time_merge %>%
-      group_by(subject, trial) %>%
+      dplyr::group_by(subject, trial) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
-      ungroup()
+      dplyr::ungroup()
 
     message("Merging baseline")
     merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset

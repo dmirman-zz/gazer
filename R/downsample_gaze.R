@@ -8,7 +8,7 @@
 #' @param type pupil for pupil data gaze for gaze data
 #' @export
 downsample_gaze <- function(dataframe, bin.length = 50, timevar = "time", aggvars = c("subject", "condition", "target", "trial", "object", "timebins"), type="gaze"){
-  if(type=="gaze") { 
+  if(type=="gaze") {
   downsample <- dataframe %>%
     mutate(timebins = round(!!sym(timevar)/bin.length)*bin.length)
   # if there are aggregation variables, then aggregate
@@ -25,9 +25,9 @@ downsample_gaze <- function(dataframe, bin.length = 50, timevar = "time", aggvar
     downsample <- dataframe %>%
       mutate(timebins = round(!!sym(timevar)/bin.length)*bin.length)
     # if there are aggregation variables, then aggregate
-    if(length(aggvars > 0)){ 
+    if(length(aggvars > 0)){
       downsample <- downsample %>%
-        dplyr::group_by_(.dots = aggvars) %>%
+        dplyr::group_by(.dots = aggvars) %>%
         dplyr::summarize(aggbaseline=mean(baselinecorrectedp)) %>%
         dplyr::ungroup()
     }
