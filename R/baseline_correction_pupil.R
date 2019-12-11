@@ -5,54 +5,52 @@
 #' @param baseline correction method. Default is sub but can also include divisive
 #' @return data frame containing baseline corrected data from event of interest
 #' @export
-baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_window=NA, baseline_method="sub") 
-{ 
-  
+baseline_correction_pupil<-function(datafile, pupil_colname=NULL, baseline_window=NA, baseline_method="sub")
+{
+
   if (baseline_method=="sub") {
     message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
     baseline <- datafile  %>%
       dplyr::filter(time > baseline_window[1],
                     time < baseline_window[2]) %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::rename(pupil_avg = pupil_colname) %>% 
-      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>% 
-      ungroup()
-    
+      dplyr::rename(pupil_avg = pupil_colname) %>%
+      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
+      ungroup()%>%
     message("Merging baseline")
-    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
-    
+     dplyr::full_join(.,datafile) # merge median pupil size with raw dataset
+
     message("Performing subtractive baseline correction")
-    
-    corrected_baseline <- merge_baseline %>% 
-      dplyr::rename(pupil_avg = pupil_colname) %>% 
+
+    corrected_baseline <- baseline %>%
+      dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::mutate(baselinecorrectedp = pupil_avg - baseline) %>%
       dplyr::rename(pup_interp = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
   }
-  
-  if (baseline_method=="div") { 
+
+  if (baseline_method=="div") {
     message("Calculating median baseline from",":", baseline_window[1], "-", baseline_window[2])
     baseline <- datafile  %>%
       dplyr::filter(time > baseline_window[1],
                     time < baseline_window[2]) %>%
-      dplyr::group_by(subject, trial) %>% 
-      dplyr::rename(pupil_avg = pupil_colname) %>% 
-      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>% 
-      ungroup()
-    
+      dplyr::group_by(subject, trial) %>%
+      dplyr::rename(pupil_avg = pupil_colname) %>%
+      dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
+      ungroup() %>%
     message("Merging baseline")
-    merge_baseline <- dplyr::full_join(baseline,datafile) # merge median pupil size with raw dataset
-    
+      dplyr::full_join(.,datafile) # merge median pupil size with raw dataset
+
     message("Performing divisive baseline correction")
-    
-    corrected_baseline <- merge_baseline %>% 
-      dplyr::rename(pupil_avg = pupil_colname) %>% 
+
+    corrected_baseline <- baseline %>%
+      dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::mutate(baselinecorrectedp = (pupil_avg - baseline)/baseline) %>%
       dplyr::rename(pup_interp = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
-    
+
   }
-  
+
   return(corrected_baseline)
-  
+
 }
