@@ -13,7 +13,7 @@
 #' @param type include whether you want to parse edf pupil data (pupil) or vwp (fixations)
 #' @export
 
-parse_edf <- function (file_list, output.dir, type="pupil") {
+parse_edf <- function (file_list, output_dir, type="pupil") {
 
   library(edfR)#use edfR to read in the edf files
   remotes::install_github("tmalsburg/saccades")
@@ -80,7 +80,7 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         ungroup()
 
 
-      setwd(output.dir)
+      setwd(output_dir)
       subOutData <- paste(file_list[sub], "_raw_pupil.csv", sep="") # save file
       write.table(dat_samp_msg2, file = subOutData, append = FALSE, sep = ",",
                   row.names = FALSE, col.names = TRUE)
@@ -107,7 +107,7 @@ parse_edf <- function (file_list, output.dir, type="pupil") {
         dplyr::select(-blink, -fixation, -saccade, -gxL, -gyL, -gxR, -gyR, -paR, -paL) %>%
         dplyr::rename(trial="eyetrial")
 
-      setwd(output.dir)
+      setwd(output_dir)
       subOutData <- paste(file_list[sub], "_raw_vwp.csv", sep="") # save file
       write.table(df_samp, file = subOutData, append = FALSE, sep = ",",
                   row.names = FALSE, col.names = TRUE)
