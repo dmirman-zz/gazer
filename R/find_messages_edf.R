@@ -5,44 +5,45 @@
 #'@import tidyverse
 #'@import data.table
 #'@import edfR
-#
-#
 # Collect trial variables for your experiment.
 
 find_messages_edf <- function(file_list,varnames,patterns, output_dir)
 {
   subs <- length(file_list)
 
-  for (sub in 1:subs) {
-    subject = basename(file_list[sub]) # get id from file
-    messages_all <- edf.batch(file_list[sub], samples = TRUE, do.plot=FALSE)
+  find_messages_edf <- function(file_list,varnames,patterns, output_directory)
+  {
+    subs <- length(file_list)
 
-    msg=edf.messages.c(file_list[sub])
+    for (sub in 1:subs) {
+      subject = basename(file_list[sub]) # get id from file
 
-    messagelist = list()
+      msg=edf.messages.c(file_list[sub])
 
-    for(i in 1:length(varnames)){
+      messagelist = list()
 
-      find_msg <- msg$msg %>%
-        subset(str_detect(string=., pattern=varnames[i])) %>% # find specific pattern
-        str_replace(pattern=patterns[i], replacement = "") %>% # replace pattern with white space
-        str_replace_all(pattern=" ", repl="") # get rid of white space
+      for(i in 1:length(varnames)){
+
+        find_msg <- msg$msg %>%
+          subset(str_detect(string=., pattern=varnames[i])) %>% # find specific pattern
+          str_replace(pattern=patterns[i], replacement = "") %>% # replace pattern with white space
+          str_replace_all(pattern=" ", repl="") # get rid of white space
         messagelist[[i]]<-find_msg
+      }
+
+
+      message_data=dplyr::bind_cols(messagelist) %>%
+        set_names(varnames) %>%
+        dplyr::mutate(subject=as.factor(subject)) %>%
+        dplyr::rename(trial = "TRIALID")%>%
+        dplyr::mutate(trial=as.integer(trial))
+
+      setwd(output_directory)
+      subOutData <- paste(file_list[sub], "_behave_data.csv", sep="") # save file
+
+      write.table(message_data, file = subOutData, append = FALSE, sep = ",",
+                  row.names = FALSE, col.names = TRUE)
     }
-
-
-    message_data=dplyr::bind_cols(messagelist) %>%
-    set_names(varnames) %>%
-    dplyr::mutate(subject=subject) %>%
-    dplyr::rename(trial = "TRIALID")%>%
-    dplyr::mutate(trial=ifelse(trial==0, trial+1, trial))
-
-
-    setwd(output_dir)
-    subOutData <- paste(file_list[sub], "_behave_data.csv", sep="") # save file
-
-    write.table(message_data, file = subOutData, append = FALSE, sep = ",",
-              row.names = FALSE, col.names = TRUE)
   }
 }
 
