@@ -61,7 +61,7 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::full_join(., datafile)
 
     message("Merging baseline")
-
+    message("Performing median divisive baseline correction")
     corrected_baseline <- baseline %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::mutate(baselinecorrectedp = (pupil_avg - baseline)/baseline) %>%
