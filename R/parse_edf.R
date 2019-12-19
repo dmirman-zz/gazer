@@ -16,7 +16,7 @@
 parse_edf <- function (file_list, output_dir, type="pupil") {
 
   library(edfR)#use edfR to read in the edf files
-  remotes::install_github("tmalsburg/saccades")
+  remotes::install_github("tmalsburg/saccades/saccades")
   library(saccades)
   library(data.table)
 
@@ -42,8 +42,9 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
         rowwise() %>%
         dplyr::mutate(pup=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
         dplyr::rename(trial="eyetrial") %>%
-        #dplyr::select(-blink, -fixation, -saccade) %>%
-        dplyr::ungroup()
+        dplyr::select(-blink, -fixation, -saccade) %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(x=ifelse(is.na(x),  1e+08, x), y=ifelse(is.na(xy),  1e+08, y))
 
       blinks_merge <- blink_detect(samp)
 
