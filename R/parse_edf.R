@@ -44,7 +44,7 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
         dplyr::rename(trial="eyetrial") %>%
         dplyr::select(-blink, -fixation, -saccade) %>%
         dplyr::ungroup() %>%
-        dplyr::mutate(x=ifelse(is.na(x),  1e+08, x), y=ifelse(is.na(xy),  1e+08, y))
+        dplyr::mutate(x=ifelse(is.na(x),  1e+08, x), y=ifelse(is.na(y),  1e+08, y))
 
       blinks_merge <- blink_detect(samp)
 
