@@ -102,7 +102,7 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
 
       df_samp = samp %>% group_by(eyetrial) %>%
         dplyr::mutate(time=time-time[1]) %>%
-        dplyr::rowwise() %>%
+        dplyr::rowwise()%>%
         dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
         dplyr::select(-blink, -fixation, -saccade, -gxL, -gyL, -gxR, -gyR, -paR, -paL) %>%
         ungroup() %>%
