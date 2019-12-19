@@ -105,6 +105,9 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
         dplyr::rowwise() %>%
         dplyr::mutate(pupil=mean(c(paL,paR),na.rm=TRUE), x=mean(c(gxL,gxR),na.rm=TRUE), y=mean(c(gyL, gyR),na.rm=TRUE)) %>%
         dplyr::select(-blink, -fixation, -saccade, -gxL, -gyL, -gxR, -gyR, -paR, -paL) %>%
+        ungroup() %>%
+        dplyr::mutate(x=ifelse(is.na(x), 1e+08, x), y=ifelse(is.na(y), 1e+08, y)) %>%
+        #for some experiments there are NAs in the x, y coordinates which throws off blink detection
         dplyr::rename(trial="eyetrial")
 
       setwd(output_dir)
