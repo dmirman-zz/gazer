@@ -3,13 +3,22 @@
 
 # gazeR:A package to analyze gaze position and pupil size data
 
-For a detailed overview of how to use gazeR, please see the vignettes and posted pre-print (https://psyarxiv.com/gvcxb/). 
+For a detailed overview of how to use gazeR, please see the vignettes and posted pre-print for SR Reports (https://psyarxiv.com/gvcxb/) and more generalized processing(https://psyarxiv.com/4qwr8)
 
 <p align="center"><img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="200px" width="200px" />
+  
+## Updates (December 2019)
+  
+ We just resubmitted our manuscript! GazeR now has more generalized functionality. 
+ 
+- GazeR can now read in edf files directly and Tobii .gazepoint files
+- Baseline by messages
+- Modified downsampling function
+- Smoothing and interpolation merged into single function
 
 ## Updates (September 2019)
 
-- Read in edf files directly
+- Read in edf files directly 
 - Blink/saccades/fixation algorithm 
 - Comptability with other eye trackers
 - add Binder functionality to run package in the cloud
