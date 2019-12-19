@@ -1,5 +1,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/dmirman/gazer/master?urlpath=rstudio)
 
+gazeR 0.0.1.2
+
 
 # gazeR:A package to analyze gaze position and pupil size data
 
