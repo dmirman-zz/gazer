@@ -11,7 +11,7 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
   
 ## Updates (December 2019)
   
- We just resubmitted our manuscript! GazeR now has more generalized functionality. 
+ We just resubmitted our manuscript (find it here: https://psyarxiv.com/4qwr8/)! GazeR now has more generalized functionality. 
  
 - GazeR can now read in edf files directly and Tobii .gazepoint files
 - Baseline by messages
