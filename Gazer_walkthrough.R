@@ -35,35 +35,26 @@ gaze_aoi$Unrelated <-
      (gaze_aoi$AOI != as.numeric(gaze_aoi$CompLocation)) &
      (gaze_aoi$AOI != 0) & !is.na(gaze_aoi$AOI))
 
-gaze_obj <- gather(gaze_aoi,
-                   key = "object", value = "fix",
-                   Targ, Comp, Unrelated, factor_key = TRUE)
-# recode NA as not-fixating
-gaze_obj$Fix <- replace(gaze_obj$fix, is.na(gaze_obj$fix), FALSE)
-summary(gaze_obj)
+gaze_obj <-gaze_aoi %>%
+  dplyr::gather(key ="object", value ="fix",Targ, Comp, Unrelated, factor_key =TRUE) %>%
+  dplyr::mutate(Fix =replace_na(fix, FALSE)) # recode NA as not-
 
 bin_gaze <- downsample_gaze(gaze_obj, bin.length = 50, timevar = "time", aggvars = c("subject", "condition", "target", "trial", "object", "timebins"))
 
 head(bin_gaze)
 
 
-gaze_subj <- bin_gaze %>%
-  filter(acc == 1, condition != "practice", time < 3500) %>%
+ggaze_subj <-bin_gaze %>%
+  filter(acc ==1, condition != "practice", timebins <3500) %>%
   # calculate number of valid trials for each subject-condition
-  group_by(subject, condition, object) %>%
-  mutate(nTrials = length(unique(target))) %>% ungroup() %>%
-  # calculate number of fixations
-  group_by(subject, condition, object, time) %>%
-  summarize(sumfix = sum(fix, na.rm=TRUE), # number of fixations
-            ntrials = unique(nTrials), # number of trials
-            meanfix = sum(fix, na.rm=TRUE)/unique(nTrials)) # fixation proportion
-# there were two unrelated objects, so divide those proportions by 2
-# there were two unrelated objects, so divide those proportions by 2
+  group_by(subject, condition, object, timebins) %>%
+  summarize(meanfix =mean(Fix, na.rm=TRUE)) #
+#there were two unrelated objects, so divide those proportions by 2
 gaze_subj$meanfix[gaze_subj$object == "Unrelated"] <-
-  gaze_subj$meanfix[gaze_subj$object == "Unrelated"] / 2
+gaze_subj$meanfix[gaze_subj$object == "Unrelated"] / 2
 summary(gaze_subj)
 
-ggplot(gaze_subj, aes(time, meanfix, color = object)) +
+ggplot(gaze_subj, aes(timebins, meanfix, color = object)) +
   facet_wrap(~ condition) +
   theme_gray() +
   labs(x = "Time (ms)",y = "Proportion of Fixations", colour = NULL) +
@@ -75,7 +66,7 @@ ggplot(gaze_subj, aes(time, meanfix, color = object)) +
 
 #### Pupil functions
 
-pupil_path <- system.file("extdata", "sample_pupil_edf.xls", package = "gazer")
+pupil_path <- system.file("extdata", "pupil_sample_files_edf.xls", package = "gazer")
 pupil_files1<-fread(pupil_path)
 pupil_files1 <- as_tibble(pupil_files1)
 summary(pupil_files1)
@@ -105,23 +96,24 @@ pupil_files1<-dataraw2 %>%
 pup_extend<- pupil_files1 %>%
   group_by(subject, trial) %>%
   mutate(extendpupil=extend_blinks(pupil, fillback=100, fillforward=100, hz=250))
+
 # Smooth and Interpolate
-smooth_interp <- smooth_interpolate_pupil(pup_extend, pupil="pupil", extendpupil="extendpupil", extendblinks=TRUE, method.first="smooth", maxgap=Inf, type="linear", hz=250, n=5) {
+smooth_interp <- smooth_interpolate_pupil(pup_extend, pupil="pupil", extendpupil="extendpupil", extendblinks=TRUE, step.first="smooth", maxgap=Inf, type="linear", hz=250, n=5)
 
-  interp_graph <- pup_interp  %>%
-    dplyr::filter(subject=="10b.edf", trial=="15")
+interp_graph <- pup_interp  %>%
+  dplyr::filter(subject=="10b.edf", trial=="15")
 
-  bold <- element_text(face = "bold", color = "black", size = 14) #axis bold
+bold <- element_text(face = "bold", color = "black", size = 14) #axis bold
 #Graph interpolation
-  pup_g<- ggplot(interp_graph, aes(x= time, y= pupil)) + geom_point()+ geom_line(colour="black") +
-    geom_line(aes(x=time, y=interp), colour="darkgreen") + xlab("Time (ms)") + ylab("Pupil Size (arbitrary units)") + theme_bw() + theme(axis.title.y=element_text(size = 16, face="bold"), axis.title.x = element_text(size=16, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"))
-  print(pup_g)
+pup_g<- ggplot(interp_graph, aes(x= time, y= pupil)) + geom_point()+ geom_line(colour="black") +
+  geom_line(aes(x=time, y=interp), colour="darkgreen") + xlab("Time (ms)") + ylab("Pupil Size (arbitrary units)") + theme_bw() + theme(axis.title.y=element_text(size = 16, face="bold"), axis.title.x = element_text(size=16, face="bold"), axis.text.x=element_text(size = 12, face="bold"), axis.text.y=element_text(size=12, face="bold"))
+print(pup_g)
 
 #Baseline
 baseline_pupil<-baseline_correction_pupil(smooth_interp, pupil_colnames='interp', baseline_window=c(500,1000))
 
 #use messages to baseline correct
-baseline_pupil<-baseline_correction_pupil_msg(smooth_interp3, pupil_colname='pup_interp', baseline_dur=100, event="target", baseline_method = "sub")
+baseline_pupil<-baseline_correction_pupil_msg(smooth_interp, pupil_colname='pup_interp', baseline_dur=100, event="target", baseline_method = "sub")
 
 head(baseline_pupil)
 
@@ -133,36 +125,32 @@ pup_outliers<-pup_missing %>%
 #MAD removal
 max_removal<-pup_outliers  %>%
   dplyr::group_by(subject, trial) %>%
-  dplyr::mutate(speed=speed_pupil(interp,time)) %>%
-  dplyr::mutate(MAD=calc_mad(speed))
+  dplyr::mutate(speed=speed_pupil(pup_interp,time)) %>%
+  dplyr::mutate(MAD=calc_mad(speed)) %>%
   dplyr::filter(speed < MAD)
 
 #onset to stimulus
 
-baseline_pupil_onset<-mad_removal %>%
+baseline_pupil_onset<-max_removal %>%
   dplyr::group_by(subject, trial) %>%
   dplyr::mutate(time_zero=onset_pupil(time, message, event=c("target"))) %>%
   ungroup() %>%
-  dplyr::filter(time_zero >= 0 & time_zero <= 2500) %>%
+  dplyr::filter(time_zero >= -100 & time_zero <= 2500) %>%
   select(subject, trial, time,baselinecorrectedp, script, time_zero,message,baselinecorrectedp)
 
 #downsample
-timebins1<- downsample_gaze(baseline_pupil_onset, bin.length=50, timevar = "time_zero", aggvars = c("subject", "script", "timebins"), type="pupil")
+timebins1<- downsample_gaze(baseline_pupil_onset, bin.length=100, timevar = "time_zero", aggvars = c("subject", "script", "timebins"), type="pupil")
 
 timebins1
 
 # plot data
-cursive_plot <- ggplot(timebins1)+  geom_line(aes(timebins, aggbaseline, linetype=script, color=script), size=3) +
+
+
+cursive_plot <-ggplot(timebins1)+
+  aes(timebins, aggbaseline, linetype=script, color=script) +
+  stat_summary(fun.y = "mean", geom = "line", size = 1) +
   theme_bw() +
-  stat_summary(fun.y = "mean",geom = "line",size = 1,aes(colour = NULL)) +
-  scale_colour_manual(values=c("orange", "dark green"), name="Script") +
-  scale_linetype_manual(values = c("solid", "dotted"), name="Script")+
-  stat_summary(fun.y = "mean",geom = "line",size = 1,aes(colour = NULL)) +
-  labs(x = "Time (ms)",y = "Pupil Dilation (change from baseline (a.u.))", colour = NULL) +
-  #geom_hline(yintercept = 0,linetype = "dashed") +
-  #geom_ribbon(data = WSCI, aes(ymin = aggbaseline-ci, ymax = aggbaseline+ci, linetype=script, colour=script),  alpha = 0.3) +
-  theme(axis.title.y=element_text(size = 14, face="bold"), axis.title.x = element_text(size=14,   face="bold"), axis.text.x=element_text(size = 12, face="bold"),axis.text.y=element_text(size=12, face="bold")) +
-  ggtitle('Pupillary Timecourse by Script Type')
+  labs(x ="Time (ms)",y ="Pupil Dilation (change from baseline (a.u.))") +
+  geom_hline(yintercept=0.0)
 
 cursive_plot
-
