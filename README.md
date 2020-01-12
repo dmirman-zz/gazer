@@ -12,7 +12,7 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
   
 ## Updates (Jan 2020)
 
-Happy New Year!! The gazeR package will soon be up and running on Code Ocean! You can download the gazeR capsule and run your own data using our fucntions from the cloud! 
+Happy New Year!! The gazeR package will soon be up and running on Code Ocean! You can download the gazeR capsule and run your own data using our functions from the cloud! 
 
 ## Updates (December 2019)
   
