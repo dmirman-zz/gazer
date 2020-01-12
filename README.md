@@ -9,6 +9,11 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
 
 <p align="center"><img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="200px" width="200px" />
   
+  
+## Updates (Jan 2020)
+
+Happy New Year!! The gazeR package will soon be up and running on Code Ocean! You can download the gazeR capsule and run your own data using our fucntions from the cloud! 
+
 ## Updates (December 2019)
   
  We just resubmitted our manuscript (find it here: https://psyarxiv.com/4qwr8/)! GazeR now has more generalized functionality. 
