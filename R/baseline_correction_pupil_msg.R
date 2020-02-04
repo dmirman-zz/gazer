@@ -17,8 +17,8 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::group_by(subject, trial) %>%
       dplyr::filter(message==!!event) %>%
       dplyr::summarise(event_offset_time=time[!is.na(message)]) %>%
-      dplyr::ungroup() %>%
-      dplyr::full_join(., datafile)
+      dplyr::full_join(., datafile) %>%
+      dplyr::ungroup()
 
     baseline <- event_time %>%
       dplyr::group_by(subject, trial) %>%
@@ -26,8 +26,8 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
-      dplyr::ungroup() %>%
-      dplyr::full_join(., datafile)
+      dplyr::full_join(., datafile) %>%
+      dplyr::ungroup()
 
 
     message("Merging baseline")
@@ -48,17 +48,17 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::group_by(subject, trial) %>%
       dplyr::filter(message==!!event) %>%
       dplyr::summarise(event_offset_time=time[!is.na(message)]) %>%
-      dplyr::ungroup() %>%
-      dplyr::full_join(., datafile)
-
+      dplyr::full_join(., datafile) %>% 
+      dplyr::ungroup()
+      
     baseline <- event_time %>%
       dplyr::group_by(subject, trial) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
-      dplyr::ungroup() %>%
-      dplyr::full_join(., datafile)
+      dplyr::full_join(., datafile)%>%
+      dplyr::ungroup()
 
     message("Merging baseline")
     message("Performing median divisive baseline correction")
