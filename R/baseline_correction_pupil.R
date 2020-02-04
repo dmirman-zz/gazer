@@ -44,7 +44,7 @@ baseline_correction_pupil<-function(datafile, pupil_colname="pupil", baseline_wi
 
     message("Performing divisive baseline correction")
 
-    corrected_baseline <- baseline_join %>%
+    corrected_baseline <- baseline %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::mutate(baselinecorrectedp = (pupil_avg - baseline)/baseline) %>%
       dplyr::rename(pup_interp = pupil_avg) %>%
