@@ -18,7 +18,7 @@ Happy New Year!! The gazeR package will soon be up and running on Code Ocean! Yo
   
  We just resubmitted our manuscript (find it here: https://psyarxiv.com/4qwr8/)! GazeR now has more generalized functionality. 
  
-- GazeR can now read in edf files directly and Tobii .gazepoint files
+- GazeR can now read in edf files directly
 - Baseline by messages
 - Modified downsampling function
 - Smoothing and interpolation merged into single function
