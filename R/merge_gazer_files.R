@@ -30,7 +30,7 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
          !!quo_name("blink"):= blink_colname,
          !!quo_name("pupil"):= pupil_colname,
          !!quo_name("trial"):= TRIAL_INDEX,
-         !!quo_name("messafe"):= SAMPLE_MESSAGE,
+         !!quo_name("message"):= SAMPLE_MESSAGE,
          everything())
   
   names(change_name) <- tolower(names(change_name))
