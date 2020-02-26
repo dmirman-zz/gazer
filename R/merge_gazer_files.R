@@ -26,12 +26,16 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
   
     fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quick
   
-    change_name <- dplyr::select(dataset,subject=RECORDING_SESSION_LABEL, trial =  TRIAL_INDEX,    blink = blink_colname, pupil = pupil_colname, message= "SAMPLE_MESSAGE",  everything())
+  change_name <- dplyr::select(!!quo_name("subject"):= RECORDING_SESSION_LABEL,
+         !!quo_name("blink"):= blink_colname,
+         !!quo_name("pupil"):= pupil_colname,
+         !!quo_name("trial"):= TRIAL_INDEX,
+         !!quo_name("messafe"):= SAMPLE_MESSAGE,
+         everything())
   
-    names(change_name) <- tolower(names(change_name))
+  names(change_name) <- tolower(names(change_name))
   
-    change_name$time <- change_name$timestamp-change_name$ip_start_time
-  
+  change_name$time <- change_name$timestamp-change_name$ip_start_time
     return(as_tibble(change_name))
   }
   
