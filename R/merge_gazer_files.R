@@ -3,7 +3,7 @@
 #' Places time in ms
 #' if edf files just reads them in
 #'@import tidyverse
-#'@import data.table
+#'@import vroom
 #' @param file_list path to .xls files
 #' @param blink_colname name of your blink colname:AVERAGE_IN_BLINK, LEFT_, #RIGHT
 #' @param pupil_colname name of your pupil colname:AVERAGE_IN_Pupil, LEFT_, #RIGHT
@@ -12,7 +12,8 @@
 #' @return data frame containing pupil data
 merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="pupil", filetype="sr") {  
   #file list is path to .xls files
-  library(data.table)
+  #vroom is faster
+  library(vroom)
 
   if (filetype=="sr") {
     
@@ -24,9 +25,10 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
       }
     }
   
-    fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #fread makes reading in files quick
+  vroom(files, na = c("."))})) #vroom makes reading in files quick
   
-  change_name <- dplyr::select(!!quo_name("subject"):= RECORDING_SESSION_LABEL,
+  change_name <- dataset %>% 
+    dplyr::select(!!quo_name("subject"):= RECORDING_SESSION_LABEL,
          !!quo_name("blink"):= blink_colname,
          !!quo_name("pupil"):= pupil_colname,
          !!quo_name("trial"):= TRIAL_INDEX,
@@ -49,9 +51,9 @@ if (filetype=="edf") {
       }
     }
     
-    fread(files, header=TRUE, na.strings = "NA", fill=TRUE)})) #fread makes reading in files quicke
+    vroom(files, na = c("NA"))})) #fread makes reading in files quicke
 
-   return(as_tibble(dataset))
+   return(dataset)
   }
 
 }

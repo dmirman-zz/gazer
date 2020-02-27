@@ -20,7 +20,8 @@ Imports:
     data.table, 
     tidyverse, 
     lme4, 
-    zoo
+    zoo, 
+    vroom
 Remotes: tmalsburg/saccades/saccades
 RoxygenNote: 6.1.1
 Suggests: knitr,
