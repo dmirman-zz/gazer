@@ -51,7 +51,7 @@ if (filetype=="edf") {
       }
     }
     
-    vroom(files, na = c("NA"))})) #fread makes reading in files quicke
+    vroom(files, na = c("NA"))})) #vroom makes reading in files quicke
 
    return(dataset)
   }
