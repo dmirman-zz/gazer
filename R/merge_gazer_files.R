@@ -13,7 +13,7 @@
 merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="pupil", filetype="sr") {  
   #file list is path to .xls files
   #vroom is faster
-  library(vroom)
+  library(data.table)
 
   if (filetype=="sr") {
     
@@ -25,7 +25,7 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
       }
     }
   
-  vroom(files, na = c("."))})) #vroom makes reading in files quick
+    fread(files, header=TRUE, sep="\t", na.strings = ".", fill=TRUE)})) #vroom makes reading in files quick
   
   change_name <- dataset %>% 
     dplyr::select(!!quo_name("subject"):= RECORDING_SESSION_LABEL,
@@ -38,6 +38,7 @@ merge_gazer_files <- function (file_list, blink_colname="blink", pupil_colname="
   names(change_name) <- tolower(names(change_name))
   
   change_name$time <- change_name$timestamp-change_name$ip_start_time
+
     return(as_tibble(change_name))
   }
   
@@ -51,9 +52,9 @@ if (filetype=="edf") {
       }
     }
     
-    vroom(files, na = c("NA"))})) #vroom makes reading in files quicke
+    fread(files, header=TRUE, na.strings = "NA", fill=TRUE)})) #vroom makes reading in files quicke
 
-   return(dataset)
+   return(as_tibble(dataset))
   }
 
 }
