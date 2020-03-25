@@ -21,6 +21,7 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
   library(data.table)
 
   if (type=="pupil") {
+    
     subs <- length(file_list)
 
     for (sub in 1:subs) {
@@ -80,8 +81,7 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
         ungroup()
 
 
-      setwd(output_dir)
-      subOutData <- paste(file_list[sub], "_raw_pupil.csv", sep="") # save file
+      subOutData <- file.path(output_dir, paste(file_list[sub], "_raw_pupil.csv", sep="")) # save file
       write.table(dat_samp_msg2, file = subOutData, append = FALSE, sep = ",",
                   row.names = FALSE, col.names = TRUE)
     }
@@ -110,8 +110,7 @@ parse_edf <- function (file_list, output_dir, type="pupil") {
         #for some experiments there are NAs in the x, y coordinates which throws off blink detection
         dplyr::rename(trial="eyetrial")
 
-      setwd(output_dir)
-      subOutData <- paste(file_list[sub], "_raw_vwp.csv", sep="") # save file
+      subOutData <- file.path(output_dir, paste(file_list[sub], "_raw_pupil.csv", sep="")) # save file
       write.table(df_samp, file = subOutData, append = FALSE, sep = ",",
                   row.names = FALSE, col.names = TRUE)
 
