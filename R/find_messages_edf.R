@@ -10,7 +10,7 @@
 #'@param file_list list of edf files
 #'@param varnames a vector of variable names from experiment c("TRIALID", "ACCURACY")
 #'@param patterns a vector of patters to look for ("TRIALID", "!V TRIAL_VAR script")
-#'@param output_directory where you want files to be stored
+#'@param output_dir where you want files to be stored
 #'@import tidyverse
 #'@import data.table
 #'@import edfR
@@ -18,7 +18,7 @@
 #
 # Collect trial variables for your experiment.
 
-find_messages_edf <- function(file_list,varnames,patterns, output_directory)
+find_messages_edf <- function(file_list,varnames,patterns, output_dir)
 {
   subs <- length(file_list)
 
@@ -45,8 +45,8 @@ find_messages_edf <- function(file_list,varnames,patterns, output_directory)
       dplyr::rename(trial = "TRIALID")%>%
       dplyr::mutate(trial=as.integer(trial))
 
-    setwd(output_directory)
-    subOutData <- paste(file_list[sub], "_behave_data.csv", sep="") # save file
+    
+    subOutData <- file.path(output_dir, paste(file_list[sub], "_behave_data.csv", sep="")) # save file
 
     write.table(message_data, file = subOutData, append = FALSE, sep = ",",
                 row.names = FALSE, col.names = TRUE)
