@@ -12,6 +12,8 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
 ## Updates (March 2020)
 
 Good news! Gazer is now up on Code Ocean! Click on the Code Ocean button at the top. You can download the capsule to run the package and analyze your data with it. No more worrying about package or OS incompatabilites--it will run on all systems! 
+
+Here is a link showing how to use the gazeR package with Code Ocean: https://www.youtube.com/watch?v=5IQmP9Yrh1k
   
 ## Updates (Jan 2020)
 
