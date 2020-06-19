@@ -45,7 +45,7 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
     message("Calculating median baseline from",":", event)
 
     event_time <- datafile %>%
-      dplyr::group_by(subject) %>%
+      dplyr::group_by(subject, trial) %>%
       dplyr::filter(message==!!event) %>%
       dplyr::summarise(event_offset_time=time[!is.na(message)]) %>%
       dplyr::full_join(., datafile) %>% 
