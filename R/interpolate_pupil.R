@@ -9,7 +9,7 @@
 #' 
 #' @return data frame containing interpolated data 
 #' 
-interpolate_pupil<-function(datafile, extendblinks=FALSE, maxgap=Inf, type=NULL, hz=NA) {
+interpolate_pupil<-function(datafile, pupil, subject, trial, extendblinks=FALSE, maxgap=Inf, type=c("linear", "cubic"), hz=NA) {
 #supports linear and cublic-spline interpolation
   if (maxgap!=Inf){
     maxgap <- round(maxgap/(1000/hz))
