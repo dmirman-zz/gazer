@@ -40,19 +40,19 @@ baseline_correction_pupil_msg<-function(datafile, pupil_colname=NULL, baseline_d
       dplyr::rename(pup_interp = pupil_avg) %>%
       dplyr::arrange(subject, trial, time)
   }
-
+#use grand average baseline instead of individual trial baseline to minimize bias
   if (baseline_method=="div") {
     message("Calculating median baseline from",":", event)
 
     event_time <- datafile %>%
-      dplyr::group_by(subject, trial) %>%
+      dplyr::group_by(subject) %>%
       dplyr::filter(message==!!event) %>%
       dplyr::summarise(event_offset_time=time[!is.na(message)]) %>%
       dplyr::full_join(., datafile) %>% 
       dplyr::ungroup()
       
     baseline <- event_time %>%
-      dplyr::group_by(subject, trial) %>%
+      dplyr::group_by(subject) %>%
       dplyr::filter(time >= event_offset_time - baseline_dur,
                     time <= event_offset_time) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%

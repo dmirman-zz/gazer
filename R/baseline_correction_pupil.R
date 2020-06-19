@@ -36,12 +36,13 @@ baseline_correction_pupil<-function(datafile, pupil_colname="pupil", baseline_wi
     baseline <- datafile  %>%
       dplyr::filter(time > baseline_window[1],
                     time < baseline_window[2]) %>%
-      dplyr::group_by(subject, trial) %>%
+      dplyr::group_by(subject) %>%
       dplyr::rename(pupil_avg = pupil_colname) %>%
       dplyr::summarise(baseline = median(pupil_avg, na.rm=TRUE)) %>%
       dplyr::full_join(., datafile) %>% # merge median pupil size with raw dataset
        ungroup()  
-
+   #use grand average baseline instead of individual trial baseline to minimize bias
+    
     message("Performing divisive baseline correction")
 
     corrected_baseline <- baseline %>%
