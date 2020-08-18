@@ -4,7 +4,7 @@ author: "Jason Geller"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{"Pupil Preprocessing"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 
-This is an R markdown file explaining pupil preprocessing functions contained in the gazeR package. The example dataset is from a lexical decision task that had individuals judge the lexicality of printed and cursive stimuli. Cursive stimuli are ambiguous and non-segmented making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this hypothesis! 
+This is an R markdown file explaining pupil pre-processing functions contained in the gazeR package. The example dataset is from a lexical decision task that had individuals judge the lexicality of printed and cursive stimuli. Cursive stimuli are ambiguous and non-segmented making them really hard to recognize. It was predicted that it should be harder to recognize cursive words than printed words. Good thing we have this new package to help us test this hypothesis! 
 
 Please see our pre-print for a more in-depth walkthrough of the functions below.  
 
@@ -26,6 +26,10 @@ Please see our pre-print for a more in-depth walkthrough of the functions below.
 
 ```{r, message=FALSE, warning=FALSE}
 remotes::install_github("dmirman/gazer")
+library(gazer)
+library(data.table)
+library(tidyverse)
+library(knitr)
 ```
 
 # Preparing Your Data
@@ -36,13 +40,15 @@ Before using this package, a number of steps are required. In order for gazeR to
 ```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 col_names <- c("subject","trial","blink","pupil", "x", "y", "time","message")
 knitr::kable(col_names, col.names = "Names")
+
+kable(col_names)
 ```
 
 You should also include other columns of interest. 
 
 Colnames can be changes to match gazer conventions 
 
-```{r,message=FALSE, warning=FALSE}
+```{r,message=FALSE, eval=FALSE, warning=FALSE}
 
 gazer_pupil <- make_gazer(data, subject="subject", trial="subject", time="time", x="x", y="y", pupil=NULL)
 ```
@@ -52,12 +58,12 @@ We need to read in the file that contains data from 3 participants. Given how la
 
 ```{r}
 pupil_path <- system.file("extdata", "pupil_sample_files_edf.xls", package = "gazer")
-pupil_sub1<-read.table(pupil_path)
+pupil_sub1<-fread(pupil_path)
 ```
 
 In reality, you will have many Ss files. The function `merge_gazer_files` will take all your pupil files from a folder path and merge them together.
 
-```{r}
+```{r eval=FALSE}
 pupil_files<-merge_gazer_files(file_list, filetype="edf")
 ```
 
@@ -66,7 +72,7 @@ pupil_files<-merge_gazer_files(file_list, filetype="edf")
 If you are also interested in analyzing behavioral data (RTs and accuracy), the `behave_pupil` function will cull the important behavioral data from the Sample Report. `behave_pupil` will return a data frame without errors when omiterrors=TRUE or a data frame with errors for accuracy/error analysis when omiterrors=FALSE. The columns relevant for your experiment need to be specified within the behave_col names argument. This does not eliminate outliers. You must use your preferred method. I recommend the very good `trimr` package by Jim Grange. 
 
 
-```{r}
+```{r eval=FALSE}
 behave_data<-behave_pupil(pupil_sub1, omiterrors = FALSE, behave_colnames = c("subject","script","alteration", "trial", "target","accuracy","rt", "block", "cb"))
 
 ```
@@ -76,9 +82,13 @@ behave_data<-behave_pupil(pupil_sub1, omiterrors = FALSE, behave_colnames = c("s
 If you are exporting files from SR, there is an option to extend blinks within Data Viewer. It is generally recommended that you extend blinks 100 ms before the blink and 100 ms after the blink. If you have not done this before exporting into R, you can use the `extend_blinks` function. The fillback argument extends blinks back in time and the fillforward argument extends blinks forward in time. For this experiment the tracker sampled at 250Hz (once every 4 ms) and we extend the blinks forward and backward 100 ms in time. 
 
 ```{r}
-pup_extend<- pupil_files1 %>% 
+pup_extend<- pupil_sub1 %>% 
   group_by(subject, trial) %>% 
-  mutate(extendpupil=extend_blinks(pupil, fillback=100, fillforward=100, hz=250))
+  mutate(extendpupil=extend_blinks(pupil, fillback=100, fillforward=100, hz=250)) %>% 
+  relocate(extendpupil, .after=trial)
+
+pup_extend
+  
 ```
 
 # Interpolation and Filter of Pupil Values
@@ -123,7 +133,7 @@ pup_missing<-count_missing_pupil(baseline_pupil, pupil="pupil", missingthresh = 
 Artifacts can arise from quick changes in pupil size (Kret & Sjak-Shie, in press). The max_dilation function calculates the normalized dilation speed, which is the max absolute change between samples divided by the temporal separation for each sample, preceding or succeeding the sample. To detect out liters, the median absolute deviation is calculated from the speed dilation variable, multiplied by a constant, and added to the median dilation speed variable--values above this threshold are then removed.
 
 ```{r}
-max_pup<-pup_outliers  %>% 
+max_pup<-pup_missing  %>% 
   dplyr::group_by(subject, trial) %>% 
   dplyr::mutate(speed=speed_pupil(pup_interp,time)) %>%
   dplyr::mutate(MAD=calc_mad(speed))%>%
@@ -135,24 +145,23 @@ max_pup<-pup_outliers  %>%
 
 In most psychological experiments, each trial includes several events. We can use this information to start our trial onset at zero.  To do this we can use the `onset_pupil` function. This function requires three arguments to be specified: time column, sample message column, and the event of interest ("target") in our example). This will allow us to start the trial at the onset of the target.  
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=TRUE, warning=FALSE}
 
 baseline_pupil_onset<-baseline_pupil %>% 
   dplyr::group_by(subject, trial) %>%  
-  dplyr::mutate(time_zero=onset_pupil(time, sample_message, event=c("target"))) %>%
+  dplyr::mutate(time_zero=onset_pupil(time, message, event=c("target"))) %>%
   ungroup() %>% 
+  relocate(time_zero,time, baseline, .after="trial")
+
+baseline_pupil_onset
   
-  
-  
-  ans <- vapply(samp$time, function(x) x-msg$time, numeric(length(msg$time)))
-  indx <- apply(abs(ans), 2, which.min)
 ```
 
 # Decimation or Downsampling
 
 Place data into timebins (users can specifiy a timebin to use). For this example, we will use 200 ms timebins. The argument `aggvars` requires a vector of coloumn names to aggregate on. If you are using pupil data, `type` should set to "pupil."
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 timebins1<- downsample_gaze(baseline_pupil_onset, bin.length=200, timevar = "time_zero", aggvars = c("subject", "script", "timebins"), type="pupil")
 
 timebins1
