@@ -13,6 +13,10 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
   
 Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any bugs or suggestions.
   
+## Updates (December 2020) 
+
+Added a new blink detection algo based off Mathot (2013). This algo detects large negative and positive chanages in the pupil size and labels them as blinks. The algorithm has four parameters that need to be adjusted based on the particulars of the data: the amount of smoothing, the (negative) onset velocity threshold,the (positive) reversal velocity threshold, and the temporal margin. This is a major addition in my eyes as some ETs do not even include blink detection. 
+
 ## Updates (May 2020)
 
 Added functionality to scale pupil size to dynamic pupil range (Ayasse et al., 2017; Piquado et al., 2010). This requires you to record participant pupil size in bright and dark conditions. 
