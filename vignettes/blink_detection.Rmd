@@ -1,0 +1,146 @@
+---
+title: "Blink Detection"
+author: "Jason Geller"
+date: "12/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+While it is generally agreed that blinks need to be taken care of during preprocessing, most eye tracking software does not include this event information. This has lead to the development of several great blink algorithms. I decided to implement one of them--Mathot (2013) in gazeR. It is a very simple and intuitive algo and does a nice job recovering the pupil data. 
+
+This vignette will show how you the steps involved in identifying blinks that underlie the`blink_mathot' function in gazeR. 
+
+First load gazeR and some sample data. 
+
+```{r, warning=FALSE, message=FALSE}
+library(gazer)
+library(cowplot)
+library(data.table)
+library(patchwork)
+library(tidyverse)
+```
+
+```{r,warning=FALSE, message=FALSE}
+pupil_path <- system.file("extdata", "pupil_sample_files_edf.xls", package = "gazer")
+pupil_files1<-fread(pupil_path)
+pupil_files1 <- as_tibble(pupil_files1)
+summary(pupil_files1)
+
+```
+
+# Blink Detection
+
+For blink detection we are using Mathôt’s (2013) approach. First the 
+uncorrected pupil signal for a single trial from a single subject is plotted as a continuous signal. 
+The signal is measured in arbitrary units as outputted by Eyelink’s software 
+(Please check your own data before using this). In the below figure, it is clear 
+to see that the participant blinked three times during the trial. Eye blinks are
+characterized by a pronounced drop in the pupillary signal, followed by a full loss of signal, 
+and then usually a recovery artifact when the signal comes back online.
+
+
+```{r, warning=FALSE, message=FALSE}
+interp_graph <- pupil_files1  %>%
+  dplyr::filter(subject=="11c.edf", trial=="1")
+
+pup_g<- ggplot(interp_graph, aes(x= time, y= pupil)) + geom_point()+ geom_line(colour="black") + ggtitle("Raw Pupil Signal")
+
+  print(pup_g)
+
+
+```
+
+In order to detect these events systematically, I calculated a
+velocity profile for each trace. However, the original signal is too noisy to create a reliable
+profile. In order to detect blinks efficiently, I began by smoothing the signal using a weighted
+moving window average of 10 samples (i.e., 20 ms; 250 Hz tracker). 
+
+
+```{r, warning=FALSE, message=FALSE}
+  pupil_blink_algo <-  interp_graph %>%
+    mutate(smooth_pupil=moving_average_pupil(pupil, n=10))
+
+pup_g1<- ggplot(pupil_blink_algo, aes(x= time, y= smooth_pupil)) + 
+  geom_point()+ geom_line(colour="black") + 
+  ggtitle("Smoothed Pupil Signal")
+
+print(pup_g1)
+```
+
+
+Next I created a velocity profile by subtracting each sample from the immediately
+preceding sample in the signal. 
+
+
+```{r}
+
+  pupil_blink_algo1 <- pupil_blink_algo %>% 
+  
+    mutate(velocity_pupil=c(diff(smooth_pupil), NA))
+
+pup_g2<- ggplot(pupil_blink_algo1, aes(x= time, y= velocity_pupil)) + 
+  geom_point()+ geom_line(colour="black") + 
+  ggtitle("Pupil Velocity")
+
+pup_g2
+```
+
+Blink onsets were subsequently identified as occurring when the velocity crossed 
+a predetermined negative threshold (I selected -5 based on Mathot's (2013) recommendation. 
+This rapid decrease in pupil diameter corresponds to the
+apparent decrease in size of the pupil as the eyelid closes. Likewise, when the eyelid reopens
+there is a recovery artifact wherein pupil size rapidly gets larger. Thus, the algorithm detected the
+recovery period by indexing the time since onset that velocity exceed some positive threshold (I
+selected -5, again based off Matĥot (2013) recommendation). Finally, the offset was detected as the time at
+which velocity fell back down to 0. In this way, a blink corresponds to an onset, recovery, and
+offset index. According to Mathôt (2013), this detection algorithm underestimates the blink
+period by several milliseconds, thus I selected a margin value (10 ms) which was subtracted from
+the onset and added to the offset using the 'extend_blinks` function in gazeR. 
+Finally, the pupil signal was then linearly interpolated. 
+
+```{r, warning=FALSE}
+
+ pupil_blink_algo2 <-  pupil_blink_algo1 %>%  
+  # Thrid, set neg and pos threshold here we are using -5 and 5 (probably good idea to look at data)
+    mutate(blinks_onset_offset=ifelse(velocity_pupil <= -5 | velocity_pupil >= 5, 
+                                      1, 0)) %>%
+  # Four turn pupil values 0 if blink detection coded as 1
+    mutate(blinks_pupil=ifelse(blinks_onset_offset==1, pupil==NA, pupil)) %>%
+  
+     mutate(extendpupil=extend_blinks(blinks_pupil, fillback=10, fillforward=10, hz=250)) %>%
+    #interpolate
+    dplyr::mutate(interp = zoo::na.approx(extendpupil, na.rm = FALSE, rule=2))
+
+```
+
+
+
+```{r pressure, echo=FALSE, warning=FALSE}
+
+pup_g3 <- ggplot(pupil_blink_algo2, aes(x= time, y= pupil)) + 
+  geom_point()+ geom_line(colour="black") +
+  geom_line(aes(x=time, y=interp), colour="purple") + 
+  xlab("Time (ms)") + 
+  ylab("Pupil Size (arbitrary units)") + 
+  ggtitle("Interpolated Pupil Signal")
+print(pup_g3)
+
+```
+
+By looking at interpolated data plotted over the raw data we can see that the algo
+did  a pretty good job at finding the blinks and recovering the pupil signal.
+These steps are all contained in the `blink_mathot` function. 
+
+```{r, warning=FALSE, message=FALSE}
+
+
+pupil= plot_grid(pup_g + pup_g1 + pup_g2 + pup_g3)
+
+plot(pupil)
+```
+
+
+
