@@ -1,4 +1,4 @@
-#' This function takes a dataframe and applies Mathot's (2013) blink algorithm to detect blinks in
+#' This function takes a dataframe and applies a simple velocity algorithm to detect blinks in
 #' the data based off velocity of pupil size changes. The algorithm has four
 #' parameters that need to be adjusted based on the
 #'particulars of the data: the amount of smoothing, the (negative) onset velocity threshold,
@@ -14,7 +14,7 @@
 #' @import zoo
 #' @return data frame containing pupil values where blinks have been linear interpolated.
 #'
-blink_mathot=function(df, neg_velocity_thresh=-5, pos_velocity_thresh=5, fillback=10 , fillforward=10, hz=250){
+blink_velocity=function(df, neg_velocity_thresh=-5, pos_velocity_thresh=5, fillback=10 , fillforward=10, hz=250){
   #First smooth the pupil signal. Here we use moving average.
   pupil_blink_algo <-  df %>%
     group_by(subject, trial) %>%
