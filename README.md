@@ -15,7 +15,7 @@ Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any 
   
 ## Updates (December 2020) 
 
-Added a new blink detection algo based off Mathot (2013). This algo detects large negative and positive chanages in the pupil size and labels them as blinks. The algorithm has four parameters that need to be adjusted based on the particulars of the data: the amount of smoothing, the (negative) onset velocity threshold,the (positive) reversal velocity threshold, and the temporal margin. This is a major addition in my eyes as some ETs do not even include blink detection. 
+Added a new blink detection algo based off Mathot (2013). This algo detects large negative and positive chanages in the pupil size and labels them as blinks. The algorithm has four parameters that need to be adjusted based on the particulars of the data: the amount of smoothing, the (negative) onset velocity threshold,the (positive) reversal velocity threshold, and the temporal margin. This is a major addition in my eyes as some ETs do not even include blink detection. It is pretty simple and it seems to do a good job, but please test it out. 
 
 ## Updates (May 2020)
 
