@@ -62,5 +62,4 @@ remotes::install_github("dmirman/gazer")
 ``` 
 # Citation
 [1] Geller, J., Winn, M. B., Mahr, T., & Mirman, D. (2020). GazeR: A Package for Processing Gaze Position and Pupil Size Data. Behavior Research Methods. 
-# References
-[2] Mathôt, S. (2013). A Simple Way to Reconstruct Pupil Size During Eye Blinks. Retrieved from doi:10.6084/m9.figshare.688001
+
