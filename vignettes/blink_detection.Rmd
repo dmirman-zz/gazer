@@ -9,9 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-While it is generally agreed that blinks need to be taken care of during preprocessing, most eye tracking software does not include this event information. This has lead to the development of several great blink algorithms. I decided to implement one of them--Mathot (2013) in gazeR. It is a very simple and intuitive algo and does a nice job recovering the pupil data. 
+While it is generally agreed that blinks need to be taken care of during preprocessing, most eye tracking software does not include this event information. This has lead to the development of several great blink algorithms. I decided to implement a velocity based one in gazeR. It is a very simple and intuitive algo and does a nice job recovering the pupil data. 
 
-This vignette will show how you the steps involved in identifying blinks that underlie the`blink_mathot' function in gazeR. 
+This vignette will show how you the steps involved in identifying blinks that underlie the`blink_velocity' function in gazeR. 
 
 First load gazeR and some sample data. 
 
@@ -33,13 +33,12 @@ summary(pupil_files1)
 
 # Blink Detection
 
-For blink detection we are using Mathôt’s (2013) approach. First the 
-uncorrected pupil signal for a single trial from a single subject is plotted as a continuous signal. 
-The signal is measured in arbitrary units as outputted by Eyelink’s software 
+ First the 
+uncorrected pupil signal for a single trial from a single subject is plotted as a continuous signal.The signal is measured in arbitrary units as outputted by Eyelink’s software 
 (Please check your own data before using this). In the below figure, it is clear 
 to see that the participant blinked three times during the trial. Eye blinks are
 characterized by a pronounced drop in the pupillary signal, followed by a full loss of signal, 
-and then usually a recovery artifact when the signal comes back online.
+and then usually a recovery artifact when the signal comes back online. The data I am working with is a bit odd (positive deflections) which suggests some type of artifact. 
 
 
 ```{r, warning=FALSE, message=FALSE}
