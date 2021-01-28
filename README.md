@@ -13,6 +13,10 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
   
 Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any bugs or suggestions.
   
+## Updates (Janurary 2020)
+
+Added Hershman et al.'s (2008) blink algo. I will be posting a walkthrough on how to use it with gazeR sometime soon. 
+
 ## Updates (December 2020) 
 
 Added a new blink detection algo based off Mathot (2013). This algo detects large negative and positive chanages in the pupil size and labels them as blinks. The algorithm has four parameters that need to be adjusted based on the particulars of the data: the amount of smoothing, the (negative) onset velocity threshold,the (positive) reversal velocity threshold, and the temporal margin. This is a major addition in my eyes as some ETs do not even include blink detection. It is pretty simple and it seems to do a good job, but please test it out. 
@@ -62,4 +66,4 @@ remotes::install_github("dmirman/gazer")
 ``` 
 # Citation
 [1] Geller, J., Winn, M. B., Mahr, T., & Mirman, D. (2020). GazeR: A Package for Processing Gaze Position and Pupil Size Data. Behavior Research Methods. 
-
+[2]Hershman, R., Henik, A., & Cohen, N. (2018). A novel blink detection method based on pupillometry noise. Behavior research methods, 50(1), 107–114. https://doi.org/10.3758/s13428-017-1008-1
