@@ -15,7 +15,7 @@ Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any 
   
 ## Updates (Janurary 2020)
 
-Added Hershman et al.'s (2008) blink algo. I will be posting a walkthrough on how to use it with gazeR sometime soon. 
+Added Hershman et al.'s (2008) blink detection algo based on pupillary noise. I will be posting a walkthrough on how to use it with gazeR sometime soon. 
 
 ## Updates (December 2020) 
 
