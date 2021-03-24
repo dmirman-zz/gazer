@@ -9,6 +9,20 @@ For a detailed overview of how to use gazeR, please see the vignettes and posted
 
 <p align="center"><img src="https://user-images.githubusercontent.com/18429968/46034046-472caa80-c0c5-11e8-89c3-ff3f463a1868.jpeg" height="200px" width="200px" />
  
+## Synopsis
+
+This package contains functions for reading in raw eye-tracking data, formatting it for (growth curve) analysis, converting from gaze coordinates to areas of interest, binifying and aggregating data, and various helper functions for GCA and plotting. In addition to gaze-position data, it can handle pupillometric and other time course data.
+
+## Installing Package
+
+``` r
+# install devtools
+install.packages("devtools")
+
+# install gazer from GitHub
+remotes::install_github("dmirman/gazer")
+``` 
+
 # Help
   
 Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any bugs or suggestions.
@@ -51,19 +65,7 @@ Happy New Year!! The gazeR package will soon be up and running on Code Ocean! Yo
 - Comptability with other eye trackers
 - add Binder functionality to run package in the cloud
 
-## Synopsis
 
-This package contains functions for reading in raw eye-tracking data, formatting it for (growth curve) analysis, converting from gaze coordinates to areas of interest, binifying and aggregating data, and various helper functions for GCA and plotting. In addition to gaze-position data, it can handle pupillometric and other time course data.
-
-## Installing Package
-
-``` r
-# install devtools
-install.packages("devtools")
-
-# install gazer from GitHub
-remotes::install_github("dmirman/gazer")
-``` 
 # Citation
 [1] Geller, J., Winn, M. B., Mahr, T., & Mirman, D. (2020). GazeR: A Package for Processing Gaze Position and Pupil Size Data. Behavior Research Methods. 
 
