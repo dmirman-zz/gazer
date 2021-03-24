@@ -66,4 +66,5 @@ remotes::install_github("dmirman/gazer")
 ``` 
 # Citation
 [1] Geller, J., Winn, M. B., Mahr, T., & Mirman, D. (2020). GazeR: A Package for Processing Gaze Position and Pupil Size Data. Behavior Research Methods. 
+
 [2]Hershman, R., Henik, A., & Cohen, N. (2018). A novel blink detection method based on pupillometry noise. Behavior research methods, 50(1), 107–114. https://doi.org/10.3758/s13428-017-1008-1
