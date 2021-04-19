@@ -33,29 +33,32 @@ merge_tobii <- function (file_list, part_colname="PID", behave_colnames="cond", 
 
   # for some reason titta uses mixed case for calibration and validation messages.
   dataset <- dataset %>%
+    #groupby the subject colname created above
     dplyr::group_by(subject) %>%
+    #make all messages lower case
     dplyr::mutate(msg=tolower(msg))%>%
     # take out the calibration and validation data
     dplyr::filter(!str_detect(msg, 'calibration'), !str_detect(msg, 'validation')) %>%
-    # select a few of the important columns
+    # select the important columns
     dplyr::select(subject,system_time_stamp, device_time_stamp, msg, all_of(behave_colnames), right_pupil_diameter,left_pupil_diameter,
                   right_pupil_validity, left_pupil_validity) %>%
-
+    #started each trial with startfix_trialnumber. Here I am stripping the message and using the trial number.
     dplyr::mutate(msgtrial=ifelse(str_detect(msg, "startfix"), str_replace_all(msg,"startfix_", ""), NA)) %>%
     ungroup() %>%
-
+    #this extends the trial number forward until next trial
     dplyr::mutate(trial = zoo::na.locf(msgtrial)) %>%
-
+    #group by trial number
     dplyr::group_by(trial)%>%
-
+    # put time in ms
     dplyr::mutate(time= (device_time_stamp - device_time_stamp[1]) /1e+6 * 1000) %>%
 
     dplyr::ungroup() %>%
 
     dplyr::rowwise() %>%
-    # need to create a monocular average pupil size
+    # need to create a monocular average pupil size from left and right
     dplyr::mutate(pupil=compute_monocular_mean(right_pupil_diameter, left_pupil_diameter, need_both = FALSE))
 
+  #wish I could find a good merge closest function. This takes the first instance of a message (approx time message was sent.)
   get_msg <- dataset %>%
 
     dplyr::group_by(trial, msg) %>%
