@@ -29,7 +29,7 @@ Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any 
   
 # Updates (April 2021)
 
-I just added a function to read in files taken from the Tobii X2-30 and modify them to work with gazeR (`merge_tobii`). I collected this data using PsychoPy and the Python Titta package. I am going to slowly work on expanding this function to work with other Tobii trackers. This function is kind of specfic to my needs at the moment but might be helpful for others using a Tobii X2-30 and wanting to use gazeR. 
+I added a function to read in files taken from the Tobii X2-30 and modifies the data to work with gazeR (`merge_tobii`). I collected this data using PsychoPy and the Python Titta package. I am going to slowly work on expanding this function to work with other Tobii trackers. This function is kind of specfic to my needs at the moment but might be helpful for others using a Tobii X2-30 and wanting to use gazeR. 
 
 # Updates (Janurary 2021)
 
