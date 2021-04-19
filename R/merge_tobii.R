@@ -9,11 +9,13 @@
 #' @param file_list a vector of file names
 #' @param part_colname name of your participant id
 #' @param behave_colnames name of your behave colnames
+#' @param trial_msg name of message used to get trials. In this case at start of fix I sent msg "startfix_trialnum"
 #' @param type right now work with X230
+#' @param
 #' @return DF
 #' @export
 #'
-merge_tobii <- function (file_list, part_colname="PID", behave_colnames="cond", type="X230") {
+merge_tobii <- function (file_list, part_colname="PID", behave_colnames="cond", trial_msg = "startfix_", type="X230") {
   #file list is path to .xls files
   #vroom is faster
   library(data.table)
@@ -43,7 +45,7 @@ merge_tobii <- function (file_list, part_colname="PID", behave_colnames="cond", 
     dplyr::select(subject,system_time_stamp, device_time_stamp, msg, all_of(behave_colnames), right_pupil_diameter,left_pupil_diameter,
                   right_pupil_validity, left_pupil_validity) %>%
     #started each trial with startfix_trialnumber. Here I am stripping the message and using the trial number.
-    dplyr::mutate(msgtrial=ifelse(str_detect(msg, "startfix"), str_replace_all(msg,"startfix_", ""), NA)) %>%
+    dplyr::mutate(msgtrial=ifelse(str_detect(msg, trial_msg), str_replace_all(msg,trial_msg, ""), NA)) %>%
     ungroup() %>%
     #this extends the trial number forward until next trial
     dplyr::mutate(trial = zoo::na.locf(msgtrial)) %>%
