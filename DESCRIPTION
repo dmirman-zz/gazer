@@ -4,7 +4,7 @@ Title: Tools for Processing Eye Tracking Data
 Version: 0.1
 Date: 2018-07-05
 Authors@R: c(
-  person("Jason", "Geller", email = "jaso-geller@uiowa.edi", role = c("aut", "cre")), 
+  person("Jason", "Geller", email = "drjasongeller@gmail.edu", role = c("aut", "cre")), 
   person("Dan", "Mirman", email = "dan@danmirman.org", role = c("aut", "cre")),
   person("Tristan", "Mahr", email = "tristan.mahr@wisc.edu", role = c("aut", "cre")),
   person("Matt", "Winn", email = "mwinn83@gmail.com", role = c("aut", "cre")))
