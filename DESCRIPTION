@@ -8,6 +8,7 @@ Authors@R: c(
   person("Dan", "Mirman", email = "dan@danmirman.org", role = c("aut", "cre")),
   person("Tristan", "Mahr", email = "tristan.mahr@wisc.edu", role = c("aut", "cre")),
   person("Matt", "Winn", email = "mwinn83@gmail.com", role = c("aut", "cre")))
+  person (("Holger", "Mitterer", email = "holger.mitterer@um.edu.mt", role = c("aut")))
 Author: Jason Geller
 Maintainer: Jason Geller <jason-geller@uiowa.edu>
 Description: Functions for reading and pre-processing eye tracking data.
@@ -20,10 +21,9 @@ Imports:
     data.table, 
     tidyverse, 
     lme4, 
-    zoo, 
-    vroom
+    zoo
 Remotes: tmalsburg/saccades/saccades
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
