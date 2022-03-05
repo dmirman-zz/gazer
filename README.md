@@ -26,6 +26,16 @@ remotes::install_github("dmirman/gazer")
 # Help
   
 Please use the issues tab (https://github.com/dmirman/gazer/issues) to file any bugs or suggestions.
+ 
+# Updates (March 2022)
+ 
+It has been awhile! I have added some functionality for reading in asc files and pulling in important information to analyze with gazeR. This was with the help of Holger Mitterer! Right now the functionslity is a bit limited (only for events and gaze/VWP), but I am working on extending this. 
+ 
+Also, I am planning to have a function/vignette for reading in data from Tobii Pro Lab and analyzing it with gazeR. I have some functionality showing how to work with Tobii data from E-Prime and the SDK/PsychoPy/Tittia, but I am working with folks that use Tobii Pro Lab and think it would be helpful showing how to analyze the data from the software. I am not sure when this will happen but I am hoping to get to it soon. 
+ 
+Stay safe and well :)
+ 
+-J 
   
 # Updates (April 2021)
 
