@@ -1,0 +1,168 @@
+---
+title: "GazeR preprocssing for SR Reseerch Trackers based on ASC files"
+author: "Holger Mitterer and Jason Geller"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"Gazer and ASC"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# The Issue
+
+The gazeR package relied on the edfR package for data from SR Research Eyetrackers. The edfR package, however, is only available for Linux and Mac systems, and even there has been running into problems.
+
+Therefore, the current functions emulate the workings of these functions using the *.asc files that can be generated from edf files using either the visual EDF2ASC tool that is distributed with each SR tracker or the command line version of EDF2ASC.
+
+At this stage, the files are only available for the visual-world-paradigm branch of the gazeR package. Send me a feature request if you require a version for pupilometry.
+
+# EDF to ASC conversion
+
+It is critical that the EDF conversion puts out both events and samples!!
+
+If the user copies the typical structure of an SR projects, the individual participants' data files be organized in their respective directories, and this model is followed here.
+
+The first function generates a batch file that allows the one-click generation of the asc files using the command line conversion tool in Windows. **For this to work you must download the edf2asc tool from SR--this is free.** It requires a main directory that contains all participants directories and a list of those directories. The user can then navigate with the command prompt to the output directory (provided in the output) and run the batch file.
+
+This conversion will take quite long then!
+
+
+```{r, message=FALSE, warning=FALSE}
+
+remotes::install_github("dmirman/gazer")
+library(gazer)
+library(here)
+library(data.table)
+library(tidyverse)
+library(knitr)
+```
+
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+
+#a list of the subdirectories generated with a regular expression
+#starts with "pp" followed by one or more digits before the end of the string
+#matches pp1, pp09, pp1347, etc. 
+#if your data directories are called "subject1", "subject2", etc.\
+#use "^subject\\d+$")
+
+mainDir=here::here()
+
+
+subDirs = dir(mainDir, pattern = "^pp\\d+$")
+
+setwd(mainDir)
+
+cat(paste(subDirs, collapse = "\n"))
+
+
+```
+
+```{r. eval=FALSE}
+
+
+generate_edf2asc_bat(mainDir, subDirs)
+
+```
+
+
+# Parsing the ASC File
+
+This function is quite analogous to the `parse_edf` function in gazeR. As an additional convenience it will generate a list of the type of messages that are found in the asc file to guide the extraction of performance and trial-level data (i.e., where is the target located on the screen, what is the condition of the trial, etc.)
+
+The parse_asc function requires a directory list as input, and overs the additional option of overwriting missing data from blinks with the last available data point (as in Mitterer and McQueen, 2009, Journal of Experimental Psychology: Human Percpetion and Performance). This option is set by default to false.
+
+Moreover, the function offers an additional parameter to keep the file sizes small (and the subsequent processing faster). The user can opt to not write out scene preview time with the parameter cut preview. If that parameter is set to a time value (in milliseconds), the output will start after the preview time.
+
+**Note that the home directory needs to be specified including a final slash**
+
+```{r, eval=FALSE}
+
+
+
+parse_asc(myDirList, homeDir = "C:/Users/JG1890/Documents/gazer/" ,
+          overwriteBlinks = F, cutPreview = 1500)
+
+```
+This function will take quite long to complete. However, it will feed back whenever it has finished processing a trial from a given participants (which may take around 1s, depending on sample size and the machine the program is run on). That is, for a study with 40 participants and 160 trials, this may well take more than 100 minutes.
+
+The function generates three files in the home directory: 
+
+1. INPUTFILE_vwp.csv containing the eye-tracking data
+2. overview_INPUTFILE.txt containing an overview of the messages in the asc file
+3. VAR_overview_INPUTFILE.txt containing an overview of the TRIAL_VARIABLES that have been put out while running the experiment. 
+
+# Extraction of messages
+The next step is to extract information about the trials from the messages. This will be specific to each study, but the overview files should help to remind the user of how the experiment was set up.
+
+This will be achieved with the `find_messages_asc` function, which is similar to the `find_messages_edf` function working on edf files. However, it has a few more options to facilitate further processing.
+
+It has four parameters:
+
+1. `myDirList` containing a list of directories to work on
+2. `time2extract`: a list of strings that match message texts for which only the time should be retained. This is useful when messages have been sent at critical time points (such as the onset/offset of a target word) and times need to be normalized in relation to this time point (analogue to markers generated from the stimuli-providing machine send to the machine that records the EEG data). That is, only the time will be retained, but is therefore immediately available as number
+3. `msg2extract`: A list of messages to extract fully based on the first word of that message (output will be string variables)
+4. `vars2extrac`: A list of Trial variables used by Experiment Builder that should be extracted (value only, with column names set by the variable name)
+
+
+
+```{r}
+myDirList = dir(mainDir,pattern = "^pp01$")
+#the three types of information to be extracted
+msg2extracts = c("clicked")
+time2extracts = c("TargetOnset")
+vars2extracts = c("targetpos", "targetw","competpos", "competw","condition", "item","trialtype", "wav")
+
+find_messages_asc(myDirList, homeDir = "C:/Users/JG1890/Documents/gazer/",
+                  time2extract = time2extracts,
+                  msg2extract = msg2extracts,
+                  vars2extract = vars2extracts)
+
+
+```
+
+
+# Merging Eye Data and Behavioral Data
+
+The next step is analogous to the `merge_gazer_files` function, which merges messages with the eye-tracking data. The function is called `merge_asc_files` and simply required one parameter, the list of directories in which to find files.
+
+For each directory, the function will feedback whether it found the expected files, and also produce a summary of how many merge attempts were succesful or not. In the example below, I purposefully included some entries in the directory list for which things dont work, so that the error handling becomes clear.
+
+
+```{r}
+
+myDirList = dir(mainDir, pattern = "^pp")
+
+merge_asc_files(myDirList,"C:/Users/JG1890/Documents/gazer/" )
+
+
+```
+# Eye-tracking analysis
+
+The files resulting from this process can be used with the general gazeR function, as explained in other vignettes. The code below how to read in data from multiple participants to process them further using gazeR.
+
+Below is the data ready for analysis in gazeR. 
+
+```{r}
+
+
+gaze_dat <- fread(here::here("pp3", "pp3_combined.csv")) %>% 
+  as_tibble()
+
+
+summary(gaze_dat)
+```
+
+
+
+
+
