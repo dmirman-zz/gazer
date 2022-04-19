@@ -115,13 +115,13 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- blinks_na %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(pup, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      dplyr::mutate(pup_interp = moving_average_pupil(interp, n = n)) %>%
+      dplyr::mutate(pup_interp = moving_average_pupil(interp, n = n))
       
       return(smooth_pupil)
   }
@@ -288,13 +288,13 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- blinks_na %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(pup, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with Hann window")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      dplyr::mutate(pup_interp = hanning_filter(interp, degree=11)) %>%
+      dplyr::mutate(pup_interp = hanning_filter(interp, degree=11))
       
       return(smooth_pupil)
   }
