@@ -46,7 +46,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(datafile) %>%
-      mutate(movingavgpup = moving_average_pupil(extendpupil, n = n))
+      mutate(movingavgpup = moving_average_pupil(get(extendpupil), n = n))
     
     
     message("Performing linear interpolation")
@@ -88,7 +88,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(datafile) %>%
-      mutate(movingavgpup = moving_average_pupil(extendpupil, n = n))
+      mutate(movingavgpup = moving_average_pupil(get(extendpupil), n = n))
     
     message("Performing cubic interpolation")
     warning("Due to extreme values from spline interpolation if NAs at onset and offset last valid pupil sizes are extrapolated")
@@ -115,13 +115,13 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- blinks_na %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(pup, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with moving average")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      dplyr::mutate(pup_interp = moving_average_pupil(interp, n = n)) %>%
+      dplyr::mutate(pup_interp = moving_average_pupil(interp, n = n))
       
       return(smooth_pupil)
   }
@@ -134,7 +134,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- datafile %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, na.rm = FALSE, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(get(extendpupil), na.rm = FALSE, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with moving average")
@@ -179,9 +179,9 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     
     pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),
+      dplyr::mutate(index = ifelse(is.na(get(extendpupil)), NA, dplyr::row_number()),
                     index =  zoo::na.approx(index, na.rm=FALSE, rule=2),
-                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index, maxgap=maxgap), 
+                    interp = zoo::na.spline(get(extendpupil), na.rm=FALSE, x=index, maxgap=maxgap), 
                     interp = zoo::na.locf(interp, na.rm = TRUE, fromLast=TRUE), 
                     interp = zoo::na.locf(interp, na.rm = TRUE)) %>%
       dplyr::ungroup()
@@ -220,7 +220,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with Hann window")
     
     smooth_pupil <- as.data.frame(datafile) %>%
-      mutate(movingavgpup = hanning_filter(extendpupil, degree=11))
+      mutate(movingavgpup = hanning_filter(get(extendpupil), degree=11))
     
     
     message("Performing linear interpolation")
@@ -262,7 +262,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with Hann window")
     
     smooth_pupil <- as.data.frame(datafile) %>%
-      mutate(movingavgpup = hanning_filter(extendpupil, degree=11))
+      mutate(movingavgpup = hanning_filter(get(extendpupil), degree=11))
     
     message("Performing cubic interpolation")
     warning("Due to extreme values from spline interpolation if NAs at onset and offset last valid pupil sizes are extrapolated")
@@ -288,13 +288,13 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- blinks_na %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(pup, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with Hann window")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      dplyr::mutate(pup_interp = hanning_filter(interp, degree=11)) %>%
+      dplyr::mutate(pup_interp = hanning_filter(interp, degree=11))
       
       return(smooth_pupil)
   }
@@ -307,7 +307,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     pupil_interp <- datafile %>%
       dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(interp = zoo::na.approx(extendpupil, na.rm = FALSE, rule=2)) %>%
+      dplyr::mutate(interp = zoo::na.approx(get(extendpupil), na.rm = FALSE, rule=2)) %>%
       dplyr::ungroup()
     
     message("Smoothing the pupil trace with Hann window")
@@ -350,9 +350,9 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     
     
     pupil_interp <- datafile %>% dplyr::group_by(subject, trial) %>%
-      dplyr::mutate(index = ifelse(is.na(extendpupil), NA, dplyr::row_number()),
+      dplyr::mutate(index = ifelse(is.na(get(extendpupil)), NA, dplyr::row_number()),
                     index =  zoo::na.approx(index, na.rm=FALSE, rule=2),
-                    interp = zoo::na.spline(extendpupil, na.rm=FALSE, x=index, maxgap=maxgap), 
+                    interp = zoo::na.spline(get(extendpupil), na.rm=FALSE, x=index, maxgap=maxgap), 
                     interp = zoo::na.locf(interp, na.rm = TRUE, fromLast=TRUE), 
                     interp = zoo::na.locf(interp, na.rm = TRUE)) %>%
       dplyr::ungroup()
@@ -360,7 +360,7 @@ smooth_interpolate_pupil<-function(datafile, pupil="pupil", extendpupil="extendp
     message("Smoothing the pupil trace with Hann window")
     
     smooth_pupil <- as.data.frame(pupil_interp) %>%
-      dplyr::mutate(pup_interp = hanning_filter(extendpupil, degree=11))
+      dplyr::mutate(pup_interp = hanning_filter(interp, degree=11))
     
     return(smooth_pupil)
   }
